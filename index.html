@@ -858,4 +858,112 @@
             const nome = document.getElementById('nomeOperacao').value;
             const data = document.getElementById('dataOperacao').value;
             const local = document.getElementById('localOperacao').value;
-            const
+            const detalhes = document.getElementById('detalhesOperacao').value;
+            
+            const dataObj = new Date(data);
+            const operacao = {
+                id: Date.now(),
+                nome: nome,
+                data: dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                local: local,
+                detalhes: detalhes,
+                autor: currentUser.nome
+            };
+            
+            operacoes.unshift(operacao);
+            renderOperacoes();
+            e.target.reset();
+            alert('✅ Operação publicada!\n📧 Notificações enviadas para todos.');
+        }
+
+        function renderOperacoes() {
+            const lista = document.getElementById('listaOperacoes');
+            if (operacoes.length === 0) {
+                lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada</p></div>';
+                return;
+            }
+            lista.innerHTML = operacoes.map(o => `
+                <div class="item-box">
+                    <div class="item-header">
+                        <span class="item-tipo">OPERAÇÃO</span>
+                        <span class="item-data">${o.data}</span>
+                    </div>
+                    <div class="item-titulo">${o.nome}</div>
+                    <div class="item-conteudo">
+                        <strong>Local:</strong> ${o.local}<br>
+                        <strong>Detalhes:</strong> ${o.detalhes}
+                    </div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                        Publicado por: ${o.autor}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ADICIONAR DOCUMENTO
+        function addDocumento(e) {
+            e.preventDefault();
+            const categoria = document.getElementById('categoriaDoc').value;
+            const nome = document.getElementById('nomeDoc').value;
+            const descricao = document.getElementById('descricaoDoc').value;
+            
+            const now = new Date();
+            const documento = {
+                id: Date.now(),
+                categoria: categoria,
+                nome: nome,
+                descricao: descricao,
+                data: now.toLocaleDateString('pt-BR'),
+                autor: currentUser.nome
+            };
+            
+            documentos.unshift(documento);
+            renderDocumentos();
+            e.target.reset();
+            alert('✅ Documento publicado!\n📧 Notificações enviadas para todos.');
+        }
+
+        function renderDocumentos() {
+            const lista = document.getElementById('listaDocumentos');
+            const docsHtml = documentos.map(d => `
+                <div class="item-box">
+                    <div class="item-header">
+                        <span class="item-tipo">${d.categoria.toUpperCase()}</span>
+                        <span class="item-data">${d.data}</span>
+                    </div>
+                    <div class="item-titulo">${d.nome}</div>
+                    <div class="item-conteudo">${d.descricao}</div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                        Publicado por: ${d.autor}
+                    </div>
+                    <div class="btn-actions">
+                        <button class="btn-small btn-download">📥 Baixar</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            lista.innerHTML = docsHtml || `
+                <div class="item-box">
+                    <div class="item-header">
+                        <span class="item-tipo">MANUAL</span>
+                        <span class="item-data">15/10/2025</span>
+                    </div>
+                    <div class="item-titulo">Código de Posturas Municipal</div>
+                    <div class="item-conteudo">Legislação municipal atualizada.</div>
+                    <div class="btn-actions">
+                        <button class="btn-small btn-download">📥 Baixar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Inicializar comunicado padrão
+        window.onload = function() {
+            console.log('✅ Sistema carregado com sucesso!');
+            console.log(📊 Total de usuários: ${Object.keys(usuarios).length});
+            console.log(👮 Administradores: ${administradores.length});
+            console.log(👤 Usuários regulares: ${Object.keys(usuarios).length - administradores.length});
+        };
+    </script>
+</body>
+</html>
