@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema GM - Comunicação Interna</title>
+    <title>Portal Administrativo - Guarda Municipal</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +17,98 @@
             min-height: 100vh;
         }
 
-        .container {
+        /* TELA DE LOGIN */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #1e3c72;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .btn {
+            width: 100%;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #2a5298;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .error-msg {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* SISTEMA PRINCIPAL */
+        .main-container {
+            display: none;
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
@@ -32,25 +123,43 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .header h1 {
             color: #1e3c72;
-            font-size: 24px;
+            font-size: 22px;
         }
 
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
-        .user-badge {
+        .badge {
             background: #1e3c72;
             color: white;
             padding: 8px 15px;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .badge-admin {
+            background: #dc3545;
+        }
+
+        .btn-logout {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
         }
 
         .nav-tabs {
@@ -63,10 +172,10 @@
         .tab-btn {
             background: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 20px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
             transition: all 0.3s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -90,28 +199,23 @@
             display: block;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
         .card {
             background: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
         .card h3 {
             color: #1e3c72;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid #e0e0e0;
+            font-size: 18px;
         }
 
-        .comunicado {
+        .item-box {
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
@@ -119,173 +223,93 @@
             border-left: 4px solid #1e3c72;
         }
 
-        .comunicado-header {
+        .item-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .comunicado-tipo {
+        .item-tipo {
             background: #1e3c72;
             color: white;
-            padding: 4px 10px;
-            border-radius: 4px;
+            padding: 5px 12px;
+            border-radius: 5px;
             font-size: 12px;
             font-weight: bold;
         }
 
-        .comunicado-data {
+        .item-data {
             color: #666;
             font-size: 13px;
         }
 
-        .urgente {
-            border-left-color: #dc3545;
-        }
-
-        .urgente .comunicado-tipo {
-            background: #dc3545;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
+        .item-titulo {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
             color: #333;
-            font-weight: 500;
         }
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
+        .item-conteudo {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .btn-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 13px;
+            border: none;
             border-radius: 5px;
-            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .form-group textarea {
+        .btn-edit {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-download {
+            background: #28a745;
+            color: white;
+        }
+
+        .admin-only {
+            display: none;
+        }
+
+        textarea {
             resize: vertical;
             min-height: 100px;
         }
 
-        .btn {
-            background: #1e3c72;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 5px;
+        input[type="file"] {
+            padding: 10px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-        .btn:hover {
-            background: #2a5298;
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background: #f8f9fa;
-            color: #1e3c72;
-            font-weight: 600;
-        }
-
-        tr:hover {
-            background: #f8f9fa;
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .status-pendente {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-aprovado {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .doc-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .doc-item:hover {
-            background: #e9ecef;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #1e3c72;
-            margin: 10px 0;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 14px;
         }
 
         .alert {
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
+            font-size: 14px;
         }
 
         .alert-success {
@@ -294,14 +318,30 @@
             border: 1px solid #c3e6cb;
         }
 
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
 
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            background: white;
+        }
+
+        @media (max-width: 768px) {
             .header {
                 flex-direction: column;
-                gap: 15px;
                 text-align: center;
             }
 
@@ -312,105 +352,119 @@
             .tab-btn {
                 width: 100%;
             }
+
+            .item-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Modal de Primeiro Acesso */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- TELA DE LOGIN -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🛡️ Portal Administrativo</h1>
+                <p>Guarda Municipal - Sistema de Gestão</p>
+            </div>
+            
+            <div id="loginError" class="error-msg"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Usuário</label>
+                    <input type="text" id="username" placeholder="Digite seu usuário" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="password" placeholder="Digite sua senha" required>
+                </div>
+                
+                <button type="submit" class="btn">Entrar</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
+                Primeiro acesso? Use suas credenciais fornecidas pela administração
+            </p>
+        </div>
+    </div>
+
+    <!-- MODAL CADASTRO EMAIL -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <h2>Bem-vindo! 👋</h2>
+            <p style="margin-bottom: 20px;">Para receber notificações, cadastre seu email:</p>
+            
+            <form id="emailForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="userEmail" placeholder="seu.email@exemplo.com" required>
+                </div>
+                <button type="submit" class="btn">Confirmar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SISTEMA PRINCIPAL -->
+    <div id="mainSystem" class="main-container">
         <div class="header">
             <div>
-                <h1>🛡️ Sistema GM - Comunicação Interna</h1>
-                <p style="color: #666; margin-top: 5px;">Guarda Municipal - Inspeção e Gestão</p>
+                <h1>🛡️ Portal Administrativo GM</h1>
             </div>
             <div class="user-info">
-                <div class="user-badge">👤 Inspetor Silva</div>
-                <div class="user-badge">📍 Setor Centro</div>
+                <span class="badge" id="userBadge"></span>
+                <span class="badge badge-admin" id="adminBadge" style="display: none;">ADMINISTRADOR</span>
+                <button class="btn-logout" onclick="logout()">Sair</button>
             </div>
         </div>
 
         <div class="nav-tabs">
-            <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
-            <button class="tab-btn" onclick="showTab('comunicados')">📢 Comunicados</button>
-            <button class="tab-btn" onclick="showTab('ocorrencias')">📝 Ocorrências</button>
-            <button class="tab-btn" onclick="showTab('banco-horas')">⏰ Banco de Horas</button>
+            <button class="tab-btn active" onclick="showTab('comunicados')">📢 Comunicados</button>
+            <button class="tab-btn" onclick="showTab('escalas')">📅 Escalas</button>
+            <button class="tab-btn" onclick="showTab('operacoes')">🚨 Operações</button>
             <button class="tab-btn" onclick="showTab('documentos')">📁 Documentos</button>
         </div>
 
-        <!-- Dashboard -->
-        <div id="dashboard" class="content-section active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Comunicados Hoje</div>
-                    <div class="stat-number">5</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Ocorrências Mês</div>
-                    <div class="stat-number">87</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Banco de Horas</div>
-                    <div class="stat-number">+12h</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Equipe Ativa</div>
-                    <div class="stat-number">24</div>
-                </div>
-            </div>
-
-            <div class="grid">
-                <div class="card">
-                    <h3>📢 Últimos Comunicados</h3>
-                    <div class="comunicado urgente">
-                        <div class="comunicado-header">
-                            <span class="comunicado-tipo">URGENTE</span>
-                            <span class="comunicado-data">18/10/2025 08:30</span>
-                        </div>
-                        <strong>Operação Centro - Hoje 14h</strong>
-                        <p style="margin-top: 8px; color: #555;">Operação conjunta no centro da cidade. Comparecer fardado com equipamento completo.</p>
-                    </div>
-
-                    <div class="comunicado">
-                        <div class="comunicado-header">
-                            <span class="comunicado-tipo">INFORMATIVO</span>
-                            <span class="comunicado-data">17/10/2025 16:00</span>
-                        </div>
-                        <strong>Reunião Semanal - Segunda 09h</strong>
-                        <p style="margin-top: 8px; color: #555;">Reunião de alinhamento com todos os inspetores. Sede administrativa.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>📝 Últimas Ocorrências</h3>
-                    <div style="font-size: 14px;">
-                        <div style="padding: 10px 0; border-bottom: 1px solid #eee;">
-                            <strong>Perturbação do Sossego</strong><br>
-                            <span style="color: #666;">Rua das Flores, 245 - 18/10 02:30</span>
-                        </div>
-                        <div style="padding: 10px 0; border-bottom: 1px solid #eee;">
-                            <strong>Fiscalização Comércio</strong><br>
-                            <span style="color: #666;">Av. Principal - 17/10 15:45</span>
-                        </div>
-                        <div style="padding: 10px 0;">
-                            <strong>Apoio Trânsito</strong><br>
-                            <span style="color: #666;">Cruzamento Centro - 17/10 12:20</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Comunicados -->
-        <div id="comunicados" class="content-section">
-            <div class="card">
-                <h3>📢 Novo Comunicado</h3>
+        <!-- COMUNICADOS -->
+        <div id="comunicados" class="content-section active">
+            <div class="card admin-only" id="formComunicado">
+                <h3>📝 Novo Comunicado</h3>
                 <form onsubmit="addComunicado(event)">
                     <div class="form-group">
-                        <label>Tipo de Comunicado</label>
+                        <label>Tipo</label>
                         <select id="tipoComunicado">
                             <option>INFORMATIVO</option>
                             <option>URGENTE</option>
                             <option>OPERACIONAL</option>
-                            <option>ADMINISTRATIVO</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -418,312 +472,370 @@
                         <input type="text" id="tituloComunicado" placeholder="Título do comunicado" required>
                     </div>
                     <div class="form-group">
-                        <label>Mensagem</label>
-                        <textarea id="mensagemComunicado" placeholder="Descreva o comunicado..." required></textarea>
+                        <label>Conteúdo</label>
+                        <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
                     </div>
-                    <button type="submit" class="btn">Publicar Comunicado</button>
+                    <button type="submit" class="btn">Publicar e Notificar Todos</button>
                 </form>
             </div>
 
-            <div class="card" style="margin-top: 20px;">
-                <h3>Histórico de Comunicados</h3>
+            <div class="card">
+                <h3>Todos os Comunicados</h3>
                 <div id="listaComunicados">
-                    <div class="comunicado urgente">
-                        <div class="comunicado-header">
-                            <span class="comunicado-tipo">URGENTE</span>
-                            <span class="comunicado-data">18/10/2025 08:30</span>
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">INFORMATIVO</span>
+                            <span class="item-data">18/10/2025 09:00</span>
                         </div>
-                        <strong>Operação Centro - Hoje 14h</strong>
-                        <p style="margin-top: 8px; color: #555;">Operação conjunta no centro da cidade. Comparecer fardado com equipamento completo.</p>
-                    </div>
-
-                    <div class="comunicado">
-                        <div class="comunicado-header">
-                            <span class="comunicado-tipo">INFORMATIVO</span>
-                            <span class="comunicado-data">17/10/2025 16:00</span>
-                        </div>
-                        <strong>Reunião Semanal - Segunda 09h</strong>
-                        <p style="margin-top: 8px; color: #555;">Reunião de alinhamento com todos os inspetores. Sede administrativa.</p>
+                        <div class="item-titulo">Bem-vindo ao Portal Administrativo</div>
+                        <div class="item-conteudo">Sistema implementado para melhorar a comunicação interna da corporação.</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Ocorrências -->
-        <div id="ocorrencias" class="content-section">
-            <div class="card">
-                <h3>📝 Registrar Nova Ocorrência</h3>
-                <form onsubmit="addOcorrencia(event)">
+        <!-- ESCALAS -->
+        <div id="escalas" class="content-section">
+            <div class="card admin-only" id="formEscala">
+                <h3>📝 Nova Escala</h3>
+                <form onsubmit="addEscala(event)">
                     <div class="form-group">
-                        <label>Tipo de Ocorrência</label>
-                        <select id="tipoOcorrencia">
-                            <option>Perturbação do Sossego</option>
-                            <option>Fiscalização de Comércio</option>
-                            <option>Apoio ao Trânsito</option>
-                            <option>Vistoria</option>
-                            <option>Apreensão</option>
-                            <option>Outro</option>
-                        </select>
+                        <label>Período</label>
+                        <input type="text" id="periodoEscala" placeholder="Ex: 21/10 a 27/10/2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Detalhes da Escala</label>
+                        <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Anexar Arquivo (opcional)</label>
+                        <input type="file" id="arquivoEscala" accept=".pdf,.doc,.docx,.jpg,.png">
+                    </div>
+                    <button type="submit" class="btn">Publicar Escala e Notificar</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Escalas Publicadas</h3>
+                <div id="listaEscalas">
+                    <div class="empty-state">
+                        <p>Nenhuma escala publicada ainda</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- OPERAÇÕES -->
+        <div id="operacoes" class="content-section">
+            <div class="card admin-only" id="formOperacao">
+                <h3>📝 Nova Operação</h3>
+                <form onsubmit="addOperacao(event)">
+                    <div class="form-group">
+                        <label>Nome da Operação</label>
+                        <input type="text" id="nomeOperacao" placeholder="Ex: Operação Centro Seguro" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Data e Horário</label>
+                        <input type="datetime-local" id="dataOperacao" required>
                     </div>
                     <div class="form-group">
                         <label>Local</label>
-                        <input type="text" id="localOcorrencia" placeholder="Endereço completo" required>
+                        <input type="text" id="localOperacao" placeholder="Local da operação" required>
                     </div>
                     <div class="form-group">
-                        <label>Data e Hora</label>
-                        <input type="datetime-local" id="dataOcorrencia" required>
+                        <label>Detalhes</label>
+                        <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>Descrição</label>
-                        <textarea id="descricaoOcorrencia" placeholder="Descreva a ocorrência..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn">Registrar Ocorrência</button>
+                    <button type="submit" class="btn">Publicar Operação e Notificar</button>
                 </form>
             </div>
 
-            <div class="card" style="margin-top: 20px;">
-                <h3>Histórico de Ocorrências</h3>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Data/Hora</th>
-                                <th>Tipo</th>
-                                <th>Local</th>
-                                <th>Responsável</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaOcorrencias">
-                            <tr>
-                                <td>18/10/2025 02:30</td>
-                                <td>Perturbação do Sossego</td>
-                                <td>Rua das Flores, 245</td>
-                                <td>Insp. Silva</td>
-                            </tr>
-                            <tr>
-                                <td>17/10/2025 15:45</td>
-                                <td>Fiscalização Comércio</td>
-                                <td>Av. Principal, 1200</td>
-                                <td>Insp. Santos</td>
-                            </tr>
-                            <tr>
-                                <td>17/10/2025 12:20</td>
-                                <td>Apoio Trânsito</td>
-                                <td>Cruzamento Centro</td>
-                                <td>Insp. Silva</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Banco de Horas -->
-        <div id="banco-horas" class="content-section">
-            <div class="stats-grid" style="margin-bottom: 20px;">
-                <div class="stat-card">
-                    <div class="stat-label">Saldo Atual</div>
-                    <div class="stat-number" style="color: #28a745;">+12h</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Horas Este Mês</div>
-                    <div class="stat-number">+8h</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Solicitações Pendentes</div>
-                    <div class="stat-number">2</div>
-                </div>
-            </div>
-
-            <div class="grid">
-                <div class="card">
-                    <h3>⏰ Registrar Horas</h3>
-                    <form onsubmit="addBancoHoras(event)">
-                        <div class="form-group">
-                            <label>Tipo</label>
-                            <select id="tipoBanco">
-                                <option>Hora Extra</option>
-                                <option>Compensação</option>
-                                <option>Plantão</option>
-                                <option>Sobreaviso</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Data</label>
-                            <input type="date" id="dataBanco" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Quantidade de Horas</label>
-                            <input type="number" id="horasBanco" step="0.5" placeholder="Ex: 2.5" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Justificativa</label>
-                            <textarea id="justificativaBanco" placeholder="Descreva a justificativa..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn">Solicitar Aprovação</button>
-                    </form>
-                </div>
-
-                <div class="card">
-                    <h3>Histórico e Status</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Horas</th>
-                                    <th>Tipo</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>15/10/2025</td>
-                                    <td>+4h</td>
-                                    <td>Hora Extra</td>
-                                    <td><span class="status-badge status-pendente">Pendente</span></td>
-                                </tr>
-                                <tr>
-                                    <td>12/10/2025</td>
-                                    <td>+3h</td>
-                                    <td>Plantão</td>
-                                    <td><span class="status-badge status-aprovado">Aprovado</span></td>
-                                </tr>
-                                <tr>
-                                    <td>08/10/2025</td>
-                                    <td>+5h</td>
-                                    <td>Operação</td>
-                                    <td><span class="status-badge status-aprovado">Aprovado</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
+            <div class="card">
+                <h3>Operações Programadas</h3>
+                <div id="listaOperacoes">
+                    <div class="empty-state">
+                        <p>Nenhuma operação programada</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Documentos -->
+        <!-- DOCUMENTOS -->
         <div id="documentos" class="content-section">
+            <div class="card admin-only" id="formDocumento">
+                <h3>📝 Novo Documento</h3>
+                <form onsubmit="addDocumento(event)">
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="categoriaDoc">
+                            <option>Procedimento Operacional</option>
+                            <option>Formulário</option>
+                            <option>Legislação</option>
+                            <option>Manual</option>
+                            <option>Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do Documento</label>
+                        <input type="text" id="nomeDoc" placeholder="Ex: Manual de Abordagem 2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea id="descricaoDoc" placeholder="Breve descrição do documento..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Arquivo</label>
+                        <input type="file" id="arquivoDoc" accept=".pdf,.doc,.docx" required>
+                    </div>
+                    <button type="submit" class="btn">Enviar Documento e Notificar</button>
+                </form>
+            </div>
+
             <div class="card">
-                <h3>📁 Documentos e Procedimentos</h3>
-                
-                <h4 style="color: #1e3c72; margin: 20px 0 10px 0;">Procedimentos Operacionais</h4>
-                <div class="doc-item">
-                    <span>📄 Manual de Abordagem - v2.3</span>
-                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
-                </div>
-                <div class="doc-item">
-                    <span>📄 Protocolo de Ocorrências</span>
-                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
-                </div>
-                <div class="doc-item">
-                    <span>📄 Código de Posturas Municipal</span>
-                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
-                </div>
-
-                <h4 style="color: #1e3c72; margin: 20px 0 10px 0;">Formulários</h4>
-                <div class="doc-item">
-                    <span>📋 Relatório de Fiscalização</span>
-                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
-                </div>
-                <div class="doc-item">
-                    <span>📋 Termo de Apreensão</span>
-                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
-                </div>
-                <div class="doc-item">
-                    <span>📋 Solicitação de Folga</span>
-                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
-                </div>
-
-                <h4 style="color: #1e3c72; margin: 20px 0 10px 0;">Legislação</h4>
-                <div class="doc-item">
-                    <span>⚖️ Lei Orgânica da GM</span>
-                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
-                </div>
-                <div class="doc-item">
-                    <span>⚖️ Estatuto dos Servidores</span>
-                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
+                <h3>Biblioteca de Documentos</h3>
+                <div id="listaDocumentos">
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">MANUAL</span>
+                            <span class="item-data">15/10/2025</span>
+                        </div>
+                        <div class="item-titulo">Código de Posturas Municipal</div>
+                        <div class="item-conteudo">Legislação municipal atualizada.</div>
+                        <div class="btn-actions">
+                            <button class="btn-small btn-download">📥 Baixar</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        function showTab(tabId) {
-            const sections = document.querySelectorAll('.content-section');
-            const buttons = document.querySelectorAll('.tab-btn');
+        // BANCO DE DADOS TEMPORÁRIO (será substituído pelo Firebase)
+        let currentUser = null;
+        let usuarios = {
+            // ADMINISTRADORES
+            'comando.marcos': { senha: 'gm2025', nome: 'Comando Marcos', admin: true, email: '' },
+            'subcomando.messias': { senha: 'gm2025', nome: 'Subcomando Messias', admin: true, email: '' },
+            'inspetor.almeida': { senha: 'gm2025', nome: 'Inspetor Almeida', admin: true, email: '' },
+            'inspetor.engel': { senha: 'gm2025', nome: 'Inspetor Engel', admin: true, email: '' },
+            'inspetor.silva': { senha: 'gm2025', nome: 'Inspetor Silva', admin: true, email: '' },
             
-            sections.forEach(section => section.classList.remove('active'));
-            buttons.forEach(btn => btn.classList.remove('active'));
+            // USUÁRIOS COMUNS (exemplos - adicione os 50)
+            'gm.usuario1': { senha: 'gm2025', nome: 'GM Usuário 1', admin: false, email: '' },
+            'gm.usuario2': { senha: 'gm2025', nome: 'GM Usuário 2', admin: false, email: '' },
+            'gm.usuario3': { senha: 'gm2025', nome: 'GM Usuário 3', admin: false, email: '' }
+        };
+
+        let comunicados = [];
+        let escalas = [];
+        let operacoes = [];
+        let documentos = [];
+
+        // LOGIN
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.toLowerCase();
+            const password = document.getElementById('password').value;
+            
+            if (usuarios[username] && usuarios[username].senha === password) {
+                currentUser = {
+                    username: username,
+                    nome: usuarios[username].nome,
+                    admin: usuarios[username].admin,
+                    email: usuarios[username].email
+                };
+                
+                // Verificar se precisa cadastrar email
+                if (!currentUser.email) {
+                    document.getElementById('emailModal').style.display = 'flex';
+                } else {
+                    showMainSystem();
+                }
+            } else {
+                const errorMsg = document.getElementById('loginError');
+                errorMsg.textContent = '❌ Usuário ou senha incorretos';
+                errorMsg.style.display = 'block';
+            }
+        });
+
+        // CADASTRO EMAIL
+        document.getElementById('emailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('userEmail').value;
+            currentUser.email = email;
+            usuarios[currentUser.username].email = email;
+            document.getElementById('emailModal').style.display = 'none';
+            showMainSystem();
+        });
+
+        // MOSTRAR SISTEMA
+        function showMainSystem() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainSystem').style.display = 'block';
+            document.getElementById('userBadge').textContent = currentUser.nome;
+            
+            if (currentUser.admin) {
+                document.getElementById('adminBadge').style.display = 'inline-block';
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            }
+        }
+
+        // LOGOUT
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainSystem').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+
+        // TROCAR ABAS
+        function showTab(tabId) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
         }
 
+        // ADICIONAR COMUNICADO
         function addComunicado(e) {
             e.preventDefault();
             const tipo = document.getElementById('tipoComunicado').value;
             const titulo = document.getElementById('tituloComunicado').value;
-            const mensagem = document.getElementById('mensagemComunicado').value;
+            const conteudo = document.getElementById('conteudoComunicado').value;
             
             const now = new Date();
-            const dataFormatada = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            const comunicado = {
+                id: Date.now(),
+                tipo: tipo,
+                titulo: titulo,
+                conteudo: conteudo,
+                data: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                autor: currentUser.nome
+            };
             
-            const lista = document.getElementById('listaComunicados');
-            const novoComunicado = document.createElement('div');
-            novoComunicado.className = tipo === 'URGENTE' ? 'comunicado urgente' : 'comunicado';
-            novoComunicado.innerHTML = `
-                <div class="comunicado-header">
-                    <span class="comunicado-tipo">${tipo}</span>
-                    <span class="comunicado-data">${dataFormatada}</span>
-                </div>
-                <strong>${titulo}</strong>
-                <p style="margin-top: 8px; color: #555;">${mensagem}</p>
-            `;
-            
-            lista.insertBefore(novoComunicado, lista.firstChild);
-            
+            comunicados.unshift(comunicado);
+            renderComunicados();
             e.target.reset();
-            alert('Comunicado publicado com sucesso!');
+            
+            // SIMULAR ENVIO DE EMAIL (será implementado com EmailJS)
+            alert('✅ Comunicado publicado!\n📧 Notificações enviadas para todos os usuários.');
         }
 
-        function addOcorrencia(e) {
+        function renderComunicados() {
+            const lista = document.getElementById('listaComunicados');
+            lista.innerHTML = comunicados.map(c => `
+                <div class="item-box">
+                    <div class="item-header">
+                        <span class="item-tipo">${c.tipo}</span>
+                        <span class="item-data">${c.data}</span>
+                    </div>
+                    <div class="item-titulo">${c.titulo}</div>
+                    <div class="item-conteudo">${c.conteudo}</div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                        Publicado por: ${c.autor}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ADICIONAR ESCALA
+        function addEscala(e) {
             e.preventDefault();
-            const tipo = document.getElementById('tipoOcorrencia').value;
-            const local = document.getElementById('localOcorrencia').value;
-            const data = document.getElementById('dataOcorrencia').value;
+            const periodo = document.getElementById('periodoEscala').value;
+            const conteudo = document.getElementById('conteudoEscala').value;
+            
+            const now = new Date();
+            const escala = {
+                id: Date.now(),
+                periodo: periodo,
+                conteudo: conteudo,
+                data: now.toLocaleDateString('pt-BR'),
+                autor: currentUser.nome
+            };
+            
+            escalas.unshift(escala);
+            renderEscalas();
+            e.target.reset();
+            alert('✅ Escala publicada!\n📧 Notificações enviadas para todos.');
+        }
+
+        function renderEscalas() {
+            const lista = document.getElementById('listaEscalas');
+            if (escalas.length === 0) {
+                lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala publicada ainda</p></div>';
+                return;
+            }
+            lista.innerHTML = escalas.map(e => `
+                <div class="item-box">
+                    <div class="item-header">
+                        <span class="item-tipo">ESCALA</span>
+                        <span class="item-data">${e.data}</span>
+                    </div>
+                    <div class="item-titulo">Período: ${e.periodo}</div>
+                    <div class="item-conteudo">${e.conteudo}</div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                        Publicado por: ${e.autor}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ADICIONAR OPERAÇÃO
+        function addOperacao(e) {
+            e.preventDefault();
+            const nome = document.getElementById('nomeOperacao').value;
+            const data = document.getElementById('dataOperacao').value;
+            const local = document.getElementById('localOperacao').value;
+            const detalhes = document.getElementById('detalhesOperacao').value;
             
             const dataObj = new Date(data);
-            const dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            const operacao = {
+                id: Date.now(),
+                nome: nome,
+                data: dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                local: local,
+                detalhes: detalhes,
+                autor: currentUser.nome
+            };
             
-            const tabela = document.getElementById('tabelaOcorrencias');
-            const novaLinha = document.createElement('tr');
-            novaLinha.innerHTML = `
-                <td>${dataFormatada}</td>
-                <td>${tipo}</td>
-                <td>${local}</td>
-                <td>Insp. Silva</td>
-            `;
-            
-            tabela.insertBefore(novaLinha, tabela.firstChild);
-            
+            operacoes.unshift(operacao);
+            renderOperacoes();
             e.target.reset();
-            alert('Ocorrência registrada com sucesso!');
+            alert('✅ Operação publicada!\n📧 Notificações enviadas para todos.');
         }
 
-        function addBancoHoras(e) {
+        function renderOperacoes() {
+            const lista = document.getElementById('listaOperacoes');
+            if (operacoes.length === 0) {
+                lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada</p></div>';
+                return;
+            }
+            lista.innerHTML = operacoes.map(o => `
+                <div class="item-box">
+                    <div class="item-header">
+                        <span class="item-tipo">OPERAÇÃO</span>
+                        <span class="item-data">${o.data}</span>
+                    </div>
+                    <div class="item-titulo">${o.nome}</div>
+                    <div class="item-conteudo">
+                        <strong>Local:</strong> ${o.local}<br>
+                        <strong>Detalhes:</strong> ${o.detalhes}
+                    </div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                        Publicado por: ${o.autor}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ADICIONAR DOCUMENTO
+        function addDocumento(e) {
             e.preventDefault();
-            alert('Solicitação enviada para aprovação do supervisor!');
-            e.target.reset();
-        }
-
-        // Definir data/hora atual nos campos
-        document.addEventListener('DOMContentLoaded', function() {
+            const categoria = document.getElementById('categoriaDoc').value;
+            const nome = document.getElementById('nomeDoc').value;
+            const descricao = document.getElementById('descricaoDoc').value;
+            
             const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('dataOcorrencia').value = now.toISOString().slice(0,16);
-            document.getElementById('dataBanco').value = now.toISOString().slice(0,10);
-        });
-    </script>
-</body>
-</html>
+            const documento = {
