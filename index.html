@@ -285,12 +285,6 @@
             color: #999;
         }
 
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-
         .modal {
             display: none;
             position: fixed;
@@ -423,7 +417,14 @@
             <div class="card">
                 <h3>Todos os Comunicados</h3>
                 <div id="listaComunicados">
-                    <div class="loading">Carregando comunicados...</div>
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">INFORMATIVO</span>
+                            <span class="item-data">18/10/2025 09:00</span>
+                        </div>
+                        <div class="item-titulo">Bem-vindo ao Portal Administrativo</div>
+                        <div class="item-conteudo">Sistema implementado para melhorar a comunicação interna da corporação.</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -448,7 +449,9 @@
             <div class="card">
                 <h3>Escalas Publicadas</h3>
                 <div id="listaEscalas">
-                    <div class="loading">Carregando escalas...</div>
+                    <div class="empty-state">
+                        <p>Nenhuma escala publicada ainda</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -481,7 +484,9 @@
             <div class="card">
                 <h3>Operações Programadas</h3>
                 <div id="listaOperacoes">
-                    <div class="loading">Carregando operações...</div>
+                    <div class="empty-state">
+                        <p>Nenhuma operação programada</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -516,7 +521,14 @@
             <div class="card">
                 <h3>Biblioteca de Documentos</h3>
                 <div id="listaDocumentos">
-                    <div class="loading">Carregando documentos...</div>
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">MANUAL</span>
+                            <span class="item-data">15/10/2025</span>
+                        </div>
+                        <div class="item-titulo">Código de Posturas Municipal</div>
+                        <div class="item-conteudo">Legislação municipal atualizada.</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -530,7 +542,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <script>
-        // ========== CONFIGURAÇÃO FIREBASE ==========
+        // Inicializar Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBVfCbAucFErELqatHP1DgJsAweMR_rzJo",
             authDomain: "sistema-gm-145eb.firebaseapp.com",
@@ -539,11 +551,10 @@
             messagingSenderId: "1033769343247",
             appId: "1:1033769343247:web:24d6934babf8a4eb65867a"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // ========== CONFIGURAÇÃO EMAILJS ==========
+        // Inicializar EmailJS
         emailjs.init('4jh6fS1vRtC262uaH');
 
         let currentUser = null;
@@ -559,31 +570,24 @@
             'gm.usuario3': { senha: 'gm2025', nome: 'GM Usuário 3', admin: false, email: '' }
         };
 
-        // ========== FUNÇÃO DE ENVIO DE EMAIL ==========
+        // Função de envio de email
         async function enviarNotificacaoEmail(tipo, titulo, conteudo) {
             const emailsUsuarios = Object.values(usuarios).filter(u => u.email).map(u => u.email);
-
-            if (emailsUsuarios.length === 0) {
-                console.log('Nenhum email cadastrado ainda');
-                return;
-            }
+            if (emailsUsuarios.length === 0) return;
 
             try {
                 for (const email of emailsUsuarios) {
                     await emailjs.send('service_trgfsbs', 'template_w71kqkh', {
-                        tipo: tipo,
-                        titulo: titulo,
-                        conteudo: conteudo,
-                        to_email: email
+                        tipo, titulo, conteudo, to_email: email
                     });
                 }
-                console.log('✅ Emails enviados com sucesso!');
+                console.log('Emails enviados!');
             } catch (error) {
-                console.error('❌ Erro ao enviar emails:', error);
+                console.error('Erro ao enviar emails:', error);
             }
         }
 
-        // ========== LOGIN ==========
+        // LOGIN
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value.trim().toLowerCase();
@@ -591,7 +595,7 @@
             
             if (usuarios[username] && usuarios[username].senha === password) {
                 currentUser = {
-                    username: username,
+                    username, 
                     nome: usuarios[username].nome,
                     admin: usuarios[username].admin,
                     email: usuarios[username].email
@@ -627,8 +631,8 @@
                 document.getElementById('adminBadge').style.display = 'inline-block';
                 document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
             }
-
-            carregarTodosDados();
+            
+            carregarDados();
         }
 
         function logout() {
@@ -642,118 +646,62 @@
         function showTab(tabId) {
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
         }
 
-        // ========== CARREGAR DADOS DO FIREBASE ==========
-        function carregarTodosDados() {
-            carregarComunicados();
-            carregarEscalas();
-            carregarOperacoes();
-            carregarDocumentos();
-        }
-
-        function carregarComunicados() {
-            db.collection('comunicados').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+        // Carregar dados do Firebase
+        function carregarDados() {
+            db.collection('comunicados').orderBy('timestamp', 'desc').onSnapshot(snap => {
                 const lista = document.getElementById('listaComunicados');
-                if (snapshot.empty) {
-                    lista.innerHTML = '<div class="empty-state"><p>Nenhum comunicado publicado ainda</p></div>';
+                if (snap.empty) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum comunicado ainda</p></div>';
                     return;
                 }
-                lista.innerHTML = snapshot.docs.map(doc => {
+                lista.innerHTML = snap.docs.map(doc => {
                     const d = doc.data();
-                    return `
-                        <div class="item-box">
-                            <div class="item-header">
-                                <span class="item-tipo">${d.tipo}</span>
-                                <span class="item-data">${d.data}</span>
-                            </div>
-                            <div class="item-titulo">${d.titulo}</div>
-                            <div class="item-conteudo">${d.conteudo}</div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Publicado por: ${d.autor}</div>
-                        </div>
-                    `;
+                    return `<div class="item-box"><div class="item-header"><span class="item-tipo">${d.tipo}</span><span class="item-data">${d.data}</span></div><div class="item-titulo">${d.titulo}</div><div class="item-conteudo">${d.conteudo}</div><div style="margin-top:10px;font-size:12px;color:#999;">Por: ${d.autor}</div></div>`;
                 }).join('');
-            }, () => {
-                document.getElementById('listaComunicados').innerHTML = '<div class="empty-state"><p>Configure as regras do Firebase primeiro</p></div>';
+            }, () => lista.innerHTML = '<div class="empty-state"><p>Configure regras do Firebase</p></div>');
+
+            db.collection('escalas').orderBy('timestamp', 'desc').onSnapshot(snap => {
+                const lista = document.getElementById('listaEscalas');
+                if (snap.empty) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala ainda</p></div>';
+                    return;
+                }
+                lista.innerHTML = snap.docs.map(doc => {
+                    const d = doc.data();
+                    return `<div class="item-box"><div class="item-header"><span class="item-tipo">ESCALA</span><span class="item-data">${d.data}</span></div><div class="item-titulo">Período: ${d.periodo}</div><div class="item-conteudo">${d.conteudo}</div><div style="margin-top:10px;font-size:12px;color:#999;">Por: ${d.autor}</div></div>`;
+                }).join('');
+            });
+
+            db.collection('operacoes').orderBy('timestamp', 'desc').onSnapshot(snap => {
+                const lista = document.getElementById('listaOperacoes');
+                if (snap.empty) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação ainda</p></div>';
+                    return;
+                }
+                lista.innerHTML = snap.docs.map(doc => {
+                    const d = doc.data();
+                    return `<div class="item-box"><div class="item-header"><span class="item-tipo">OPERAÇÃO</span><span class="item-data">${d.data}</span></div><div class="item-titulo">${d.nome}</div><div class="item-conteudo"><strong>Local:</strong> ${d.local}<br><strong>Detalhes:</strong> ${d.detalhes}</div><div style="margin-top:10px;font-size:12px;color:#999;">Por: ${d.autor}</div></div>`;
+                }).join('');
+            });
+
+            db.collection('documentos').orderBy('timestamp', 'desc').onSnapshot(snap => {
+                const lista = document.getElementById('listaDocumentos');
+                if (snap.empty) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum documento ainda</p></div>';
+                    return;
+                }
+                lista.innerHTML = snap.docs.map(doc => {
+                    const d = doc.data();
+                    return `<div class="item-box"><div class="item-header"><span class="item-tipo">${d.categoria}</span><span class="item-data">${d.data}</span></div><div class="item-titulo">${d.nome}</div><div class="item-conteudo">${d.descricao||''}</div><div style="margin-top:10px;font-size:12px;color:#999;">Por: ${d.autor}</div></div>`;
+                }).join('');
             });
         }
 
-        function carregarEscalas() {
-            db.collection('escalas').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-                const lista = document.getElementById('listaEscalas');
-                if (snapshot.empty) {
-                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala publicada ainda</p></div>';
-                    return;
-                }
-                lista.innerHTML = snapshot.docs.map(doc => {
-                    const d = doc.data();
-                    return `
-                        <div class="item-box">
-                            <div class="item-header">
-                                <span class="item-tipo">ESCALA</span>
-                                <span class="item-data">${d.data}</span>
-                            </div>
-                            <div class="item-titulo">Período: ${d.periodo}</div>
-                            <div class="item-conteudo">${d.conteudo}</div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Publicado por: ${d.autor}</div>
-                        </div>
-                    `;
-                }).join('');
-            }, () => lista.innerHTML = '<div class="empty-state"><p>Configure as regras do Firebase</p></div>');
-        }
-
-        function carregarOperacoes() {
-            db.collection('operacoes').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-                const lista = document.getElementById('listaOperacoes');
-                if (snapshot.empty) {
-                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada</p></div>';
-                    return;
-                }
-                lista.innerHTML = snapshot.docs.map(doc => {
-                    const d = doc.data();
-                    return `
-                        <div class="item-box">
-                            <div class="item-header">
-                                <span class="item-tipo">OPERAÇÃO</span>
-                                <span class="item-data">${d.data}</span>
-                            </div>
-                            <div class="item-titulo">${d.nome}</div>
-                            <div class="item-conteudo"><strong>Local:</strong> ${d.local}<br><strong>Detalhes:</strong> ${d.detalhes}</div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Publicado por: ${d.autor}</div>
-                        </div>
-                    `;
-                }).join('');
-            }, () => lista.innerHTML = '<div class="empty-state"><p>Configure as regras do Firebase</p></div>');
-        }
-
-        function carregarDocumentos() {
-            db.collection('documentos').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-                const lista = document.getElementById('listaDocumentos');
-                if (snapshot.empty) {
-                    lista.innerHTML = '<div class="empty-state"><p>Nenhum documento publicado ainda</p></div>';
-                    return;
-                }
-                lista.innerHTML = snapshot.docs.map(doc => {
-                    const d = doc.data();
-                    return `
-                        <div class="item-box">
-                            <div class="item-header">
-                                <span class="item-tipo">${d.categoria}</span>
-                                <span class="item-data">${d.data}</span>
-                            </div>
-                            <div class="item-titulo">${d.nome}</div>
-                            <div class="item-conteudo">${d.descricao || ''}</div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Publicado por: ${d.autor}</div>
-                        </div>
-                    `;
-                }).join('');
-            }, () => lista.innerHTML = '<div class="empty-state"><p>Configure as regras do Firebase</p></div>');
-        }
-
-        // ========== ADICIONAR COMUNICADO ==========
+        // Formulários
         document.getElementById('formComunicado').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('btnComunicado');
@@ -775,10 +723,10 @@
 
                 await enviarNotificacaoEmail(tipo, titulo, conteudo);
 
-                const successMsg = document.getElementById('comunicadoSuccess');
-                successMsg.textContent = '✅ Comunicado publicado e emails enviados!';
-                successMsg.style.display = 'block';
-                setTimeout(() => successMsg.style.display = 'none', 5000);
+                const msg = document.getElementById('comunicadoSuccess');
+                msg.textContent = '✅ Publicado e emails enviados!';
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 5000);
                 this.reset();
             } catch (error) {
                 alert('Erro: ' + error.message);
@@ -788,7 +736,6 @@
             btn.textContent = 'Publicar e Notificar Todos';
         });
 
-        // ========== ADICIONAR ESCALA ==========
         document.getElementById('formEscala').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('btnEscala');
@@ -797,4 +744,29 @@
 
             const periodo = document.getElementById('periodoEscala').value;
             const conteudo = document.getElementById('conteudoEscala').value;
-            const
+            const now = new Date();
+
+            try {
+                await db.collection('escalas').add({
+                    periodo, conteudo,
+                    data: now.toLocaleDateString('pt-BR'),
+                    autor: currentUser.nome,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                await enviarNotificacaoEmail('ESCALA', 'Nova Escala: ' + periodo, conteudo);
+
+                const msg = document.getElementById('escalaSuccess');
+                msg.textContent = '✅ Escala publicada!';
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 5000);
+                this.reset();
+            } catch (error) {
+                alert('Erro: ' + error.message);
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Publicar Escala e Notificar';
+        });
+
+        document.getElementById('formOperacao').addEventListener('submit', async function
