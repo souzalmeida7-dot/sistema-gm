@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema GM - Comunicação Interna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-badge {
+            background: #1e3c72;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .tab-btn.active {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .comunicado {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .comunicado-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .comunicado-tipo {
+            background: #1e3c72;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .comunicado-data {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .urgente {
+            border-left-color: #dc3545;
+        }
+
+        .urgente .comunicado-tipo {
+            background: #dc3545;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #2a5298;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #1e3c72;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pendente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-aprovado {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .doc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .doc-item:hover {
+            background: #e9ecef;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e3c72;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>🛡️ Sistema GM - Comunicação Interna</h1>
+                <p style="color: #666; margin-top: 5px;">Guarda Municipal - Inspeção e Gestão</p>
+            </div>
+            <div class="user-info">
+                <div class="user-badge">👤 Inspetor Silva</div>
+                <div class="user-badge">📍 Setor Centro</div>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-btn" onclick="showTab('comunicados')">📢 Comunicados</button>
+            <button class="tab-btn" onclick="showTab('ocorrencias')">📝 Ocorrências</button>
+            <button class="tab-btn" onclick="showTab('banco-horas')">⏰ Banco de Horas</button>
+            <button class="tab-btn" onclick="showTab('documentos')">📁 Documentos</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="content-section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Comunicados Hoje</div>
+                    <div class="stat-number">5</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Ocorrências Mês</div>
+                    <div class="stat-number">87</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Banco de Horas</div>
+                    <div class="stat-number">+12h</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Equipe Ativa</div>
+                    <div class="stat-number">24</div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>📢 Últimos Comunicados</h3>
+                    <div class="comunicado urgente">
+                        <div class="comunicado-header">
+                            <span class="comunicado-tipo">URGENTE</span>
+                            <span class="comunicado-data">18/10/2025 08:30</span>
+                        </div>
+                        <strong>Operação Centro - Hoje 14h</strong>
+                        <p style="margin-top: 8px; color: #555;">Operação conjunta no centro da cidade. Comparecer fardado com equipamento completo.</p>
+                    </div>
+
+                    <div class="comunicado">
+                        <div class="comunicado-header">
+                            <span class="comunicado-tipo">INFORMATIVO</span>
+                            <span class="comunicado-data">17/10/2025 16:00</span>
+                        </div>
+                        <strong>Reunião Semanal - Segunda 09h</strong>
+                        <p style="margin-top: 8px; color: #555;">Reunião de alinhamento com todos os inspetores. Sede administrativa.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📝 Últimas Ocorrências</h3>
+                    <div style="font-size: 14px;">
+                        <div style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                            <strong>Perturbação do Sossego</strong><br>
+                            <span style="color: #666;">Rua das Flores, 245 - 18/10 02:30</span>
+                        </div>
+                        <div style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                            <strong>Fiscalização Comércio</strong><br>
+                            <span style="color: #666;">Av. Principal - 17/10 15:45</span>
+                        </div>
+                        <div style="padding: 10px 0;">
+                            <strong>Apoio Trânsito</strong><br>
+                            <span style="color: #666;">Cruzamento Centro - 17/10 12:20</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comunicados -->
+        <div id="comunicados" class="content-section">
+            <div class="card">
+                <h3>📢 Novo Comunicado</h3>
+                <form onsubmit="addComunicado(event)">
+                    <div class="form-group">
+                        <label>Tipo de Comunicado</label>
+                        <select id="tipoComunicado">
+                            <option>INFORMATIVO</option>
+                            <option>URGENTE</option>
+                            <option>OPERACIONAL</option>
+                            <option>ADMINISTRATIVO</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" id="tituloComunicado" placeholder="Título do comunicado" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mensagem</label>
+                        <textarea id="mensagemComunicado" placeholder="Descreva o comunicado..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Publicar Comunicado</button>
+                </form>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <h3>Histórico de Comunicados</h3>
+                <div id="listaComunicados">
+                    <div class="comunicado urgente">
+                        <div class="comunicado-header">
+                            <span class="comunicado-tipo">URGENTE</span>
+                            <span class="comunicado-data">18/10/2025 08:30</span>
+                        </div>
+                        <strong>Operação Centro - Hoje 14h</strong>
+                        <p style="margin-top: 8px; color: #555;">Operação conjunta no centro da cidade. Comparecer fardado com equipamento completo.</p>
+                    </div>
+
+                    <div class="comunicado">
+                        <div class="comunicado-header">
+                            <span class="comunicado-tipo">INFORMATIVO</span>
+                            <span class="comunicado-data">17/10/2025 16:00</span>
+                        </div>
+                        <strong>Reunião Semanal - Segunda 09h</strong>
+                        <p style="margin-top: 8px; color: #555;">Reunião de alinhamento com todos os inspetores. Sede administrativa.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ocorrências -->
+        <div id="ocorrencias" class="content-section">
+            <div class="card">
+                <h3>📝 Registrar Nova Ocorrência</h3>
+                <form onsubmit="addOcorrencia(event)">
+                    <div class="form-group">
+                        <label>Tipo de Ocorrência</label>
+                        <select id="tipoOcorrencia">
+                            <option>Perturbação do Sossego</option>
+                            <option>Fiscalização de Comércio</option>
+                            <option>Apoio ao Trânsito</option>
+                            <option>Vistoria</option>
+                            <option>Apreensão</option>
+                            <option>Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Local</label>
+                        <input type="text" id="localOcorrencia" placeholder="Endereço completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Data e Hora</label>
+                        <input type="datetime-local" id="dataOcorrencia" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea id="descricaoOcorrencia" placeholder="Descreva a ocorrência..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Registrar Ocorrência</button>
+                </form>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <h3>Histórico de Ocorrências</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Tipo</th>
+                                <th>Local</th>
+                                <th>Responsável</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaOcorrencias">
+                            <tr>
+                                <td>18/10/2025 02:30</td>
+                                <td>Perturbação do Sossego</td>
+                                <td>Rua das Flores, 245</td>
+                                <td>Insp. Silva</td>
+                            </tr>
+                            <tr>
+                                <td>17/10/2025 15:45</td>
+                                <td>Fiscalização Comércio</td>
+                                <td>Av. Principal, 1200</td>
+                                <td>Insp. Santos</td>
+                            </tr>
+                            <tr>
+                                <td>17/10/2025 12:20</td>
+                                <td>Apoio Trânsito</td>
+                                <td>Cruzamento Centro</td>
+                                <td>Insp. Silva</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banco de Horas -->
+        <div id="banco-horas" class="content-section">
+            <div class="stats-grid" style="margin-bottom: 20px;">
+                <div class="stat-card">
+                    <div class="stat-label">Saldo Atual</div>
+                    <div class="stat-number" style="color: #28a745;">+12h</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Horas Este Mês</div>
+                    <div class="stat-number">+8h</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Solicitações Pendentes</div>
+                    <div class="stat-number">2</div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>⏰ Registrar Horas</h3>
+                    <form onsubmit="addBancoHoras(event)">
+                        <div class="form-group">
+                            <label>Tipo</label>
+                            <select id="tipoBanco">
+                                <option>Hora Extra</option>
+                                <option>Compensação</option>
+                                <option>Plantão</option>
+                                <option>Sobreaviso</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Data</label>
+                            <input type="date" id="dataBanco" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantidade de Horas</label>
+                            <input type="number" id="horasBanco" step="0.5" placeholder="Ex: 2.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Justificativa</label>
+                            <textarea id="justificativaBanco" placeholder="Descreva a justificativa..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Solicitar Aprovação</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Histórico e Status</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Horas</th>
+                                    <th>Tipo</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>15/10/2025</td>
+                                    <td>+4h</td>
+                                    <td>Hora Extra</td>
+                                    <td><span class="status-badge status-pendente">Pendente</span></td>
+                                </tr>
+                                <tr>
+                                    <td>12/10/2025</td>
+                                    <td>+3h</td>
+                                    <td>Plantão</td>
+                                    <td><span class="status-badge status-aprovado">Aprovado</span></td>
+                                </tr>
+                                <tr>
+                                    <td>08/10/2025</td>
+                                    <td>+5h</td>
+                                    <td>Operação</td>
+                                    <td><span class="status-badge status-aprovado">Aprovado</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentos -->
+        <div id="documentos" class="content-section">
+            <div class="card">
+                <h3>📁 Documentos e Procedimentos</h3>
+                
+                <h4 style="color: #1e3c72; margin: 20px 0 10px 0;">Procedimentos Operacionais</h4>
+                <div class="doc-item">
+                    <span>📄 Manual de Abordagem - v2.3</span>
+                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
+                </div>
+                <div class="doc-item">
+                    <span>📄 Protocolo de Ocorrências</span>
+                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
+                </div>
+                <div class="doc-item">
+                    <span>📄 Código de Posturas Municipal</span>
+                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
+                </div>
+
+                <h4 style="color: #1e3c72; margin: 20px 0 10px 0;">Formulários</h4>
+                <div class="doc-item">
+                    <span>📋 Relatório de Fiscalização</span>
+                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
+                </div>
+                <div class="doc-item">
+                    <span>📋 Termo de Apreensão</span>
+                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
+                </div>
+                <div class="doc-item">
+                    <span>📋 Solicitação de Folga</span>
+                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
+                </div>
+
+                <h4 style="color: #1e3c72; margin: 20px 0 10px 0;">Legislação</h4>
+                <div class="doc-item">
+                    <span>⚖️ Lei Orgânica da GM</span>
+                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
+                </div>
+                <div class="doc-item">
+                    <span>⚖️ Estatuto dos Servidores</span>
+                    <button class="btn btn-secondary" style="padding: 8px 16px;">Baixar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            const sections = document.querySelectorAll('.content-section');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            sections.forEach(section => section.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function addComunicado(e) {
+            e.preventDefault();
+            const tipo = document.getElementById('tipoComunicado').value;
+            const titulo = document.getElementById('tituloComunicado').value;
+            const mensagem = document.getElementById('mensagemComunicado').value;
+            
+            const now = new Date();
+            const dataFormatada = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            
+            const lista = document.getElementById('listaComunicados');
+            const novoComunicado = document.createElement('div');
+            novoComunicado.className = tipo === 'URGENTE' ? 'comunicado urgente' : 'comunicado';
+            novoComunicado.innerHTML = `
+                <div class="comunicado-header">
+                    <span class="comunicado-tipo">${tipo}</span>
+                    <span class="comunicado-data">${dataFormatada}</span>
+                </div>
+                <strong>${titulo}</strong>
+                <p style="margin-top: 8px; color: #555;">${mensagem}</p>
+            `;
+            
+            lista.insertBefore(novoComunicado, lista.firstChild);
+            
+            e.target.reset();
+            alert('Comunicado publicado com sucesso!');
+        }
+
+        function addOcorrencia(e) {
+            e.preventDefault();
+            const tipo = document.getElementById('tipoOcorrencia').value;
+            const local = document.getElementById('localOcorrencia').value;
+            const data = document.getElementById('dataOcorrencia').value;
+            
+            const dataObj = new Date(data);
+            const dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            
+            const tabela = document.getElementById('tabelaOcorrencias');
+            const novaLinha = document.createElement('tr');
+            novaLinha.innerHTML = `
+                <td>${dataFormatada}</td>
+                <td>${tipo}</td>
+                <td>${local}</td>
+                <td>Insp. Silva</td>
+            `;
+            
+            tabela.insertBefore(novaLinha, tabela.firstChild);
+            
+            e.target.reset();
+            alert('Ocorrência registrada com sucesso!');
+        }
+
+        function addBancoHoras(e) {
+            e.preventDefault();
+            alert('Solicitação enviada para aprovação do supervisor!');
+            e.target.reset();
+        }
+
+        // Definir data/hora atual nos campos
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('dataOcorrencia').value = now.toISOString().slice(0,16);
+            document.getElementById('dataBanco').value = now.toISOString().slice(0,10);
+        });
+    </script>
+</body>
+</html>
