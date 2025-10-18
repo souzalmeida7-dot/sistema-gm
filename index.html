@@ -100,14 +100,28 @@
             box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
         }
 
-        .error-msg {
-            background: #fee;
-            color: #c33;
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-msg, .success-msg {
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 14px;
             display: none;
+        }
+
+        .error-msg {
+            background: #fee;
+            color: #c33;
+        }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
         }
 
         .main-container {
@@ -271,6 +285,12 @@
             color: #999;
         }
 
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -378,7 +398,8 @@
         <div id="comunicados" class="content-section active">
             <div class="card admin-only">
                 <h3>📝 Novo Comunicado</h3>
-                <form onsubmit="addComunicado(event)">
+                <div id="comunicadoSuccess" class="success-msg"></div>
+                <form id="formComunicado">
                     <div class="form-group">
                         <label>Tipo</label>
                         <select id="tipoComunicado">
@@ -395,21 +416,14 @@
                         <label>Conteúdo</label>
                         <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
                     </div>
-                    <button type="submit" class="btn">Publicar e Notificar Todos</button>
+                    <button type="submit" class="btn" id="btnComunicado">Publicar e Notificar Todos</button>
                 </form>
             </div>
 
             <div class="card">
                 <h3>Todos os Comunicados</h3>
                 <div id="listaComunicados">
-                    <div class="item-box">
-                        <div class="item-header">
-                            <span class="item-tipo">INFORMATIVO</span>
-                            <span class="item-data">18/10/2025 09:00</span>
-                        </div>
-                        <div class="item-titulo">Bem-vindo ao Portal Administrativo</div>
-                        <div class="item-conteudo">Sistema implementado para melhorar a comunicação interna da corporação.</div>
-                    </div>
+                    <div class="loading">Carregando comunicados...</div>
                 </div>
             </div>
         </div>
@@ -417,7 +431,8 @@
         <div id="escalas" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Escala</h3>
-                <form onsubmit="addEscala(event)">
+                <div id="escalaSuccess" class="success-msg"></div>
+                <form id="formEscala">
                     <div class="form-group">
                         <label>Período</label>
                         <input type="text" id="periodoEscala" placeholder="Ex: 21/10 a 27/10/2025" required>
@@ -426,16 +441,14 @@
                         <label>Detalhes da Escala</label>
                         <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
                     </div>
-                    <button type="submit" class="btn">Publicar Escala e Notificar</button>
+                    <button type="submit" class="btn" id="btnEscala">Publicar Escala e Notificar</button>
                 </form>
             </div>
 
             <div class="card">
                 <h3>Escalas Publicadas</h3>
                 <div id="listaEscalas">
-                    <div class="empty-state">
-                        <p>Nenhuma escala publicada ainda</p>
-                    </div>
+                    <div class="loading">Carregando escalas...</div>
                 </div>
             </div>
         </div>
@@ -443,7 +456,8 @@
         <div id="operacoes" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Operação</h3>
-                <form onsubmit="addOperacao(event)">
+                <div id="operacaoSuccess" class="success-msg"></div>
+                <form id="formOperacao">
                     <div class="form-group">
                         <label>Nome da Operação</label>
                         <input type="text" id="nomeOperacao" placeholder="Ex: Operação Centro Seguro" required>
@@ -460,16 +474,14 @@
                         <label>Detalhes</label>
                         <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
                     </div>
-                    <button type="submit" class="btn">Publicar Operação e Notificar</button>
+                    <button type="submit" class="btn" id="btnOperacao">Publicar Operação e Notificar</button>
                 </form>
             </div>
 
             <div class="card">
                 <h3>Operações Programadas</h3>
                 <div id="listaOperacoes">
-                    <div class="empty-state">
-                        <p>Nenhuma operação programada</p>
-                    </div>
+                    <div class="loading">Carregando operações...</div>
                 </div>
             </div>
         </div>
@@ -477,7 +489,8 @@
         <div id="documentos" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Novo Documento</h3>
-                <form onsubmit="addDocumento(event)">
+                <div id="documentoSuccess" class="success-msg"></div>
+                <form id="formDocumento">
                     <div class="form-group">
                         <label>Categoria</label>
                         <select id="categoriaDoc">
@@ -496,27 +509,43 @@
                         <label>Descrição</label>
                         <textarea id="descricaoDoc" placeholder="Breve descrição do documento..."></textarea>
                     </div>
-                    <button type="submit" class="btn">Publicar Documento e Notificar</button>
+                    <button type="submit" class="btn" id="btnDocumento">Publicar Documento e Notificar</button>
                 </form>
             </div>
 
             <div class="card">
                 <h3>Biblioteca de Documentos</h3>
                 <div id="listaDocumentos">
-                    <div class="item-box">
-                        <div class="item-header">
-                            <span class="item-tipo">MANUAL</span>
-                            <span class="item-data">15/10/2025</span>
-                        </div>
-                        <div class="item-titulo">Código de Posturas Municipal</div>
-                        <div class="item-conteudo">Legislação municipal atualizada.</div>
-                    </div>
+                    <div class="loading">Carregando documentos...</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
     <script>
+        // ========== CONFIGURAÇÃO FIREBASE ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVfCbAucFErELqatHP1DgJsAweMR_rzJo",
+            authDomain: "sistema-gm-145eb.firebaseapp.com",
+            projectId: "sistema-gm-145eb",
+            storageBucket: "sistema-gm-145eb.firebasestorage.app",
+            messagingSenderId: "1033769343247",
+            appId: "1:1033769343247:web:24d6934babf8a4eb65867a"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ========== CONFIGURAÇÃO EMAILJS ==========
+        emailjs.init('4jh6fS1vRtC262uaH');
+
         let currentUser = null;
         
         const usuarios = {
@@ -530,11 +559,31 @@
             'gm.usuario3': { senha: 'gm2025', nome: 'GM Usuário 3', admin: false, email: '' }
         };
 
-        let comunicados = [];
-        let escalas = [];
-        let operacoes = [];
-        let documentos = [];
+        // ========== FUNÇÃO DE ENVIO DE EMAIL ==========
+        async function enviarNotificacaoEmail(tipo, titulo, conteudo) {
+            const emailsUsuarios = Object.values(usuarios).filter(u => u.email).map(u => u.email);
 
+            if (emailsUsuarios.length === 0) {
+                console.log('Nenhum email cadastrado ainda');
+                return;
+            }
+
+            try {
+                for (const email of emailsUsuarios) {
+                    await emailjs.send('service_trgfsbs', 'template_w71kqkh', {
+                        tipo: tipo,
+                        titulo: titulo,
+                        conteudo: conteudo,
+                        to_email: email
+                    });
+                }
+                console.log('✅ Emails enviados com sucesso!');
+            } catch (error) {
+                console.error('❌ Erro ao enviar emails:', error);
+            }
+        }
+
+        // ========== LOGIN ==========
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value.trim().toLowerCase();
@@ -578,6 +627,8 @@
                 document.getElementById('adminBadge').style.display = 'inline-block';
                 document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
             }
+
+            carregarTodosDados();
         }
 
         function logout() {
@@ -596,167 +647,154 @@
             event.target.classList.add('active');
         }
 
-        function addComunicado(e) {
+        // ========== CARREGAR DADOS DO FIREBASE ==========
+        function carregarTodosDados() {
+            carregarComunicados();
+            carregarEscalas();
+            carregarOperacoes();
+            carregarDocumentos();
+        }
+
+        function carregarComunicados() {
+            db.collection('comunicados').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                const lista = document.getElementById('listaComunicados');
+                if (snapshot.empty) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum comunicado publicado ainda</p></div>';
+                    return;
+                }
+                lista.innerHTML = snapshot.docs.map(doc => {
+                    const d = doc.data();
+                    return `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span class="item-tipo">${d.tipo}</span>
+                                <span class="item-data">${d.data}</span>
+                            </div>
+                            <div class="item-titulo">${d.titulo}</div>
+                            <div class="item-conteudo">${d.conteudo}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Publicado por: ${d.autor}</div>
+                        </div>
+                    `;
+                }).join('');
+            }, () => {
+                document.getElementById('listaComunicados').innerHTML = '<div class="empty-state"><p>Configure as regras do Firebase primeiro</p></div>';
+            });
+        }
+
+        function carregarEscalas() {
+            db.collection('escalas').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                const lista = document.getElementById('listaEscalas');
+                if (snapshot.empty) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala publicada ainda</p></div>';
+                    return;
+                }
+                lista.innerHTML = snapshot.docs.map(doc => {
+                    const d = doc.data();
+                    return `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span class="item-tipo">ESCALA</span>
+                                <span class="item-data">${d.data}</span>
+                            </div>
+                            <div class="item-titulo">Período: ${d.periodo}</div>
+                            <div class="item-conteudo">${d.conteudo}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Publicado por: ${d.autor}</div>
+                        </div>
+                    `;
+                }).join('');
+            }, () => lista.innerHTML = '<div class="empty-state"><p>Configure as regras do Firebase</p></div>');
+        }
+
+        function carregarOperacoes() {
+            db.collection('operacoes').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                const lista = document.getElementById('listaOperacoes');
+                if (snapshot.empty) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada</p></div>';
+                    return;
+                }
+                lista.innerHTML = snapshot.docs.map(doc => {
+                    const d = doc.data();
+                    return `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span class="item-tipo">OPERAÇÃO</span>
+                                <span class="item-data">${d.data}</span>
+                            </div>
+                            <div class="item-titulo">${d.nome}</div>
+                            <div class="item-conteudo"><strong>Local:</strong> ${d.local}<br><strong>Detalhes:</strong> ${d.detalhes}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Publicado por: ${d.autor}</div>
+                        </div>
+                    `;
+                }).join('');
+            }, () => lista.innerHTML = '<div class="empty-state"><p>Configure as regras do Firebase</p></div>');
+        }
+
+        function carregarDocumentos() {
+            db.collection('documentos').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                const lista = document.getElementById('listaDocumentos');
+                if (snapshot.empty) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum documento publicado ainda</p></div>';
+                    return;
+                }
+                lista.innerHTML = snapshot.docs.map(doc => {
+                    const d = doc.data();
+                    return `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span class="item-tipo">${d.categoria}</span>
+                                <span class="item-data">${d.data}</span>
+                            </div>
+                            <div class="item-titulo">${d.nome}</div>
+                            <div class="item-conteudo">${d.descricao || ''}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Publicado por: ${d.autor}</div>
+                        </div>
+                    `;
+                }).join('');
+            }, () => lista.innerHTML = '<div class="empty-state"><p>Configure as regras do Firebase</p></div>');
+        }
+
+        // ========== ADICIONAR COMUNICADO ==========
+        document.getElementById('formComunicado').addEventListener('submit', async function(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnComunicado');
+            btn.disabled = true;
+            btn.textContent = 'Publicando...';
+
             const tipo = document.getElementById('tipoComunicado').value;
             const titulo = document.getElementById('tituloComunicado').value;
             const conteudo = document.getElementById('conteudoComunicado').value;
-            
             const now = new Date();
-            const comunicado = {
-                tipo: tipo,
-                titulo: titulo,
-                conteudo: conteudo,
-                data: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                autor: currentUser.nome
-            };
-            
-            comunicados.unshift(comunicado);
-            renderComunicados();
-            e.target.reset();
-            alert('✅ Comunicado publicado!\n📧 Notificações enviadas para todos os usuários.');
-        }
 
-        function renderComunicados() {
-            const lista = document.getElementById('listaComunicados');
-            lista.innerHTML = comunicados.map(c => `
-                <div class="item-box">
-                    <div class="item-header">
-                        <span class="item-tipo">${c.tipo}</span>
-                        <span class="item-data">${c.data}</span>
-                    </div>
-                    <div class="item-titulo">${c.titulo}</div>
-                    <div class="item-conteudo">${c.conteudo}</div>
-                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                        Publicado por: ${c.autor}
-                    </div>
-                </div>
-            `).join('');
-        }
+            try {
+                await db.collection('comunicados').add({
+                    tipo, titulo, conteudo,
+                    data: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    autor: currentUser.nome,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
 
-        function addEscala(e) {
+                await enviarNotificacaoEmail(tipo, titulo, conteudo);
+
+                const successMsg = document.getElementById('comunicadoSuccess');
+                successMsg.textContent = '✅ Comunicado publicado e emails enviados!';
+                successMsg.style.display = 'block';
+                setTimeout(() => successMsg.style.display = 'none', 5000);
+                this.reset();
+            } catch (error) {
+                alert('Erro: ' + error.message);
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Publicar e Notificar Todos';
+        });
+
+        // ========== ADICIONAR ESCALA ==========
+        document.getElementById('formEscala').addEventListener('submit', async function(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnEscala');
+            btn.disabled = true;
+            btn.textContent = 'Publicando...';
+
             const periodo = document.getElementById('periodoEscala').value;
             const conteudo = document.getElementById('conteudoEscala').value;
-            
-            const now = new Date();
-            const escala = {
-                periodo: periodo,
-                conteudo: conteudo,
-                data: now.toLocaleDateString('pt-BR'),
-                autor: currentUser.nome
-            };
-            
-            escalas.unshift(escala);
-            renderEscalas();
-            e.target.reset();
-            alert('✅ Escala publicada!\n📧 Notificações enviadas para todos.');
-        }
-
-        function renderEscalas() {
-            const lista = document.getElementById('listaEscalas');
-            if (escalas.length === 0) {
-                lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala publicada ainda</p></div>';
-                return;
-            }
-            lista.innerHTML = escalas.map(e => `
-                <div class="item-box">
-                    <div class="item-header">
-                        <span class="item-tipo">ESCALA</span>
-                        <span class="item-data">${e.data}</span>
-                    </div>
-                    <div class="item-titulo">Período: ${e.periodo}</div>
-                    <div class="item-conteudo">${e.conteudo}</div>
-                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                        Publicado por: ${e.autor}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function addOperacao(e) {
-            e.preventDefault();
-            const nome = document.getElementById('nomeOperacao').value;
-            const data = document.getElementById('dataOperacao').value;
-            const local = document.getElementById('localOperacao').value;
-            const detalhes = document.getElementById('detalhesOperacao').value;
-            
-            const dataObj = new Date(data);
-            const operacao = {
-                nome: nome,
-                data: dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                local: local,
-                detalhes: detalhes,
-                autor: currentUser.nome
-            };
-            
-            operacoes.unshift(operacao);
-            renderOperacoes();
-            e.target.reset();
-            alert('✅ Operação publicada!\n📧 Notificações enviadas para todos.');
-        }
-
-        function renderOperacoes() {
-            const lista = document.getElementById('listaOperacoes');
-            if (operacoes.length === 0) {
-                lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada</p></div>';
-                return;
-            }
-            lista.innerHTML = operacoes.map(o => `
-                <div class="item-box">
-                    <div class="item-header">
-                        <span class="item-tipo">OPERAÇÃO</span>
-                        <span class="item-data">${o.data}</span>
-                    </div>
-                    <div class="item-titulo">${o.nome}</div>
-                    <div class="item-conteudo">
-                        <strong>Local:</strong> ${o.local}<br>
-                        <strong>Detalhes:</strong> ${o.detalhes}
-                    </div>
-                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                        Publicado por: ${o.autor}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function addDocumento(e) {
-            e.preventDefault();
-            const categoria = document.getElementById('categoriaDoc').value;
-            const nome = document.getElementById('nomeDoc').value;
-            const descricao = document.getElementById('descricaoDoc').value;
-            
-            const now = new Date();
-            const documento = {
-                categoria: categoria,
-                nome: nome,
-                descricao: descricao,
-                data: now.toLocaleDateString('pt-BR'),
-                autor: currentUser.nome
-            };
-            
-            documentos.unshift(documento);
-            renderDocumentos();
-            e.target.reset();
-            alert('✅ Documento publicado!\n📧 Notificações enviadas para todos.');
-        }
-
-        function renderDocumentos() {
-            const lista = document.getElementById('listaDocumentos');
-            lista.innerHTML = documentos.map(d => `
-                <div class="item-box">
-                    <div class="item-header">
-                        <span class="item-tipo">${d.categoria}</span>
-                        <span class="item-data">${d.data}</span>
-                    </div>
-                    <div class="item-titulo">${d.nome}</div>
-                    <div class="item-conteudo">${d.descricao}</div>
-                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                        Publicado por: ${d.autor}
-                    </div>
-                </div>
-            `).join('');
-        }
-    </script>
-</body>
-</html>
+            const
