@@ -17,7 +17,6 @@
             min-height: 100vh;
         }
 
-        /* TELA DE LOGIN */
         .login-container {
             display: flex;
             justify-content: center;
@@ -63,7 +62,7 @@
             font-size: 14px;
         }
 
-        .form-group input {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
@@ -72,9 +71,14 @@
             transition: border 0.3s;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: #1e3c72;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
         }
 
         .btn {
@@ -106,7 +110,6 @@
             display: none;
         }
 
-        /* SISTEMA PRINCIPAL */
         .main-container {
             display: none;
             max-width: 1400px;
@@ -258,70 +261,8 @@
             line-height: 1.6;
         }
 
-        .btn-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 13px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-edit {
-            background: #ffc107;
-            color: #000;
-        }
-
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-download {
-            background: #28a745;
-            color: white;
-        }
-
         .admin-only {
             display: none;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        input[type="file"] {
-            padding: 10px;
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
         }
 
         .empty-state {
@@ -330,36 +271,6 @@
             color: #999;
         }
 
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            background: white;
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .nav-tabs {
-                flex-direction: column;
-            }
-
-            .tab-btn {
-                width: 100%;
-            }
-
-            .item-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-
-        /* Modal de Primeiro Acesso */
         .modal {
             display: none;
             position: fixed;
@@ -385,10 +296,22 @@
             color: #1e3c72;
             margin-bottom: 20px;
         }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-tabs {
+                flex-direction: column;
+            }
+            .tab-btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- TELA DE LOGIN -->
     <div id="loginScreen" class="login-container">
         <div class="login-box">
             <div class="login-header">
@@ -401,7 +324,7 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label>Usuário</label>
-                    <input type="text" id="username" placeholder="Digite seu usuário" required>
+                    <input type="text" id="username" placeholder="Digite seu usuário" required autocomplete="off">
                 </div>
                 
                 <div class="form-group">
@@ -418,7 +341,6 @@
         </div>
     </div>
 
-    <!-- MODAL CADASTRO EMAIL -->
     <div id="emailModal" class="modal">
         <div class="modal-content">
             <h2>Bem-vindo! 👋</h2>
@@ -434,7 +356,6 @@
         </div>
     </div>
 
-    <!-- SISTEMA PRINCIPAL -->
     <div id="mainSystem" class="main-container">
         <div class="header">
             <div>
@@ -454,9 +375,8 @@
             <button class="tab-btn" onclick="showTab('documentos')">📁 Documentos</button>
         </div>
 
-        <!-- COMUNICADOS -->
         <div id="comunicados" class="content-section active">
-            <div class="card admin-only" id="formComunicado">
+            <div class="card admin-only">
                 <h3>📝 Novo Comunicado</h3>
                 <form onsubmit="addComunicado(event)">
                     <div class="form-group">
@@ -494,9 +414,8 @@
             </div>
         </div>
 
-        <!-- ESCALAS -->
         <div id="escalas" class="content-section">
-            <div class="card admin-only" id="formEscala">
+            <div class="card admin-only">
                 <h3>📝 Nova Escala</h3>
                 <form onsubmit="addEscala(event)">
                     <div class="form-group">
@@ -506,10 +425,6 @@
                     <div class="form-group">
                         <label>Detalhes da Escala</label>
                         <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Anexar Arquivo (opcional)</label>
-                        <input type="file" id="arquivoEscala" accept=".pdf,.doc,.docx,.jpg,.png">
                     </div>
                     <button type="submit" class="btn">Publicar Escala e Notificar</button>
                 </form>
@@ -525,9 +440,8 @@
             </div>
         </div>
 
-        <!-- OPERAÇÕES -->
         <div id="operacoes" class="content-section">
-            <div class="card admin-only" id="formOperacao">
+            <div class="card admin-only">
                 <h3>📝 Nova Operação</h3>
                 <form onsubmit="addOperacao(event)">
                     <div class="form-group">
@@ -560,9 +474,8 @@
             </div>
         </div>
 
-        <!-- DOCUMENTOS -->
         <div id="documentos" class="content-section">
-            <div class="card admin-only" id="formDocumento">
+            <div class="card admin-only">
                 <h3>📝 Novo Documento</h3>
                 <form onsubmit="addDocumento(event)">
                     <div class="form-group">
@@ -581,13 +494,9 @@
                     </div>
                     <div class="form-group">
                         <label>Descrição</label>
-                        <textarea id="descricaoDoc" placeholder="Breve descrição do documento..." required></textarea>
+                        <textarea id="descricaoDoc" placeholder="Breve descrição do documento..."></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>Arquivo</label>
-                        <input type="file" id="arquivoDoc" accept=".pdf,.doc,.docx" required>
-                    </div>
-                    <button type="submit" class="btn">Enviar Documento e Notificar</button>
+                    <button type="submit" class="btn">Publicar Documento e Notificar</button>
                 </form>
             </div>
 
@@ -601,9 +510,6 @@
                         </div>
                         <div class="item-titulo">Código de Posturas Municipal</div>
                         <div class="item-conteudo">Legislação municipal atualizada.</div>
-                        <div class="btn-actions">
-                            <button class="btn-small btn-download">📥 Baixar</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -611,17 +517,14 @@
     </div>
 
     <script>
-        // BANCO DE DADOS TEMPORÁRIO (será substituído pelo Firebase)
         let currentUser = null;
-        let usuarios = {
-            // ADMINISTRADORES
+        
+        const usuarios = {
             'comando.marcos': { senha: 'gm2025', nome: 'Comando Marcos', admin: true, email: '' },
             'subcomando.messias': { senha: 'gm2025', nome: 'Subcomando Messias', admin: true, email: '' },
             'inspetor.almeida': { senha: 'gm2025', nome: 'Inspetor Almeida', admin: true, email: '' },
             'inspetor.engel': { senha: 'gm2025', nome: 'Inspetor Engel', admin: true, email: '' },
             'inspetor.silva': { senha: 'gm2025', nome: 'Inspetor Silva', admin: true, email: '' },
-            
-            // USUÁRIOS COMUNS (exemplos - adicione os 50)
             'gm.usuario1': { senha: 'gm2025', nome: 'GM Usuário 1', admin: false, email: '' },
             'gm.usuario2': { senha: 'gm2025', nome: 'GM Usuário 2', admin: false, email: '' },
             'gm.usuario3': { senha: 'gm2025', nome: 'GM Usuário 3', admin: false, email: '' }
@@ -632,10 +535,9 @@
         let operacoes = [];
         let documentos = [];
 
-        // LOGIN
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const username = document.getElementById('username').value.toLowerCase();
+            const username = document.getElementById('username').value.trim().toLowerCase();
             const password = document.getElementById('password').value;
             
             if (usuarios[username] && usuarios[username].senha === password) {
@@ -646,7 +548,6 @@
                     email: usuarios[username].email
                 };
                 
-                // Verificar se precisa cadastrar email
                 if (!currentUser.email) {
                     document.getElementById('emailModal').style.display = 'flex';
                 } else {
@@ -659,7 +560,6 @@
             }
         });
 
-        // CADASTRO EMAIL
         document.getElementById('emailForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('userEmail').value;
@@ -669,7 +569,6 @@
             showMainSystem();
         });
 
-        // MOSTRAR SISTEMA
         function showMainSystem() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainSystem').style.display = 'block';
@@ -681,15 +580,14 @@
             }
         }
 
-        // LOGOUT
         function logout() {
             currentUser = null;
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('mainSystem').style.display = 'none';
             document.getElementById('loginForm').reset();
+            document.getElementById('loginError').style.display = 'none';
         }
 
-        // TROCAR ABAS
         function showTab(tabId) {
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -698,7 +596,6 @@
             event.target.classList.add('active');
         }
 
-        // ADICIONAR COMUNICADO
         function addComunicado(e) {
             e.preventDefault();
             const tipo = document.getElementById('tipoComunicado').value;
@@ -707,7 +604,6 @@
             
             const now = new Date();
             const comunicado = {
-                id: Date.now(),
                 tipo: tipo,
                 titulo: titulo,
                 conteudo: conteudo,
@@ -718,8 +614,6 @@
             comunicados.unshift(comunicado);
             renderComunicados();
             e.target.reset();
-            
-            // SIMULAR ENVIO DE EMAIL (será implementado com EmailJS)
             alert('✅ Comunicado publicado!\n📧 Notificações enviadas para todos os usuários.');
         }
 
@@ -740,7 +634,6 @@
             `).join('');
         }
 
-        // ADICIONAR ESCALA
         function addEscala(e) {
             e.preventDefault();
             const periodo = document.getElementById('periodoEscala').value;
@@ -748,7 +641,6 @@
             
             const now = new Date();
             const escala = {
-                id: Date.now(),
                 periodo: periodo,
                 conteudo: conteudo,
                 data: now.toLocaleDateString('pt-BR'),
@@ -782,7 +674,6 @@
             `).join('');
         }
 
-        // ADICIONAR OPERAÇÃO
         function addOperacao(e) {
             e.preventDefault();
             const nome = document.getElementById('nomeOperacao').value;
@@ -792,7 +683,6 @@
             
             const dataObj = new Date(data);
             const operacao = {
-                id: Date.now(),
                 nome: nome,
                 data: dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
                 local: local,
@@ -830,7 +720,6 @@
             `).join('');
         }
 
-        // ADICIONAR DOCUMENTO
         function addDocumento(e) {
             e.preventDefault();
             const categoria = document.getElementById('categoriaDoc').value;
@@ -839,3 +728,35 @@
             
             const now = new Date();
             const documento = {
+                categoria: categoria,
+                nome: nome,
+                descricao: descricao,
+                data: now.toLocaleDateString('pt-BR'),
+                autor: currentUser.nome
+            };
+            
+            documentos.unshift(documento);
+            renderDocumentos();
+            e.target.reset();
+            alert('✅ Documento publicado!\n📧 Notificações enviadas para todos.');
+        }
+
+        function renderDocumentos() {
+            const lista = document.getElementById('listaDocumentos');
+            lista.innerHTML = documentos.map(d => `
+                <div class="item-box">
+                    <div class="item-header">
+                        <span class="item-tipo">${d.categoria}</span>
+                        <span class="item-data">${d.data}</span>
+                    </div>
+                    <div class="item-titulo">${d.nome}</div>
+                    <div class="item-conteudo">${d.descricao}</div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                        Publicado por: ${d.autor}
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
