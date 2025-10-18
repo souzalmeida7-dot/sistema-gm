@@ -34,7 +34,23 @@ button{background:#1e3c72;color:white;padding:12px 20px;border:none;border-radiu
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 <script>
-const firebaseConfig = SEU_FIREBASE_CONFIG;
+const firebaseConfig = // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBVfCbAucFErELqatHP1DgJsAweMR_rzJo",
+  authDomain: "sistema-gm-145eb.firebaseapp.com",
+  projectId: "sistema-gm-145eb",
+  storageBucket: "sistema-gm-145eb.firebasestorage.app",
+  messagingSenderId: "1033769343247",
+  appId: "1:1033769343247:web:24d6934babf8a4eb65867a"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);;
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 </script>
