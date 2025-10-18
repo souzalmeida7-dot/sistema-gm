@@ -100,14 +100,28 @@
             box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
         }
 
-        .error-msg {
-            background: #fee;
-            color: #c33;
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-msg, .success-msg {
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 14px;
             display: none;
+        }
+
+        .error-msg {
+            background: #fee;
+            color: #c33;
+        }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
         }
 
         .main-container {
@@ -378,7 +392,8 @@
         <div id="comunicados" class="content-section active">
             <div class="card admin-only">
                 <h3>📝 Novo Comunicado</h3>
-                <form onsubmit="addComunicado(event)">
+                <div id="comunicadoSuccess" class="success-msg"></div>
+                <form id="formComunicado">
                     <div class="form-group">
                         <label>Tipo</label>
                         <select id="tipoComunicado">
@@ -395,7 +410,7 @@
                         <label>Conteúdo</label>
                         <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
                     </div>
-                    <button type="submit" class="btn">Publicar e Notificar Todos</button>
+                    <button type="submit" class="btn" id="btnComunicado">Publicar e Notificar Todos</button>
                 </form>
             </div>
 
@@ -417,7 +432,8 @@
         <div id="escalas" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Escala</h3>
-                <form onsubmit="addEscala(event)">
+                <div id="escalaSuccess" class="success-msg"></div>
+                <form id="formEscala">
                     <div class="form-group">
                         <label>Período</label>
                         <input type="text" id="periodoEscala" placeholder="Ex: 21/10 a 27/10/2025" required>
@@ -426,7 +442,7 @@
                         <label>Detalhes da Escala</label>
                         <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
                     </div>
-                    <button type="submit" class="btn">Publicar Escala e Notificar</button>
+                    <button type="submit" class="btn" id="btnEscala">Publicar Escala e Notificar</button>
                 </form>
             </div>
 
@@ -443,7 +459,8 @@
         <div id="operacoes" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Operação</h3>
-                <form onsubmit="addOperacao(event)">
+                <div id="operacaoSuccess" class="success-msg"></div>
+                <form id="formOperacao">
                     <div class="form-group">
                         <label>Nome da Operação</label>
                         <input type="text" id="nomeOperacao" placeholder="Ex: Operação Centro Seguro" required>
@@ -460,7 +477,7 @@
                         <label>Detalhes</label>
                         <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
                     </div>
-                    <button type="submit" class="btn">Publicar Operação e Notificar</button>
+                    <button type="submit" class="btn" id="btnOperacao">Publicar Operação e Notificar</button>
                 </form>
             </div>
 
@@ -468,7 +485,8 @@
                 <h3>Operações Programadas</h3>
                 <div id="listaOperacoes">
                     <div class="empty-state">
-                        <p>Nenhuma operação programada</p>
+                        
+<p>Nenhuma operação programada</p>
                     </div>
                 </div>
             </div>
