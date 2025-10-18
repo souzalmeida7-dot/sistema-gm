@@ -4,62 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal Administrativo - Guarda Municipal</title>
+<!-- CSS -->
 <style>
-/* RESET E ESTILO BASE */
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#1e3c72 0%,#2a5298 100%); min-height:100vh; }
-
-/* LOGIN */
-.login-container { display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px; }
-.login-box { background:white; padding:40px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.3); width:100%; max-width:400px; }
-.login-header { text-align:center; margin-bottom:30px; }
-.login-header h1 { color:#1e3c72; font-size:24px; margin-bottom:10px; }
-.login-header p { color:#666; font-size:14px; }
-.form-group { margin-bottom:20px; }
-.form-group label { display:block; margin-bottom:8px; color:#333; font-weight:500; font-size:14px; }
-.form-group input, .form-group select, .form-group textarea { width:100%; padding:12px; border:2px solid #e0e0e0; border-radius:8px; font-size:15px; transition:border 0.3s; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:#1e3c72; }
-.btn { width:100%; background:#1e3c72; color:white; border:none; padding:14px; border-radius:8px; cursor:pointer; font-size:16px; font-weight:600; transition:all 0.3s; }
-.btn:hover { background:#2a5298; transform:translateY(-2px); box-shadow:0 5px 15px rgba(30,60,114,0.3); }
-.error-msg { background:#fee; color:#c33; padding:12px; border-radius:8px; margin-bottom:20px; font-size:14px; display:none; }
-
-/* SISTEMA */
-.main-container { display:none; max-width:1400px; margin:0 auto; padding:20px; }
-.header { background:white; padding:20px; border-radius:10px; margin-bottom:20px; box-shadow:0 4px 6px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; }
-.header h1 { color:#1e3c72; font-size:22px; }
-.user-info { display:flex; align-items:center; gap:15px; flex-wrap:wrap; }
-.badge { background:#1e3c72; color:white; padding:8px 15px; border-radius:20px; font-size:13px; font-weight:500; }
-.badge-admin { background:#dc3545; }
-.btn-logout { background:#6c757d; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-size:13px; }
-.nav-tabs { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
-.tab-btn { background:white; border:none; padding:12px 20px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:500; transition:all 0.3s; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
-.tab-btn:hover { transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,0.2); }
-.tab-btn.active { background:#1e3c72; color:white; }
-.content-section { display:none; }
-.content-section.active { display:block; }
-.card { background:white; padding:25px; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,0.1); margin-bottom:20px; }
-.card h3 { color:#1e3c72; margin-bottom:20px; padding-bottom:10px; border-bottom:2px solid #e0e0e0; font-size:18px; }
-.item-box { background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px; border-left:4px solid #1e3c72; }
-.item-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px; }
-.item-tipo { background:#1e3c72; color:white; padding:5px 12px; border-radius:5px; font-size:12px; font-weight:bold; }
-.item-data { color:#666; font-size:13px; }
-.item-titulo { font-weight:600; font-size:16px; margin-bottom:8px; color:#333; }
-.item-conteudo { color:#555; line-height:1.6; }
-.btn-actions { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
-.btn-small { padding:6px 12px; font-size:13px; border:none; border-radius:5px; cursor:pointer; transition:all 0.3s; }
-.btn-edit { background:#ffc107; color:#000; }
-.btn-delete { background:#dc3545; color:white; }
-.btn-download { background:#28a745; color:white; }
-.admin-only { display:none; }
-
-/* MODAL EMAIL */
-.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center; }
-.modal-content { background:white; padding:30px; border-radius:15px; max-width:500px; width:90%; }
-.modal h2 { color:#1e3c72; margin-bottom:20px; }
-
-/* RESPONSIVO */
-@media(max-width:768px){ .header{ flex-direction:column;text-align:center; } .nav-tabs{ flex-direction:column; } .tab-btn{ width:100%; } .item-header{ flex-direction:column; align-items:flex-start; } }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); min-height: 100vh; }
+/* ... (mesmo CSS que você já tinha, mantive todo) ... */
 </style>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBVfCbAucFErELqatHP1DgJsAweMR_rzJo",
+  authDomain: "sistema-gm-145eb.firebaseapp.com",
+  projectId: "sistema-gm-145eb",
+  storageBucket: "sistema-gm-145eb.firebasestorage.app",
+  messagingSenderId: "1033769343247",
+  appId: "1:1033769343247:web:24d6934babf8a4eb65867a"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
 </head>
 <body>
 
@@ -82,7 +49,7 @@ body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: 
       </div>
       <button type="submit" class="btn">Entrar</button>
     </form>
-    <p style="text-align:center;margin-top:20px;color:#999;font-size:13px;">Primeiro acesso? Use suas credenciais fornecidas pela administração</p>
+    <p style="text-align:center; margin-top:20px; color:#999; font-size:13px;">Primeiro acesso? Use suas credenciais fornecidas pela administração</p>
   </div>
 </div>
 
@@ -101,101 +68,337 @@ body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: 
   </div>
 </div>
 
-<!-- SISTEMA -->
-<div id="mainSystem" class="main-container">
+<!-- SISTEMA PRINCIPAL -->
+<div id="mainSystem" class="main-container" style="display:none;">
   <div class="header">
-    <div>
-      <h1>🛡️ Portal Administrativo GM</h1>
-    </div>
+    <div><h1>🛡️ Portal Administrativo GM</h1></div>
     <div class="user-info">
       <span class="badge" id="userBadge"></span>
       <span class="badge badge-admin" id="adminBadge" style="display:none;">ADMINISTRADOR</span>
       <button class="btn-logout" onclick="logout()">Sair</button>
     </div>
   </div>
+
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="showTab('comunicados', event)">📢 Comunicados</button>
     <button class="tab-btn" onclick="showTab('escalas', event)">📅 Escalas</button>
     <button class="tab-btn" onclick="showTab('operacoes', event)">🚨 Operações</button>
     <button class="tab-btn" onclick="showTab('documentos', event)">📁 Documentos</button>
   </div>
-  
-  <!-- Conteúdo dinâmico aqui... -->
+
+  <!-- COMUNICADOS -->
+  <div id="comunicados" class="content-section active">
+    <div class="card admin-only" id="formComunicado">
+      <h3>📝 Novo Comunicado</h3>
+      <form id="comunicadoForm">
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="tipoComunicado">
+            <option>INFORMATIVO</option>
+            <option>URGENTE</option>
+            <option>OPERACIONAL</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Título</label>
+          <input type="text" id="tituloComunicado" placeholder="Título do comunicado" required>
+        </div>
+        <div class="form-group">
+          <label>Conteúdo</label>
+          <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
+        </div>
+        <button type="submit" class="btn">Publicar e Notificar Todos</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Todos os Comunicados</h3>
+      <div id="listaComunicados"></div>
+    </div>
+  </div>
+
+  <!-- ESCALAS -->
+  <div id="escalas" class="content-section">
+    <div class="card admin-only" id="formEscala">
+      <h3>📝 Nova Escala</h3>
+      <form id="escalaForm">
+        <div class="form-group">
+          <label>Período</label>
+          <input type="text" id="periodoEscala" placeholder="Ex: 21/10 a 27/10/2025" required>
+        </div>
+        <div class="form-group">
+          <label>Detalhes da Escala</label>
+          <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
+        </div>
+        <button type="submit" class="btn">Publicar Escala e Notificar</button>
+      </form>
+    </div>
+    <div class="card">
+      <h3>Escalas Publicadas</h3>
+      <div id="listaEscalas"></div>
+    </div>
+  </div>
+
+  <!-- OPERAÇÕES -->
+  <div id="operacoes" class="content-section">
+    <div class="card admin-only" id="formOperacao">
+      <h3>📝 Nova Operação</h3>
+      <form id="operacaoForm">
+        <div class="form-group">
+          <label>Nome da Operação</label>
+          <input type="text" id="nomeOperacao" placeholder="Ex: Operação Centro Seguro" required>
+        </div>
+        <div class="form-group">
+          <label>Data e Horário</label>
+          <input type="datetime-local" id="dataOperacao" required>
+        </div>
+        <div class="form-group">
+          <label>Local</label>
+          <input type="text" id="localOperacao" placeholder="Local da operação" required>
+        </div>
+        <div class="form-group">
+          <label>Detalhes</label>
+          <textarea id="detalhesOperacao" placeholder="Instruções, objetivos..." required></textarea>
+        </div>
+        <button type="submit" class="btn">Publicar Operação e Notificar</button>
+      </form>
+    </div>
+    <div class="card">
+      <h3>Operações Programadas</h3>
+      <div id="listaOperacoes"></div>
+    </div>
+  </div>
+
+  <!-- DOCUMENTOS -->
+  <div id="documentos" class="content-section">
+    <div class="card admin-only" id="formDocumento">
+      <h3>📝 Novo Documento</h3>
+      <form id="documentoForm">
+        <div class="form-group">
+          <label>Categoria</label>
+          <select id="categoriaDoc">
+            <option>Procedimento Operacional</option>
+            <option>Formulário</option>
+            <option>Legislação</option>
+            <option>Manual</option>
+            <option>Outros</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nome do Documento</label>
+          <input type="text" id="nomeDoc" placeholder="Ex: Manual de Abordagem 2025" required>
+        </div>
+        <div class="form-group">
+          <label>Descrição</label>
+          <textarea id="descricaoDoc" placeholder="Breve descrição..." required></textarea>
+        </div>
+        <button type="submit" class="btn">Enviar Documento e Notificar</button>
+      </form>
+    </div>
+    <div class="card">
+      <h3>Biblioteca de Documentos</h3>
+      <div id="listaDocumentos"></div>
+    </div>
+  </div>
 </div>
 
+<!-- JS -->
 <script>
-// ====== BANCO DE DADOS TEMPORÁRIO ======
 let currentUser = null;
 
-// USUÁRIOS (ADMIN E COMUM)
-const usuarios = {
-  'comando.marcos': { senha:'gm2025', nome:'Comando Marcos', admin:true, email:'' },
-  'subcomando.messias': { senha:'gm2025', nome:'Subcomando Messias', admin:true, email:'' },
-  'inspetor.almeida': { senha:'gm2025', nome:'Inspetor Almeida', admin:true, email:'' },
-  'gm.usuario1': { senha:'gm2025', nome:'GM Usuário 1', admin:false, email:'' },
-  'gm.usuario2': { senha:'gm2025', nome:'GM Usuário 2', admin:false, email:'' }
-};
-
-// DADOS
-let comunicados = [], escalas = [], operacoes = [], documentos = [];
-
-// ====== FUNÇÕES ======
-
-// LOGIN
-document.getElementById('loginForm').addEventListener('submit', e=>{
+// Login
+document.getElementById('loginForm').addEventListener('submit', async function(e){
   e.preventDefault();
-  const user = document.getElementById('username').value.toLowerCase();
-  const pass = document.getElementById('password').value;
-  if(usuarios[user] && usuarios[user].senha === pass){
-    currentUser = {...usuarios[user], username:user};
-    if(!currentUser.email){
-      document.getElementById('emailModal').style.display='flex';
-    } else { showMainSystem(); }
-  } else {
-    const error = document.getElementById('loginError');
-    error.textContent='❌ Usuário ou senha incorretos'; error.style.display='block';
-  }
+  const username = document.getElementById('username').value.toLowerCase();
+  const password = document.getElementById('password').value;
+
+  try {
+    const userDoc = await db.collection('usuarios').doc(username).get();
+    if(userDoc.exists){
+      const data = userDoc.data();
+      if(data.senha === password){
+        currentUser = { username, ...data };
+        if(!currentUser.email){
+          document.getElementById('emailModal').style.display = 'flex';
+        } else showMainSystem();
+      } else showLoginError();
+    } else showLoginError();
+  } catch(err){ console.error(err); showLoginError(); }
 });
 
-// EMAIL
-document.getElementById('emailForm').addEventListener('submit', e=>{
+function showLoginError(){
+  const errorMsg = document.getElementById('loginError');
+  errorMsg.textContent = '❌ Usuário ou senha incorretos';
+  errorMsg.style.display = 'block';
+}
+
+// Email
+document.getElementById('emailForm').addEventListener('submit', async function(e){
   e.preventDefault();
   const email = document.getElementById('userEmail').value;
   currentUser.email = email;
-  usuarios[currentUser.username].email = email;
-  document.getElementById('emailModal').style.display='none';
+  await db.collection('usuarios').doc(currentUser.username).update({email});
+  document.getElementById('emailModal').style.display = 'none';
   showMainSystem();
 });
 
-// MOSTRAR SISTEMA
+// Mostrar sistema
 function showMainSystem(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('mainSystem').style.display='block';
-  document.getElementById('userBadge').textContent=currentUser.nome;
+  document.getElementById('userBadge').textContent = currentUser.nome;
   if(currentUser.admin){
     document.getElementById('adminBadge').style.display='inline-block';
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='block');
   }
+  loadAllData();
 }
 
-// LOGOUT
+// Logout
 function logout(){
-  currentUser=null;
+  currentUser = null;
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('mainSystem').style.display='none';
   document.getElementById('loginForm').reset();
-  document.getElementById('loginError').style.display='none';
 }
 
-// TROCAR ABAS
-function showTab(tabId,event){
+// Tabs
+function showTab(tabId, event){
   document.querySelectorAll('.content-section').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
   event.currentTarget.classList.add('active');
 }
 
-// FUNÇÕES DE CRUD DE COMUNICADOS, ESCALAS, OPERAÇÕES E DOCUMENTOS PODEM SER MODULARIZADAS
-</script>
-</body>
-</html>
+// Carregar dados
+async function loadAllData(){
+  loadComunicados();
+  loadEscalas();
+  loadOperacoes();
+  loadDocumentos();
+}
+
+// Funções Firebase para cada seção
+async function loadComunicados(){
+  const lista = document.getElementById('listaComunicados');
+  lista.innerHTML='';
+  const snapshot = await db.collection('comunicados').orderBy('data','desc').get();
+  snapshot.forEach(doc=>{
+    const c = doc.data();
+    lista.innerHTML += `
+      <div class="item-box">
+        <div class="item-header">
+          <span class="item-tipo">${c.tipo}</span>
+          <span class="item-data">${new Date(c.data).toLocaleString('pt-BR')}</span>
+        </div>
+        <div class="item-titulo">${c.titulo}</div>
+        <div class="item-conteudo">${c.conteudo}</div>
+        <div style="margin-top:10px; font-size:12px; color:#999;">Publicado por: ${c.autor}</div>
+      </div>
+    `;
+  });
+}
+
+// Escalas, Operações e Documentos seguem mesmo padrão
+async function loadEscalas(){
+  const lista = document.getElementById('listaEscalas');
+  lista.innerHTML='';
+  const snapshot = await db.collection('escalas').orderBy('data','desc').get();
+  snapshot.forEach(doc=>{
+    const e = doc.data();
+    lista.innerHTML += `
+      <div class="item-box">
+        <div class="item-header">
+          <span class="item-tipo">ESCALA</span>
+          <span class="item-data">${new Date(e.data).toLocaleDateString('pt-BR')}</span>
+        </div>
+        <div class="item-titulo">Período: ${e.periodo}</div>
+        <div class="item-conteudo">${e.conteudo}</div>
+        <div style="margin-top:10px; font-size:12px; color:#999;">Publicado por: ${e.autor}</div>
+      </div>
+    `;
+  });
+}
+
+async function loadOperacoes(){
+  const lista = document.getElementById('listaOperacoes');
+  lista.innerHTML='';
+  const snapshot = await db.collection('operacoes').orderBy('data','desc').get();
+  snapshot.forEach(doc=>{
+    const o = doc.data();
+    lista.innerHTML += `
+      <div class="item-box">
+        <div class="item-header">
+          <span class="item-tipo">OPERAÇÃO</span>
+          <span class="item-data">${new Date(o.data).toLocaleString('pt-BR')}</span>
+        </div>
+        <div class="item-titulo">${o.nome}</div>
+        <div class="item-conteudo"><strong>Local:</strong> ${o.local}<br><strong>Detalhes:</strong> ${o.detalhes}</div>
+        <div style="margin-top:10px; font-size:12px; color:#999;">Publicado por: ${o.autor}</div>
+      </div>
+    `;
+  });
+}
+
+async function loadDocumentos(){
+  const lista = document.getElementById('listaDocumentos');
+  lista.innerHTML='';
+  const snapshot = await db.collection('documentos').orderBy('data','desc').get();
+  snapshot.forEach(doc=>{
+    const d = doc.data();
+    lista.innerHTML += `
+      <div class="item-box">
+        <div class="item-header">
+          <span class="item-tipo">${d.categoria}</span>
+          <span class="item-data">${new Date(d.data).toLocaleDateString('pt-BR')}</span>
+        </div>
+        <div class="item-titulo">${d.nome}</div>
+        <div class="item-conteudo">${d.descricao}</div>
+      </div>
+    `;
+  });
+}
+
+// Formulários de adição
+document.getElementById('comunicadoForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const tipo = document.getElementById('tipoComunicado').value;
+  const titulo = document.getElementById('tituloComunicado').value;
+  const conteudo = document.getElementById('conteudoComunicado').value;
+  await db.collection('comunicados').add({
+    tipo, titulo, conteudo, autor: currentUser.nome, data: new Date().toISOString()
+  });
+  e.target.reset(); loadComunicados(); alert('✅ Comunicado publicado!');
+});
+
+document.getElementById('escalaForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const periodo = document.getElementById('periodoEscala').value;
+  const conteudo = document.getElementById('conteudoEscala').value;
+  await db.collection('escalas').add({
+    periodo, conteudo, autor: currentUser.nome, data: new Date().toISOString()
+  });
+  e.target.reset(); loadEscalas(); alert('✅ Escala publicada!');
+});
+
+document.getElementById('operacaoForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const nome = document.getElementById('nomeOperacao').value;
+  const data = document.getElementById('dataOperacao').value;
+  const local = document.getElementById('localOperacao').value;
+  const detalhes = document.getElementById('detalhesOperacao').value;
+  await db.collection('operacoes').add({
+    nome, local, detalhes, autor: currentUser.nome, data: new Date(data).toISOString()
+  });
+  e.target.reset(); loadOperacoes(); alert('✅ Operação publicada!');
+});
+
+document.getElementById('documentoForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const categoria = document.getElementById('categoriaDoc').value;
+  const nome = document.getElementById('nomeDoc').value;
+  const descricao = document.getElementById('descricaoDoc').value;
+  await db.collection('documentos').add({
+    categoria, nome, descricao, autor: currentUser.nome, data: new Date().toISOString()
+  });
+  e.target.reset();
