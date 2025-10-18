@@ -356,7 +356,7 @@
             </form>
 
             <p style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
-                Primeiro acesso? Use suas credenciais fornecidas pela administração
+                Use: inspetor.almeida / gm2025
             </p>
         </div>
     </div>
@@ -441,7 +441,7 @@
                         <label>Detalhes da Escala</label>
                         <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
                     </div>
-                    <button type="submit" class="btn" id="btnEscala">Publicar Escala e Notificar</button>
+                    <button type="submit" class="btn">Publicar Escala e Notificar</button>
                 </form>
             </div>
 
@@ -474,7 +474,7 @@
                         <label>Detalhes</label>
                         <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
                     </div>
-                    <button type="submit" class="btn" id="btnOperacao">Publicar Operação e Notificar</button>
+                    <button type="submit" class="btn">Publicar Operação e Notificar</button>
                 </form>
             </div>
 
@@ -509,7 +509,7 @@
                         <label>Descrição</label>
                         <textarea id="descricaoDoc" placeholder="Breve descrição do documento..."></textarea>
                     </div>
-                    <button type="submit" class="btn" id="btnDocumento">Publicar Documento e Notificar</button>
+                    <button type="submit" class="btn">Publicar Documento e Notificar</button>
                 </form>
             </div>
 
@@ -572,14 +572,14 @@
             }
 
             try {
-                const templateParams = {
-                    tipo: tipo,
-                    titulo: titulo,
-                    conteudo: conteudo,
-                    to_email: emailsUsuarios.join(',')
-                };
-
-                await emailjs.send('service_trgfsbs', 'template_w71kqkh', templateParams);
+                for (const email of emailsUsuarios) {
+                    await emailjs.send('service_trgfsbs', 'template_w71kqkh', {
+                        tipo: tipo,
+                        titulo: titulo,
+                        conteudo: conteudo,
+                        to_email: email
+                    });
+                }
                 console.log('Emails enviados com sucesso!');
             } catch (error) {
                 console.error('Erro ao enviar emails:', error);
@@ -684,6 +684,10 @@
                             </div>
                         `;
                     }).join('');
+                }, error => {
+                    console.error('Erro ao carregar comunicados:', error);
+                    document.getElementById('listaComunicados').innerHTML = 
+                        '<div class="empty-state"><p>Erro ao carregar dados. Verifique as regras do Firebase.</p></div>';
                 });
         }
 
@@ -713,6 +717,8 @@
                             </div>
                         `;
                     }).join('');
+                }, error => {
+                    console.error('Erro ao carregar escalas:', error);
                 });
         }
 
@@ -745,6 +751,8 @@
                             </div>
                         `;
                     }).join('');
+                }, error => {
+                    console.error('Erro ao carregar operações:', error);
                 });
         }
 
@@ -767,13 +775,15 @@
                                     <span class="item-data">${data.data}</span>
                                 </div>
                                 <div class="item-titulo">${data.nome}</div>
-                                <div class="item-conteudo">${data.descricao}</div>
+                                <div class="item-conteudo">${data.descricao || ''}</div>
                                 <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                     Publicado por: ${data.autor}
                                 </div>
                             </div>
                         `;
                     }).join('');
+                }, error => {
+                    console.error('Erro ao carregar documentos:', error);
                 });
         }
 
@@ -810,6 +820,7 @@
                 this.reset();
             } catch (error) {
                 alert('Erro ao publicar: ' + error.message);
+                console.error(error);
             }
 
             btn.disabled = false;
@@ -817,16 +828,4 @@
         });
 
         // ADICIONAR ESCALA
-        document.getElementById('formEscala').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnEscala');
-            btn.disabled = true;
-            btn.textContent = 'Publicando...';
-
-            const periodo = document.getElementById('periodoEscala').value;
-            const conteudo = document.getElementById('conteudoEscala').value;
-            
-            const now = new Date();
-            const escala = {
-                periodo: periodo,
-                conteudo: conte
+        document.getElementById('formEscala').addEventListener
