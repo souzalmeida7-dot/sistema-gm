@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configuração Firebase - Portal GM</title>
+    <title>Portal Administrativo - Guarda Municipal</title>
     <style>
         * {
             margin: 0;
@@ -15,51 +15,70 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
+        }
+
+        .login-container {
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
             padding: 20px;
         }
 
-        .container {
+        .login-box {
             background: white;
             padding: 40px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            max-width: 600px;
             width: 100%;
+            max-width: 400px;
         }
 
-        h1 {
-            color: #1e3c72;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-
-        .subtitle {
-            color: #666;
+        .login-header {
+            text-align: center;
             margin-bottom: 30px;
-            font-size: 14px;
         }
 
-        .info-box {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #1e3c72;
-        }
-
-        .info-box h3 {
+        .login-header h1 {
             color: #1e3c72;
+            font-size: 24px;
             margin-bottom: 10px;
-            font-size: 16px;
         }
 
-        .info-box p {
-            color: #555;
+        .login-header p {
+            color: #666;
             font-size: 14px;
-            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
         }
 
         .btn {
@@ -73,7 +92,6 @@
             font-size: 16px;
             font-weight: 600;
             transition: all 0.3s;
-            margin-bottom: 10px;
         }
 
         .btn:hover {
@@ -88,120 +106,416 @@
             transform: none;
         }
 
-        .success-msg {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
+        .error-msg, .success-msg {
+            padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
+            font-size: 14px;
             display: none;
-            border: 1px solid #c3e6cb;
         }
 
         .error-msg {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            border: 1px solid #f5c6cb;
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
         }
 
-        .user-item {
-            background: #f8f9fa;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 8px;
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .main-container {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 22px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #1e3c72;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .badge-admin {
+            background: #dc3545;
+        }
+
+        .btn-logout {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .user-item .status {
-            font-weight: 600;
-            font-size: 12px;
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
-        .status.pending {
-            color: #856404;
+        .tab-btn.active {
+            background: #1e3c72;
+            color: white;
         }
 
-        .status.success {
-            color: #155724;
+        .content-section {
+            display: none;
         }
 
-        .status.error {
-            color: #721c24;
+        .content-section.active {
+            display: block;
         }
 
-        .instructions {
-            background: #fff3cd;
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 18px;
+        }
+
+        .item-box {
+            background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #ffc107;
+            margin-bottom: 15px;
+            border-left: 4px solid #1e3c72;
         }
 
-        .instructions ol {
-            margin-left: 20px;
-            margin-top: 10px;
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .instructions li {
+        .item-tipo {
+            background: #1e3c72;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .item-data {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .item-titulo {
+            font-weight: 600;
+            font-size: 16px;
             margin-bottom: 8px;
-            color: #856404;
-            font-size: 14px;
+            color: #333;
+        }
+
+        .item-conteudo {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .admin-only {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #1e3c72;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-tabs {
+                flex-direction: column;
+            }
+            .tab-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🛡️ Configuração do Firebase</h1>
-        <p class="subtitle">Portal Administrativo - Guarda Municipal</p>
-
-        <div class="instructions">
-            <h3 style="color: #856404; margin-bottom: 10px;">📋 Instruções:</h3>
-            <ol>
-                <li>Clique no botão abaixo para cadastrar o usuário Comando Marcos</li>
-                <li>Aguarde a confirmação de sucesso</li>
-                <li>Depois, adicione os outros usuários no Authentication do Firebase</li>
-                <li>Use este script novamente para cada novo usuário</li>
-            </ol>
-        </div>
-
-        <div id="successMsg" class="success-msg"></div>
-        <div id="errorMsg" class="error-msg"></div>
-
-        <div class="info-box">
-            <h3>✅ Usuário Pronto para Cadastrar:</h3>
-            <div class="user-item">
-                <div>
-                    <strong>Comando Marcos</strong><br>
-                    <small>comando.marcos@gm.com | Admin</small>
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🛡️ Portal Administrativo</h1>
+                <p>Guarda Municipal - Sistema de Gestão</p>
+            </div>
+            
+            <div id="loginError" class="error-msg"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="seu.email@exemplo.com" required>
                 </div>
-                <span class="status pending" id="status1">PENDENTE</span>
+                
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="password" placeholder="Digite sua senha" required>
+                </div>
+                
+                <button type="submit" class="btn" id="btnLogin">Entrar</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
+                Primeiro acesso? Entre em contato com a administração
+            </p>
+        </div>
+    </div>
+
+    <div id="mainSystem" class="main-container">
+        <div class="header">
+            <div>
+                <h1>🛡️ Portal Administrativo GM</h1>
+            </div>
+            <div class="user-info">
+                <span class="badge" id="userBadge"></span>
+                <span class="badge badge-admin" id="adminBadge" style="display: none;">ADMINISTRADOR</span>
+                <button class="btn-logout" onclick="logout()">Sair</button>
             </div>
         </div>
 
-        <button class="btn" onclick="cadastrarUsuario()" id="btnCadastrar">
-            🚀 Cadastrar Comando Marcos no Database
-        </button>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('comunicados')">📢 Comunicados</button>
+            <button class="tab-btn" onclick="showTab('escalas')">📅 Escalas</button>
+            <button class="tab-btn" onclick="showTab('operacoes')">🚨 Operações</button>
+            <button class="tab-btn" onclick="showTab('documentos')">📁 Documentos</button>
+        </div>
 
-        <div class="info-box" style="margin-top: 20px;">
-            <h3>📝 Próximos Passos:</h3>
-            <p>
-                Após cadastrar este usuário, você pode criar os outros usuários no Authentication e usar este mesmo script para cadastrá-los no Database.
-            </p>
+        <div id="comunicados" class="content-section active">
+            <div class="card admin-only">
+                <h3>📝 Novo Comunicado</h3>
+                <div id="comunicadoSuccess" class="success-msg"></div>
+                <form id="formComunicado">
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select id="tipoComunicado">
+                            <option>INFORMATIVO</option>
+                            <option>URGENTE</option>
+                            <option>OPERACIONAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" id="tituloComunicado" placeholder="Título do comunicado" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Conteúdo</label>
+                        <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Publicar Comunicado</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Todos os Comunicados</h3>
+                <div id="listaComunicados">
+                    <div class="loading">Carregando...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="escalas" class="content-section">
+            <div class="card admin-only">
+                <h3>📝 Nova Escala</h3>
+                <div id="escalaSuccess" class="success-msg"></div>
+                <form id="formEscala">
+                    <div class="form-group">
+                        <label>Período</label>
+                        <input type="text" id="periodoEscala" placeholder="Ex: 21/10 a 27/10/2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Detalhes da Escala</label>
+                        <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Publicar Escala</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Escalas Publicadas</h3>
+                <div id="listaEscalas">
+                    <div class="loading">Carregando...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="operacoes" class="content-section">
+            <div class="card admin-only">
+                <h3>📝 Nova Operação</h3>
+                <div id="operacaoSuccess" class="success-msg"></div>
+                <form id="formOperacao">
+                    <div class="form-group">
+                        <label>Nome da Operação</label>
+                        <input type="text" id="nomeOperacao" placeholder="Ex: Operação Centro Seguro" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Data e Horário</label>
+                        <input type="datetime-local" id="dataOperacao" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Local</label>
+                        <input type="text" id="localOperacao" placeholder="Local da operação" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Detalhes</label>
+                        <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Publicar Operação</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Operações Programadas</h3>
+                <div id="listaOperacoes">
+                    <div class="loading">Carregando...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="documentos" class="content-section">
+            <div class="card admin-only">
+                <h3>📝 Novo Documento</h3>
+                <div id="documentoSuccess" class="success-msg"></div>
+                <form id="formDocumento">
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="categoriaDoc">
+                            <option>Procedimento Operacional</option>
+                            <option>Formulário</option>
+                            <option>Legislação</option>
+                            <option>Manual</option>
+                            <option>Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do Documento</label>
+                        <input type="text" id="nomeDoc" placeholder="Ex: Manual de Abordagem 2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea id="descricaoDoc" placeholder="Breve descrição do documento..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">Publicar Documento</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Biblioteca de Documentos</h3>
+                <div id="listaDocumentos">
+                    <div class="loading">Carregando...</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <script>
+        // ========== CONFIGURAÇÃO DO FIREBASE ==========
         const firebaseConfig = {
             apiKey: "AIzaSyBVfCbAucFErELqatHP1DgJsAweMR_rzJo",
             authDomain: "sistema-gm-145eb.firebaseapp.com",
@@ -212,63 +526,413 @@
             appId: "1:1033769343247:web:24d6934babf8a4eb65867a"
         };
 
+        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const database = firebase.database();
 
-        async function cadastrarUsuario() {
-            const btn = document.getElementById('btnCadastrar');
-            const successMsg = document.getElementById('successMsg');
-            const errorMsg = document.getElementById('errorMsg');
-            const status = document.getElementById('status1');
+        let currentUser = null;
 
-            btn.disabled = true;
-            btn.textContent = '⏳ Cadastrando...';
-            successMsg.style.display = 'none';
+        // ========== AUTENTICAÇÃO ==========
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btnLogin = document.getElementById('btnLogin');
+            const errorMsg = document.getElementById('loginError');
+
+            btnLogin.disabled = true;
+            btnLogin.textContent = 'Entrando...';
             errorMsg.style.display = 'none';
 
             try {
-                const uid = 'ANNwwtTpQhRMLsQOvj3ts81I0on2';
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
                 
-                await database.ref('usuarios/' + uid).set({
-                    nome: 'Comando Marcos',
-                    admin: true,
-                    email: 'comando.marcos@gm.com',
-                    dataCadastro: new Date().toISOString()
-                });
-
-                status.textContent = '✅ CADASTRADO';
-                status.className = 'status success';
-
-                successMsg.innerHTML = `
-                    <strong>✅ Sucesso!</strong><br>
-                    Usuário <strong>Comando Marcos</strong> cadastrado com sucesso no Realtime Database!<br><br>
-                    <strong>Agora você pode:</strong><br>
-                    1. Testar o login no Portal Administrativo<br>
-                    2. Email: comando.marcos@gm.com<br>
-                    3. Senha: gm2025
-                `;
-                successMsg.style.display = 'block';
-
-                btn.textContent = '✅ Usuário Cadastrado!';
-                btn.style.background = '#28a745';
-
+                // Buscar dados do usuário no database
+                const snapshot = await database.ref('usuarios/' + user.uid).once('value');
+                const userData = snapshot.val();
+                
+                if (userData) {
+                    currentUser = {
+                        uid: user.uid,
+                        email: user.email,
+                        nome: userData.nome,
+                        admin: userData.admin || false
+                    };
+                    showMainSystem();
+                } else {
+                    throw new Error('Usuário não encontrado no sistema');
+                }
             } catch (error) {
-                console.error('Erro:', error);
-                
-                status.textContent = '❌ ERRO';
-                status.className = 'status error';
-
-                errorMsg.innerHTML = `
-                    <strong>❌ Erro ao cadastrar!</strong><br>
-                    ${error.message}<br><br>
-                    Verifique se as regras do Realtime Database estão configuradas corretamente.
-                `;
+                console.error('Erro no login:', error);
+                errorMsg.textContent = '❌ ' + getErrorMessage(error.code);
                 errorMsg.style.display = 'block';
+            } finally {
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'Entrar';
+            }
+        });
 
-                btn.disabled = false;
-                btn.textContent = '🔄 Tentar Novamente';
+        function getErrorMessage(errorCode) {
+            const messages = {
+                'auth/invalid-email': 'Email inválido',
+                'auth/user-disabled': 'Usuário desabilitado',
+                'auth/user-not-found': 'Usuário não encontrado',
+                'auth/wrong-password': 'Senha incorreta',
+                'auth/invalid-credential': 'Email ou senha incorretos',
+                'auth/too-many-requests': 'Muitas tentativas. Tente novamente mais tarde'
+            };
+            return messages[errorCode] || 'Erro ao fazer login. Tente novamente.';
+        }
+
+        function showMainSystem() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainSystem').style.display = 'block';
+            document.getElementById('userBadge').textContent = currentUser.nome;
+            
+            if (currentUser.admin) {
+                document.getElementById('adminBadge').style.display = 'inline-block';
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            }
+
+            // Carregar dados
+            loadComunicados();
+            loadEscalas();
+            loadOperacoes();
+            loadDocumentos();
+        }
+
+        async function logout() {
+            try {
+                await auth.signOut();
+                currentUser = null;
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainSystem').style.display = 'none';
+                document.getElementById('loginForm').reset();
+            } catch (error) {
+                console.error('Erro ao sair:', error);
+                alert('Erro ao sair. Tente novamente.');
             }
         }
+
+        // ========== NAVEGAÇÃO ==========
+        function showTab(tabId) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ========== COMUNICADOS ==========
+        document.getElementById('formComunicado').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const tipo = document.getElementById('tipoComunicado').value;
+            const titulo = document.getElementById('tituloComunicado').value;
+            const conteudo = document.getElementById('conteudoComunicado').value;
+            
+            try {
+                const now = new Date();
+                const comunicado = {
+                    tipo: tipo,
+                    titulo: titulo,
+                    conteudo: conteudo,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid
+                };
+                
+                await database.ref('documentos').push(documento);
+                
+                const successMsg = document.getElementById('documentoSuccess');
+                successMsg.textContent = '✅ Documento publicado com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => successMsg.style.display = 'none', 3000);
+                
+                e.target.reset();
+            } catch (error) {
+                console.error('Erro ao publicar:', error);
+                alert('Erro ao publicar documento. Tente novamente.');
+            }
+        });
+
+        function loadDocumentos() {
+            database.ref('documentos').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaDocumentos');
+                const documentos = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    documentos.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                documentos.reverse();
+                
+                if (documentos.length === 0) {
+                    lista.innerHTML = `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span class="item-tipo">MANUAL</span>
+                                <span class="item-data">15/10/2025</span>
+                            </div>
+                            <div class="item-titulo">Código de Posturas Municipal</div>
+                            <div class="item-conteudo">Legislação municipal atualizada.</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                lista.innerHTML = documentos.map(d => `
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">${d.categoria}</span>
+                            <span class="item-data">${d.dataFormatada}</span>
+                        </div>
+                        <div class="item-titulo">${d.nome}</div>
+                        <div class="item-conteudo">${d.descricao}</div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                            Publicado por: ${d.autor}
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // ========== MONITORAR ESTADO DE AUTENTICAÇÃO ==========
+        auth.onAuthStateChanged(async (user) => {
+            if (user && !currentUser) {
+                try {
+                    const snapshot = await database.ref('usuarios/' + user.uid).once('value');
+                    const userData = snapshot.val();
+                    
+                    if (userData) {
+                        currentUser = {
+                            uid: user.uid,
+                            email: user.email,
+                            nome: userData.nome,
+                            admin: userData.admin || false
+                        };
+                        showMainSystem();
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar usuário:', error);
+                }
+            }
+        });
     </script>
 </body>
-</html>
+</html>comunicados').push(comunicado);
+                
+                const successMsg = document.getElementById('comunicadoSuccess');
+                successMsg.textContent = '✅ Comunicado publicado com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => successMsg.style.display = 'none', 3000);
+                
+                e.target.reset();
+            } catch (error) {
+                console.error('Erro ao publicar:', error);
+                alert('Erro ao publicar comunicado. Tente novamente.');
+            }
+        });
+
+        function loadComunicados() {
+            database.ref('comunicados').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaComunicados');
+                const comunicados = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    comunicados.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                comunicados.reverse(); // Mais recentes primeiro
+                
+                if (comunicados.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum comunicado publicado</p></div>';
+                    return;
+                }
+                
+                lista.innerHTML = comunicados.map(c => `
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">${c.tipo}</span>
+                            <span class="item-data">${c.dataFormatada}</span>
+                        </div>
+                        <div class="item-titulo">${c.titulo}</div>
+                        <div class="item-conteudo">${c.conteudo}</div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                            Publicado por: ${c.autor}
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // ========== ESCALAS ==========
+        document.getElementById('formEscala').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const periodo = document.getElementById('periodoEscala').value;
+            const conteudo = document.getElementById('conteudoEscala').value;
+            
+            try {
+                const now = new Date();
+                const escala = {
+                    periodo: periodo,
+                    conteudo: conteudo,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR'),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid
+                };
+                
+                await database.ref('escalas').push(escala);
+                
+                const successMsg = document.getElementById('escalaSuccess');
+                successMsg.textContent = '✅ Escala publicada com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => successMsg.style.display = 'none', 3000);
+                
+                e.target.reset();
+            } catch (error) {
+                console.error('Erro ao publicar:', error);
+                alert('Erro ao publicar escala. Tente novamente.');
+            }
+        });
+
+        function loadEscalas() {
+            database.ref('escalas').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaEscalas');
+                const escalas = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    escalas.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                escalas.reverse();
+                
+                if (escalas.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala publicada</p></div>';
+                    return;
+                }
+                
+                lista.innerHTML = escalas.map(e => `
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">ESCALA</span>
+                            <span class="item-data">${e.dataFormatada}</span>
+                        </div>
+                        <div class="item-titulo">Período: ${e.periodo}</div>
+                        <div class="item-conteudo">${e.conteudo}</div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                            Publicado por: ${e.autor}
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // ========== OPERAÇÕES ==========
+        document.getElementById('formOperacao').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('nomeOperacao').value;
+            const data = document.getElementById('dataOperacao').value;
+            const local = document.getElementById('localOperacao').value;
+            const detalhes = document.getElementById('detalhesOperacao').value;
+            
+            try {
+                const dataObj = new Date(data);
+                const operacao = {
+                    nome: nome,
+                    data: dataObj.toISOString(),
+                    dataFormatada: dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    local: local,
+                    detalhes: detalhes,
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid
+                };
+                
+                await database.ref('operacoes').push(operacao);
+                
+                const successMsg = document.getElementById('operacaoSuccess');
+                successMsg.textContent = '✅ Operação publicada com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => successMsg.style.display = 'none', 3000);
+                
+                e.target.reset();
+            } catch (error) {
+                console.error('Erro ao publicar:', error);
+                alert('Erro ao publicar operação. Tente novamente.');
+            }
+        });
+
+        function loadOperacoes() {
+            database.ref('operacoes').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaOperacoes');
+                const operacoes = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    operacoes.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                operacoes.reverse();
+                
+                if (operacoes.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada</p></div>';
+                    return;
+                }
+                
+                lista.innerHTML = operacoes.map(o => `
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">OPERAÇÃO</span>
+                            <span class="item-data">${o.dataFormatada}</span>
+                        </div>
+                        <div class="item-titulo">${o.nome}</div>
+                        <div class="item-conteudo">
+                            <strong>Local:</strong> ${o.local}<br>
+                            <strong>Detalhes:</strong> ${o.detalhes}
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                            Publicado por: ${o.autor}
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // ========== DOCUMENTOS ==========
+        document.getElementById('formDocumento').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const categoria = document.getElementById('categoriaDoc').value;
+            const nome = document.getElementById('nomeDoc').value;
+            const descricao = document.getElementById('descricaoDoc').value;
+            
+            try {
+                const now = new Date();
+                const documento = {
+                    categoria: categoria,
+                    nome: nome,
+                    descricao: descricao,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR'),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid
+                };
+                
+                await database.ref('
