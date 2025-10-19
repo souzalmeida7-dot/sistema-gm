@@ -62,7 +62,10 @@
             font-size: 14px;
         }
 
-        .form-group input, .form-group select, .form-group textarea {
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea,
+        .form-group input[type="file"] {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
@@ -71,7 +74,10 @@
             transition: border 0.3s;
         }
 
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus,
+        .form-group input[type="file"]:focus {
             outline: none;
             border-color: #1e3c72;
         }
@@ -146,9 +152,21 @@
             gap: 15px;
         }
 
+        .header .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .logo img {
+            height: 40px; /* Ajuste o tamanho da logo */
+            width: auto;
+        }
+
         .header h1 {
             color: #1e3c72;
             font-size: 22px;
+            margin: 0; /* Remover margem padrão do h1 */
         }
 
         .user-info {
@@ -179,6 +197,11 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 13px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #5a6268;
         }
 
         .nav-tabs {
@@ -293,6 +316,55 @@
             color: #1e3c72;
         }
 
+        /* Estilos para o botão de exclusão */
+        .btn-delete {
+            background: #dc3545; /* Vermelho */
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease;
+            margin-left: 10px; /* Espaçamento do texto */
+        }
+
+        .btn-delete:hover {
+            background: #c82333; /* Vermelho mais escuro no hover */
+        }
+        
+        .item-actions {
+            display: flex;
+            justify-content: flex-end; /* Alinhar botões à direita */
+            gap: 5px; /* Espaçamento entre botões */
+            margin-top: 10px;
+        }
+
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #1e3c72;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 13px;
+            padding: 5px 0;
+            transition: color 0.3s;
+        }
+
+        .download-link:hover {
+            color: #2a5298;
+        }
+
+        .download-link svg {
+            fill: #1e3c72;
+            transition: fill 0.3s;
+        }
+
+        .download-link:hover svg {
+            fill: #2a5298;
+        }
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -303,6 +375,13 @@
             }
             .tab-btn {
                 width: 100%;
+            }
+            .item-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .item-actions {
+                justify-content: flex-start;
             }
         }
     </style>
@@ -341,8 +420,11 @@
     <!-- SISTEMA PRINCIPAL -->
     <div id="mainSystem" class="main-container">
         <div class="header">
-            <div>
-                <h1>🛡️ Portal Administrativo GM</h1>
+            <div class="logo">
+                <!-- Substitua 'sua-logo.png' pela URL da sua logo. -->
+                <!-- Use uma logo em PNG com fundo transparente para melhor resultado -->
+                <img src="https://i.imgur.com/your-logo.png" alt="Logo da Guarda Municipal" id="gmLogo"> 
+                <h1>Portal Administrativo GM</h1>
             </div>
             <div class="user-info">
                 <span class="badge" id="userBadge"></span>
@@ -352,10 +434,10 @@
         </div>
 
         <div class="nav-tabs">
-            <button class="tab-btn active" onclick="showTab('comunicados')">📢 Comunicados</button>
-            <button class="tab-btn" onclick="showTab('escalas')">📅 Escalas</button>
-            <button class="tab-btn" onclick="showTab('operacoes')">🚨 Operações</button>
-            <button class="tab-btn" onclick="showTab('documentos')">📁 Documentos</button>
+            <button class="tab-btn active" onclick="showTab(event, 'comunicados')">📢 Comunicados</button>
+            <button class="tab-btn" onclick="showTab(event, 'escalas')">📅 Escalas</button>
+            <button class="tab-btn" onclick="showTab(event, 'operacoes')">🚨 Operações</button>
+            <button class="tab-btn" onclick="showTab(event, 'documentos')">📁 Documentos</button>
         </div>
 
         <!-- ABA COMUNICADOS -->
@@ -367,9 +449,9 @@
                     <div class="form-group">
                         <label>Tipo</label>
                         <select id="tipoComunicado">
-                            <option>INFORMATIVO</option>
-                            <option>URGENTE</option>
-                            <option>OPERACIONAL</option>
+                            <option value="INFORMATIVO">INFORMATIVO</option>
+                            <option value="URGENTE">URGENTE</option>
+                            <option value="OPERACIONAL">OPERACIONAL</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -379,6 +461,10 @@
                     <div class="form-group">
                         <label>Conteúdo</label>
                         <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Anexar PDF (Opcional)</label>
+                        <input type="file" id="pdfComunicado" accept="application/pdf">
                     </div>
                     <button type="submit" class="btn">Publicar Comunicado</button>
                 </form>
@@ -405,6 +491,10 @@
                     <div class="form-group">
                         <label>Detalhes da Escala</label>
                         <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Anexar PDF (Opcional)</label>
+                        <input type="file" id="pdfEscala" accept="application/pdf">
                     </div>
                     <button type="submit" class="btn">Publicar Escala</button>
                 </form>
@@ -440,6 +530,10 @@
                         <label>Detalhes</label>
                         <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
                     </div>
+                    <div class="form-group">
+                        <label>Anexar PDF (Opcional)</label>
+                        <input type="file" id="pdfOperacao" accept="application/pdf">
+                    </div>
                     <button type="submit" class="btn">Publicar Operação</button>
                 </form>
             </div>
@@ -461,11 +555,11 @@
                     <div class="form-group">
                         <label>Categoria</label>
                         <select id="categoriaDoc">
-                            <option>Procedimento Operacional</option>
-                            <option>Formulário</option>
-                            <option>Legislação</option>
-                            <option>Manual</option>
-                            <option>Outros</option>
+                            <option value="Procedimento Operacional">Procedimento Operacional</option>
+                            <option value="Formulário">Formulário</option>
+                            <option value="Legislação">Legislação</option>
+                            <option value="Manual">Manual</option>
+                            <option value="Outros">Outros</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -475,6 +569,10 @@
                     <div class="form-group">
                         <label>Descrição</label>
                         <textarea id="descricaoDoc" placeholder="Breve descrição do documento..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Anexar PDF</label>
+                        <input type="file" id="pdfDocumento" accept="application/pdf" required>
                     </div>
                     <button type="submit" class="btn">Publicar Documento</button>
                 </form>
@@ -493,6 +591,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
     <script>
         // ========================================
@@ -503,7 +602,7 @@
             authDomain: "sistema-gm-145eb.firebaseapp.com",
             databaseURL: "https://sistema-gm-145eb-default-rtdb.firebaseio.com",
             projectId: "sistema-gm-145eb",
-            storageBucket: "sistema-gm-145eb.firebasestorage.app",
+            storageBucket: "sistema-gm-145eb.firebasestorage.app", // Adicionado o Storage Bucket
             messagingSenderId: "1033769343247",
             appId: "1:1033769343247:web:24d6934babf8a4eb65867a"
         };
@@ -512,6 +611,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
+        const storage = firebase.storage(); // Inicializar Firebase Storage
 
         // Variável global do usuário atual
         let currentUser = null;
@@ -527,26 +627,18 @@
             const btnLogin = document.getElementById('btnLogin');
             const errorMsg = document.getElementById('loginError');
 
-            // Desabilitar botão durante login
             btnLogin.disabled = true;
             btnLogin.textContent = 'Entrando...';
             errorMsg.style.display = 'none';
 
             try {
-                // Fazer login no Firebase Authentication
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
-                console.log('Login bem sucedido! UID:', user.uid);
-                
-                // Buscar dados do usuário no Realtime Database
                 const snapshot = await database.ref('usuarios/' + user.uid).once('value');
                 const userData = snapshot.val();
                 
-                console.log('Dados do usuário:', userData);
-                
                 if (userData) {
-                    // Armazenar informações do usuário
                     currentUser = {
                         uid: user.uid,
                         email: user.email,
@@ -554,30 +646,17 @@
                         admin: userData.admin || false
                     };
                     
-                    console.log('Usuário logado:', currentUser);
-                    
-                    // Mostrar sistema principal
                     showMainSystem();
                 } else {
-                    throw new Error('Usuário não encontrado no banco de dados. Execute o script de configuração primeiro!');
+                    throw new Error('Usuário não encontrado no banco de dados. Verifique a configuração.');
                 }
                 
             } catch (error) {
-                console.error('Erro no login:', error);
-                
-                // Mostrar mensagem de erro
-                let errorMessage = 'Erro ao fazer login';
-                
-                if (error.code === 'auth/invalid-email') {
-                    errorMessage = 'Email inválido';
+                let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
+                if (error.code === 'auth/invalid-email' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Email ou senha incorretos.';
                 } else if (error.code === 'auth/user-disabled') {
-                    errorMessage = 'Usuário desabilitado';
-                } else if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'Usuário não encontrado';
-                } else if (error.code === 'auth/wrong-password') {
-                    errorMessage = 'Senha incorreta';
-                } else if (error.code === 'auth/invalid-credential') {
-                    errorMessage = 'Email ou senha incorretos';
+                    errorMessage = 'Sua conta foi desativada.';
                 } else if (error.message) {
                     errorMessage = error.message;
                 }
@@ -586,7 +665,6 @@
                 errorMsg.style.display = 'block';
                 
             } finally {
-                // Reabilitar botão
                 btnLogin.disabled = false;
                 btnLogin.textContent = 'Entrar';
             }
@@ -596,22 +674,20 @@
         // MOSTRAR SISTEMA PRINCIPAL
         // ========================================
         function showMainSystem() {
-            console.log('Mostrando sistema principal...');
-            
-            // Esconder tela de login
             document.getElementById('loginScreen').style.display = 'none';
-            
-            // Mostrar sistema principal
             document.getElementById('mainSystem').style.display = 'block';
             
-            // Atualizar nome do usuário
             document.getElementById('userBadge').textContent = currentUser.nome;
             
-            // Se for admin, mostrar badge e formulários
             if (currentUser.admin) {
                 document.getElementById('adminBadge').style.display = 'inline-block';
                 document.querySelectorAll('.admin-only').forEach(el => {
                     el.style.display = 'block';
+                });
+            } else {
+                // Se não for admin, garante que os formulários de adição estejam escondidos
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.style.display = 'none';
                 });
             }
 
@@ -630,12 +706,30 @@
                 await auth.signOut();
                 currentUser = null;
                 
-                // Voltar para tela de login
                 document.getElementById('loginScreen').style.display = 'flex';
                 document.getElementById('mainSystem').style.display = 'none';
                 document.getElementById('loginForm').reset();
                 document.getElementById('loginError').style.display = 'none';
                 
+                // Reinicia os estados dos formulários e mensagens de sucesso
+                document.getElementById('formComunicado').reset();
+                document.getElementById('formEscala').reset();
+                document.getElementById('formOperacao').reset();
+                document.getElementById('formDocumento').reset();
+                document.getElementById('comunicadoSuccess').style.display = 'none';
+                document.getElementById('escalaSuccess').style.display = 'none';
+                document.getElementById('operacaoSuccess').style.display = 'none';
+                document.getElementById('documentoSuccess').style.display = 'none';
+
+                // Garante que a primeira aba ativa seja comunicados e esconde outras
+                document.getElementById('comunicados').classList.add('active');
+                document.getElementById('escalas').classList.remove('active');
+                document.getElementById('operacoes').classList.remove('active');
+                document.getElementById('documentos').classList.remove('active');
+                document.querySelector('.nav-tabs .tab-btn.active').classList.remove('active');
+                document.querySelector('.nav-tabs .tab-btn:first-child').classList.add('active');
+
+
             } catch (error) {
                 console.error('Erro ao sair:', error);
                 alert('Erro ao sair. Tente novamente.');
@@ -645,8 +739,7 @@
         // ========================================
         // NAVEGAÇÃO ENTRE ABAS
         // ========================================
-        function showTab(tabId) {
-            // Remover classe active de todas as abas
+        function showTab(event, tabId) {
             document.querySelectorAll('.content-section').forEach(el => {
                 el.classList.remove('active');
             });
@@ -654,13 +747,46 @@
                 el.classList.remove('active');
             });
             
-            // Adicionar classe active na aba clicada
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
         }
 
         // ========================================
-        // COMUNICADOS - PUBLICAR
+        // FUNÇÃO GENÉRICA PARA UPLOAD DE PDF
+        // ========================================
+        async function uploadPdf(file, folderName) {
+            if (!file) return null;
+
+            const storageRef = storage.ref();
+            const fileName = `${Date.now()}_${file.name}`;
+            const fileRef = storageRef.child(`${folderName}/${fileName}`);
+            
+            try {
+                const snapshot = await fileRef.put(file);
+                const downloadURL = await snapshot.ref.getDownloadURL();
+                return { name: file.name, url: downloadURL, path: fileRef.fullPath };
+            } catch (error) {
+                console.error('Erro ao fazer upload do PDF:', error);
+                throw new Error('Falha ao fazer upload do arquivo. Tente novamente.');
+            }
+        }
+
+        // ========================================
+        // FUNÇÃO GENÉRICA PARA EXCLUIR PDF DO STORAGE
+        // ========================================
+        async function deletePdfFromStorage(filePath) {
+            if (!filePath) return;
+            try {
+                const fileRef = storage.ref(filePath);
+                await fileRef.delete();
+                console.log('PDF excluído do Storage:', filePath);
+            } catch (error) {
+                console.warn('Não foi possível excluir o PDF do Storage (pode não existir):', error);
+            }
+        }
+
+        // ========================================
+        // COMUNICADOS - PUBLICAR E EXCLUIR
         // ========================================
         document.getElementById('formComunicado').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -668,8 +794,18 @@
             const tipo = document.getElementById('tipoComunicado').value;
             const titulo = document.getElementById('tituloComunicado').value;
             const conteudo = document.getElementById('conteudoComunicado').value;
+            const pdfFile = document.getElementById('pdfComunicado').files[0];
+            const submitBtn = e.target.querySelector('.btn');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publicando...';
             
             try {
+                let pdfInfo = null;
+                if (pdfFile) {
+                    pdfInfo = await uploadPdf(pdfFile, 'comunicados_pdfs');
+                }
+
                 const now = new Date();
                 const comunicado = {
                     tipo: tipo,
@@ -678,38 +814,46 @@
                     data: now.toISOString(),
                     dataFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
                     autor: currentUser.nome,
-                    autorId: currentUser.uid
+                    autorId: currentUser.uid,
+                    pdf: pdfInfo // Adiciona informações do PDF
                 };
                 
-                // Salvar no Firebase
                 await database.ref('comunicados').push(comunicado);
                 
-                // Mostrar mensagem de sucesso
                 const successMsg = document.getElementById('comunicadoSuccess');
                 successMsg.textContent = '✅ Comunicado publicado com sucesso!';
                 successMsg.style.display = 'block';
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 3000);
+                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
                 
-                // Limpar formulário
-                e.target.reset();
+                e.target.reset(); // Limpar formulário
                 
             } catch (error) {
                 console.error('Erro ao publicar comunicado:', error);
-                alert('Erro ao publicar comunicado. Tente novamente.');
+                alert('Erro ao publicar comunicado: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publicar Comunicado';
             }
         });
 
-        // ========================================
-        // COMUNICADOS - CARREGAR LISTA
-        // ========================================
+        async function deleteComunicado(comunicadoId, pdfPath) {
+            if (confirm('Tem certeza que deseja excluir este comunicado?')) {
+                try {
+                    await database.ref('comunicados/' + comunicadoId).remove();
+                    await deletePdfFromStorage(pdfPath); // Excluir PDF associado
+                    console.log('Comunicado excluído com sucesso:', comunicadoId);
+                } catch (error) {
+                    console.error('Erro ao excluir comunicado:', error);
+                    alert('Erro ao excluir comunicado. Tente novamente.');
+                }
+            }
+        }
+
         function loadComunicados() {
             database.ref('comunicados').orderByChild('data').on('value', (snapshot) => {
                 const lista = document.getElementById('listaComunicados');
                 const comunicados = [];
                 
-                // Coletar todos os comunicados
                 snapshot.forEach((childSnapshot) => {
                     comunicados.push({
                         id: childSnapshot.key,
@@ -717,10 +861,8 @@
                     });
                 });
                 
-                // Inverter para mostrar mais recentes primeiro
-                comunicados.reverse();
+                comunicados.reverse(); // Mostrar mais recentes primeiro
                 
-                // Renderizar lista
                 if (comunicados.length === 0) {
                     lista.innerHTML = '<div class="empty-state"><p>Nenhum comunicado publicado ainda</p></div>';
                 } else {
@@ -734,6 +876,15 @@
                             <div class="item-conteudo">${c.conteudo}</div>
                             <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                 Publicado por: ${c.autor}
+                                ${c.pdf ? `<a href="${c.pdf.url}" target="_blank" class="download-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    ${c.pdf.name}
+                                </a>` : ''}
+                                ${currentUser.admin ? `
+                                    <div class="item-actions" style="margin-top: 5px;">
+                                        <button class="btn-delete" onclick="deleteComunicado('${c.id}', '${c.pdf ? c.pdf.path : ''}')">Excluir</button>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     `).join('');
@@ -742,15 +893,25 @@
         }
 
         // ========================================
-        // ESCALAS - PUBLICAR
+        // ESCALAS - PUBLICAR E EXCLUIR
         // ========================================
         document.getElementById('formEscala').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const periodo = document.getElementById('periodoEscala').value;
             const conteudo = document.getElementById('conteudoEscala').value;
+            const pdfFile = document.getElementById('pdfEscala').files[0];
+            const submitBtn = e.target.querySelector('.btn');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publicando...';
             
             try {
+                let pdfInfo = null;
+                if (pdfFile) {
+                    pdfInfo = await uploadPdf(pdfFile, 'escalas_pdfs');
+                }
+
                 const now = new Date();
                 const escala = {
                     periodo: periodo,
@@ -758,7 +919,8 @@
                     data: now.toISOString(),
                     dataFormatada: now.toLocaleDateString('pt-BR'),
                     autor: currentUser.nome,
-                    autorId: currentUser.uid
+                    autorId: currentUser.uid,
+                    pdf: pdfInfo
                 };
                 
                 await database.ref('escalas').push(escala);
@@ -766,21 +928,32 @@
                 const successMsg = document.getElementById('escalaSuccess');
                 successMsg.textContent = '✅ Escala publicada com sucesso!';
                 successMsg.style.display = 'block';
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 3000);
+                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
                 
                 e.target.reset();
                 
             } catch (error) {
                 console.error('Erro ao publicar escala:', error);
-                alert('Erro ao publicar escala. Tente novamente.');
+                alert('Erro ao publicar escala: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publicar Escala';
             }
         });
 
-        // ========================================
-        // ESCALAS - CARREGAR LISTA
-        // ========================================
+        async function deleteEscala(escalaId, pdfPath) {
+            if (confirm('Tem certeza que deseja excluir esta escala?')) {
+                try {
+                    await database.ref('escalas/' + escalaId).remove();
+                    await deletePdfFromStorage(pdfPath);
+                    console.log('Escala excluída com sucesso:', escalaId);
+                } catch (error) {
+                    console.error('Erro ao excluir escala:', error);
+                    alert('Erro ao excluir escala. Tente novamente.');
+                }
+            }
+        }
+
         function loadEscalas() {
             database.ref('escalas').orderByChild('data').on('value', (snapshot) => {
                 const lista = document.getElementById('listaEscalas');
@@ -808,6 +981,15 @@
                             <div class="item-conteudo">${e.conteudo}</div>
                             <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                 Publicado por: ${e.autor}
+                                ${e.pdf ? `<a href="${e.pdf.url}" target="_blank" class="download-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    ${e.pdf.name}
+                                </a>` : ''}
+                                ${currentUser.admin ? `
+                                    <div class="item-actions" style="margin-top: 5px;">
+                                        <button class="btn-delete" onclick="deleteEscala('${e.id}', '${e.pdf ? e.pdf.path : ''}')">Excluir</button>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     `).join('');
@@ -816,7 +998,7 @@
         }
 
         // ========================================
-        // OPERAÇÕES - PUBLICAR
+        // OPERAÇÕES - PUBLICAR E EXCLUIR
         // ========================================
         document.getElementById('formOperacao').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -825,8 +1007,18 @@
             const data = document.getElementById('dataOperacao').value;
             const local = document.getElementById('localOperacao').value;
             const detalhes = document.getElementById('detalhesOperacao').value;
+            const pdfFile = document.getElementById('pdfOperacao').files[0];
+            const submitBtn = e.target.querySelector('.btn');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publicando...';
             
             try {
+                let pdfInfo = null;
+                if (pdfFile) {
+                    pdfInfo = await uploadPdf(pdfFile, 'operacoes_pdfs');
+                }
+
                 const dataObj = new Date(data);
                 const operacao = {
                     nome: nome,
@@ -835,7 +1027,8 @@
                     local: local,
                     detalhes: detalhes,
                     autor: currentUser.nome,
-                    autorId: currentUser.uid
+                    autorId: currentUser.uid,
+                    pdf: pdfInfo
                 };
                 
                 await database.ref('operacoes').push(operacao);
@@ -843,21 +1036,32 @@
                 const successMsg = document.getElementById('operacaoSuccess');
                 successMsg.textContent = '✅ Operação publicada com sucesso!';
                 successMsg.style.display = 'block';
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 3000);
+                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
                 
                 e.target.reset();
                 
             } catch (error) {
                 console.error('Erro ao publicar operação:', error);
-                alert('Erro ao publicar operação. Tente novamente.');
+                alert('Erro ao publicar operação: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publicar Operação';
             }
         });
 
-        // ========================================
-        // OPERAÇÕES - CARREGAR LISTA
-        // ========================================
+        async function deleteOperacao(operacaoId, pdfPath) {
+            if (confirm('Tem certeza que deseja excluir esta operação?')) {
+                try {
+                    await database.ref('operacoes/' + operacaoId).remove();
+                    await deletePdfFromStorage(pdfPath);
+                    console.log('Operação excluída com sucesso:', operacaoId);
+                } catch (error) {
+                    console.error('Erro ao excluir operação:', error);
+                    alert('Erro ao excluir operação. Tente novamente.');
+                }
+            }
+        }
+
         function loadOperacoes() {
             database.ref('operacoes').orderByChild('data').on('value', (snapshot) => {
                 const lista = document.getElementById('listaOperacoes');
@@ -888,6 +1092,15 @@
                             </div>
                             <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                 Publicado por: ${o.autor}
+                                ${o.pdf ? `<a href="${o.pdf.url}" target="_blank" class="download-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    ${o.pdf.name}
+                                </a>` : ''}
+                                ${currentUser.admin ? `
+                                    <div class="item-actions" style="margin-top: 5px;">
+                                        <button class="btn-delete" onclick="deleteOperacao('${o.id}', '${o.pdf ? o.pdf.path : ''}')">Excluir</button>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     `).join('');
@@ -896,7 +1109,7 @@
         }
 
         // ========================================
-        // DOCUMENTOS - PUBLICAR
+        // DOCUMENTOS - PUBLICAR E EXCLUIR
         // ========================================
         document.getElementById('formDocumento').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -904,8 +1117,20 @@
             const categoria = document.getElementById('categoriaDoc').value;
             const nome = document.getElementById('nomeDoc').value;
             const descricao = document.getElementById('descricaoDoc').value;
+            const pdfFile = document.getElementById('pdfDocumento').files[0]; // Este é obrigatório
+            const submitBtn = e.target.querySelector('.btn');
+
+            if (!pdfFile) {
+                alert('Por favor, anexe um arquivo PDF para o documento.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publicando...';
             
             try {
+                const pdfInfo = await uploadPdf(pdfFile, 'documentos_pdfs'); // PDF é obrigatório aqui
+
                 const now = new Date();
                 const documento = {
                     categoria: categoria,
@@ -914,7 +1139,8 @@
                     data: now.toISOString(),
                     dataFormatada: now.toLocaleDateString('pt-BR'),
                     autor: currentUser.nome,
-                    autorId: currentUser.uid
+                    autorId: currentUser.uid,
+                    pdf: pdfInfo // Adiciona informações do PDF
                 };
                 
                 await database.ref('documentos').push(documento);
@@ -922,21 +1148,32 @@
                 const successMsg = document.getElementById('documentoSuccess');
                 successMsg.textContent = '✅ Documento publicado com sucesso!';
                 successMsg.style.display = 'block';
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 3000);
+                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
                 
                 e.target.reset();
                 
             } catch (error) {
                 console.error('Erro ao publicar documento:', error);
-                alert('Erro ao publicar documento. Tente novamente.');
+                alert('Erro ao publicar documento: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publicar Documento';
             }
         });
 
-        // ========================================
-        // DOCUMENTOS - CARREGAR LISTA
-        // ========================================
+        async function deleteDocumento(documentoId, pdfPath) {
+            if (confirm('Tem certeza que deseja excluir este documento?')) {
+                try {
+                    await database.ref('documentos/' + documentoId).remove();
+                    await deletePdfFromStorage(pdfPath); // Excluir PDF associado
+                    console.log('Documento excluído com sucesso:', documentoId);
+                } catch (error) {
+                    console.error('Erro ao excluir documento:', error);
+                    alert('Erro ao excluir documento. Tente novamente.');
+                }
+            }
+        }
+
         function loadDocumentos() {
             database.ref('documentos').orderByChild('data').on('value', (snapshot) => {
                 const lista = document.getElementById('listaDocumentos');
@@ -952,16 +1189,7 @@
                 documentos.reverse();
                 
                 if (documentos.length === 0) {
-                    lista.innerHTML = `
-                        <div class="item-box">
-                            <div class="item-header">
-                                <span class="item-tipo">MANUAL</span>
-                                <span class="item-data">15/10/2025</span>
-                            </div>
-                            <div class="item-titulo">Código de Posturas Municipal</div>
-                            <div class="item-conteudo">Legislação municipal atualizada.</div>
-                        </div>
-                    `;
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum documento publicado ainda</p></div>';
                 } else {
                     lista.innerHTML = documentos.map(d => `
                         <div class="item-box">
@@ -973,6 +1201,15 @@
                             <div class="item-conteudo">${d.descricao}</div>
                             <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                 Publicado por: ${d.autor}
+                                ${d.pdf ? `<a href="${d.pdf.url}" target="_blank" class="download-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    ${d.pdf.name}
+                                </a>` : ''}
+                                ${currentUser.admin ? `
+                                    <div class="item-actions" style="margin-top: 5px;">
+                                        <button class="btn-delete" onclick="deleteDocumento('${d.id}', '${d.pdf ? d.pdf.path : ''}')">Excluir</button>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     `).join('');
@@ -984,7 +1221,7 @@
         // MONITORAR ESTADO DE AUTENTICAÇÃO
         // ========================================
         auth.onAuthStateChanged(async (user) => {
-            if (user && !currentUser) {
+            if (user && !currentUser) { // Se o usuário estiver logado mas o currentUser ainda não foi definido
                 try {
                     const snapshot = await database.ref('usuarios/' + user.uid).once('value');
                     const userData = snapshot.val();
@@ -997,10 +1234,19 @@
                             admin: userData.admin || false
                         };
                         showMainSystem();
+                    } else {
+                        // Se o usuário existir no Auth mas não no DB, pode ser um problema de configuração
+                        console.warn('Usuário autenticado, mas dados não encontrados no Realtime Database.');
+                        await auth.signOut(); // Força o logout
                     }
                 } catch (error) {
-                    console.error('Erro ao carregar usuário:', error);
+                    console.error('Erro ao carregar dados do usuário no onAuthStateChanged:', error);
+                    await auth.signOut(); // Em caso de erro, força o logout
                 }
+            } else if (!user && currentUser) { // Se o usuário deslogou
+                currentUser = null;
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainSystem').style.display = 'none';
             }
         });
     </script>
