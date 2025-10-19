@@ -308,6 +308,7 @@
     </style>
 </head>
 <body>
+    <!-- TELA DE LOGIN -->
     <div id="loginScreen" class="login-container">
         <div class="login-box">
             <div class="login-header">
@@ -320,23 +321,24 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" id="email" placeholder="comando.marcos@gm.com" required>
+                    <input type="email" id="email" placeholder="comando.marcos@gm.com" required autocomplete="email">
                 </div>
                 
                 <div class="form-group">
                     <label>Senha</label>
-                    <input type="password" id="password" placeholder="Digite sua senha" required>
+                    <input type="password" id="password" placeholder="Digite sua senha" required autocomplete="current-password">
                 </div>
                 
                 <button type="submit" class="btn" id="btnLogin">Entrar</button>
             </form>
 
             <p style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
-                Use: comando.marcos@gm.com / gm2025
+                Teste: comando.marcos@gm.com / gm2025
             </p>
         </div>
     </div>
 
+    <!-- SISTEMA PRINCIPAL -->
     <div id="mainSystem" class="main-container">
         <div class="header">
             <div>
@@ -356,6 +358,7 @@
             <button class="tab-btn" onclick="showTab('documentos')">📁 Documentos</button>
         </div>
 
+        <!-- ABA COMUNICADOS -->
         <div id="comunicados" class="content-section active">
             <div class="card admin-only">
                 <h3>📝 Novo Comunicado</h3>
@@ -384,11 +387,12 @@
             <div class="card">
                 <h3>Todos os Comunicados</h3>
                 <div id="listaComunicados">
-                    <div class="loading">Carregando...</div>
+                    <div class="loading">Carregando comunicados...</div>
                 </div>
             </div>
         </div>
 
+        <!-- ABA ESCALAS -->
         <div id="escalas" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Escala</h3>
@@ -409,11 +413,12 @@
             <div class="card">
                 <h3>Escalas Publicadas</h3>
                 <div id="listaEscalas">
-                    <div class="loading">Carregando...</div>
+                    <div class="loading">Carregando escalas...</div>
                 </div>
             </div>
         </div>
 
+        <!-- ABA OPERAÇÕES -->
         <div id="operacoes" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Operação</h3>
@@ -442,11 +447,12 @@
             <div class="card">
                 <h3>Operações Programadas</h3>
                 <div id="listaOperacoes">
-                    <div class="loading">Carregando...</div>
+                    <div class="loading">Carregando operações...</div>
                 </div>
             </div>
         </div>
 
+        <!-- ABA DOCUMENTOS -->
         <div id="documentos" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Novo Documento</h3>
@@ -477,17 +483,21 @@
             <div class="card">
                 <h3>Biblioteca de Documentos</h3>
                 <div id="listaDocumentos">
-                    <div class="loading">Carregando...</div>
+                    <div class="loading">Carregando documentos...</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <script>
+        // ========================================
+        // CONFIGURAÇÃO DO FIREBASE
+        // ========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBVfCbAucFErELqatHP1DgJsAweMR_rzJo",
             authDomain: "sistema-gm-145eb.firebaseapp.com",
@@ -498,118 +508,223 @@
             appId: "1:1033769343247:web:24d6934babf8a4eb65867a"
         };
 
+        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
+
+        // Variável global do usuário atual
         let currentUser = null;
 
+        // ========================================
+        // SISTEMA DE LOGIN
+        // ========================================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const btnLogin = document.getElementById('btnLogin');
             const errorMsg = document.getElementById('loginError');
 
+            // Desabilitar botão durante login
             btnLogin.disabled = true;
             btnLogin.textContent = 'Entrando...';
             errorMsg.style.display = 'none';
 
             try {
+                // Fazer login no Firebase Authentication
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
+                console.log('Login bem sucedido! UID:', user.uid);
+                
+                // Buscar dados do usuário no Realtime Database
                 const snapshot = await database.ref('usuarios/' + user.uid).once('value');
                 const userData = snapshot.val();
                 
+                console.log('Dados do usuário:', userData);
+                
                 if (userData) {
+                    // Armazenar informações do usuário
                     currentUser = {
                         uid: user.uid,
                         email: user.email,
                         nome: userData.nome,
                         admin: userData.admin || false
                     };
+                    
+                    console.log('Usuário logado:', currentUser);
+                    
+                    // Mostrar sistema principal
                     showMainSystem();
                 } else {
-                    throw new Error('Usuário não encontrado no sistema');
+                    throw new Error('Usuário não encontrado no banco de dados. Execute o script de configuração primeiro!');
                 }
+                
             } catch (error) {
                 console.error('Erro no login:', error);
-                errorMsg.textContent = '❌ ' + (error.message || 'Email ou senha incorretos');
+                
+                // Mostrar mensagem de erro
+                let errorMessage = 'Erro ao fazer login';
+                
+                if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Email inválido';
+                } else if (error.code === 'auth/user-disabled') {
+                    errorMessage = 'Usuário desabilitado';
+                } else if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'Usuário não encontrado';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Senha incorreta';
+                } else if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Email ou senha incorretos';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                errorMsg.textContent = '❌ ' + errorMessage;
                 errorMsg.style.display = 'block';
+                
             } finally {
+                // Reabilitar botão
                 btnLogin.disabled = false;
                 btnLogin.textContent = 'Entrar';
             }
         });
 
+        // ========================================
+        // MOSTRAR SISTEMA PRINCIPAL
+        // ========================================
         function showMainSystem() {
+            console.log('Mostrando sistema principal...');
+            
+            // Esconder tela de login
             document.getElementById('loginScreen').style.display = 'none';
+            
+            // Mostrar sistema principal
             document.getElementById('mainSystem').style.display = 'block';
+            
+            // Atualizar nome do usuário
             document.getElementById('userBadge').textContent = currentUser.nome;
             
+            // Se for admin, mostrar badge e formulários
             if (currentUser.admin) {
                 document.getElementById('adminBadge').style.display = 'inline-block';
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.style.display = 'block';
+                });
             }
 
+            // Carregar dados do Firebase
             loadComunicados();
             loadEscalas();
             loadOperacoes();
             loadDocumentos();
         }
 
+        // ========================================
+        // LOGOUT
+        // ========================================
         async function logout() {
             try {
                 await auth.signOut();
                 currentUser = null;
+                
+                // Voltar para tela de login
                 document.getElementById('loginScreen').style.display = 'flex';
                 document.getElementById('mainSystem').style.display = 'none';
                 document.getElementById('loginForm').reset();
+                document.getElementById('loginError').style.display = 'none';
+                
             } catch (error) {
-                alert('Erro ao sair');
+                console.error('Erro ao sair:', error);
+                alert('Erro ao sair. Tente novamente.');
             }
         }
 
+        // ========================================
+        // NAVEGAÇÃO ENTRE ABAS
+        // ========================================
         function showTab(tabId) {
-            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            // Remover classe active de todas as abas
+            document.querySelectorAll('.content-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Adicionar classe active na aba clicada
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
         }
 
+        // ========================================
+        // COMUNICADOS - PUBLICAR
+        // ========================================
         document.getElementById('formComunicado').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            const tipo = document.getElementById('tipoComunicado').value;
+            const titulo = document.getElementById('tituloComunicado').value;
+            const conteudo = document.getElementById('conteudoComunicado').value;
+            
             try {
                 const now = new Date();
-                await database.ref('comunicados').push({
-                    tipo: document.getElementById('tipoComunicado').value,
-                    titulo: document.getElementById('tituloComunicado').value,
-                    conteudo: document.getElementById('conteudoComunicado').value,
+                const comunicado = {
+                    tipo: tipo,
+                    titulo: titulo,
+                    conteudo: conteudo,
                     data: now.toISOString(),
                     dataFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
                     autor: currentUser.nome,
                     autorId: currentUser.uid
-                });
+                };
                 
-                const msg = document.getElementById('comunicadoSuccess');
-                msg.textContent = '✅ Comunicado publicado!';
-                msg.style.display = 'block';
-                setTimeout(() => msg.style.display = 'none', 3000);
+                // Salvar no Firebase
+                await database.ref('comunicados').push(comunicado);
+                
+                // Mostrar mensagem de sucesso
+                const successMsg = document.getElementById('comunicadoSuccess');
+                successMsg.textContent = '✅ Comunicado publicado com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+                
+                // Limpar formulário
                 e.target.reset();
+                
             } catch (error) {
-                alert('Erro ao publicar');
+                console.error('Erro ao publicar comunicado:', error);
+                alert('Erro ao publicar comunicado. Tente novamente.');
             }
         });
 
+        // ========================================
+        // COMUNICADOS - CARREGAR LISTA
+        // ========================================
         function loadComunicados() {
             database.ref('comunicados').orderByChild('data').on('value', (snapshot) => {
                 const lista = document.getElementById('listaComunicados');
-                const items = [];
-                snapshot.forEach((child) => items.push({id: child.key, ...child.val()}));
-                items.reverse();
+                const comunicados = [];
                 
-                lista.innerHTML = items.length === 0 ? '<div class="empty-state"><p>Nenhum comunicado</p></div>' :
-                    items.map(c => `
+                // Coletar todos os comunicados
+                snapshot.forEach((childSnapshot) => {
+                    comunicados.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                // Inverter para mostrar mais recentes primeiro
+                comunicados.reverse();
+                
+                // Renderizar lista
+                if (comunicados.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum comunicado publicado ainda</p></div>';
+                } else {
+                    lista.innerHTML = comunicados.map(c => `
                         <div class="item-box">
                             <div class="item-header">
                                 <span class="item-tipo">${c.tipo}</span>
@@ -617,44 +732,73 @@
                             </div>
                             <div class="item-titulo">${c.titulo}</div>
                             <div class="item-conteudo">${c.conteudo}</div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Por: ${c.autor}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                                Publicado por: ${c.autor}
+                            </div>
                         </div>
                     `).join('');
+                }
             });
         }
 
+        // ========================================
+        // ESCALAS - PUBLICAR
+        // ========================================
         document.getElementById('formEscala').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            const periodo = document.getElementById('periodoEscala').value;
+            const conteudo = document.getElementById('conteudoEscala').value;
+            
             try {
                 const now = new Date();
-                await database.ref('escalas').push({
-                    periodo: document.getElementById('periodoEscala').value,
-                    conteudo: document.getElementById('conteudoEscala').value,
+                const escala = {
+                    periodo: periodo,
+                    conteudo: conteudo,
                     data: now.toISOString(),
                     dataFormatada: now.toLocaleDateString('pt-BR'),
                     autor: currentUser.nome,
                     autorId: currentUser.uid
-                });
+                };
                 
-                const msg = document.getElementById('escalaSuccess');
-                msg.textContent = '✅ Escala publicada!';
-                msg.style.display = 'block';
-                setTimeout(() => msg.style.display = 'none', 3000);
+                await database.ref('escalas').push(escala);
+                
+                const successMsg = document.getElementById('escalaSuccess');
+                successMsg.textContent = '✅ Escala publicada com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+                
                 e.target.reset();
+                
             } catch (error) {
-                alert('Erro ao publicar');
+                console.error('Erro ao publicar escala:', error);
+                alert('Erro ao publicar escala. Tente novamente.');
             }
         });
 
+        // ========================================
+        // ESCALAS - CARREGAR LISTA
+        // ========================================
         function loadEscalas() {
             database.ref('escalas').orderByChild('data').on('value', (snapshot) => {
                 const lista = document.getElementById('listaEscalas');
-                const items = [];
-                snapshot.forEach((child) => items.push({id: child.key, ...child.val()}));
-                items.reverse();
+                const escalas = [];
                 
-                lista.innerHTML = items.length === 0 ? '<div class="empty-state"><p>Nenhuma escala</p></div>' :
-                    items.map(e => `
+                snapshot.forEach((childSnapshot) => {
+                    escalas.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                escalas.reverse();
+                
+                if (escalas.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala publicada ainda</p></div>';
+                } else {
+                    lista.innerHTML = escalas.map(e => `
                         <div class="item-box">
                             <div class="item-header">
                                 <span class="item-tipo">ESCALA</span>
@@ -662,45 +806,76 @@
                             </div>
                             <div class="item-titulo">Período: ${e.periodo}</div>
                             <div class="item-conteudo">${e.conteudo}</div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Por: ${e.autor}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                                Publicado por: ${e.autor}
+                            </div>
                         </div>
                     `).join('');
+                }
             });
         }
 
+        // ========================================
+        // OPERAÇÕES - PUBLICAR
+        // ========================================
         document.getElementById('formOperacao').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            const nome = document.getElementById('nomeOperacao').value;
+            const data = document.getElementById('dataOperacao').value;
+            const local = document.getElementById('localOperacao').value;
+            const detalhes = document.getElementById('detalhesOperacao').value;
+            
             try {
-                const dataObj = new Date(document.getElementById('dataOperacao').value);
-                await database.ref('operacoes').push({
-                    nome: document.getElementById('nomeOperacao').value,
+                const dataObj = new Date(data);
+                const operacao = {
+                    nome: nome,
                     data: dataObj.toISOString(),
                     dataFormatada: dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                    local: document.getElementById('localOperacao').value,
-                    detalhes: document.getElementById('detalhesOperacao').value,
+                    local: local,
+                    detalhes: detalhes,
                     autor: currentUser.nome,
                     autorId: currentUser.uid
-                });
+                };
                 
-                const msg = document.getElementById('operacaoSuccess');
-                msg.textContent = '✅ Operação publicada!';
-                msg.style.display = 'block';
-                setTimeout(() => msg.style.display = 'none', 3000);
+                await database.ref('operacoes').push(operacao);
+                
+                const successMsg = document.getElementById('operacaoSuccess');
+                successMsg.textContent = '✅ Operação publicada com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+                
                 e.target.reset();
+                
             } catch (error) {
-                alert('Erro ao publicar');
+                console.error('Erro ao publicar operação:', error);
+                alert('Erro ao publicar operação. Tente novamente.');
             }
         });
 
+        // ========================================
+        // OPERAÇÕES - CARREGAR LISTA
+        // ========================================
         function loadOperacoes() {
             database.ref('operacoes').orderByChild('data').on('value', (snapshot) => {
                 const lista = document.getElementById('listaOperacoes');
-                const items = [];
-                snapshot.forEach((child) => items.push({id: child.key, ...child.val()}));
-                items.reverse();
+                const operacoes = [];
                 
-                lista.innerHTML = items.length === 0 ? '<div class="empty-state"><p>Nenhuma operação</p></div>' :
-                    items.map(o => `
+                snapshot.forEach((childSnapshot) => {
+                    operacoes.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                operacoes.reverse();
+                
+                if (operacoes.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada ainda</p></div>';
+                } else {
+                    lista.innerHTML = operacoes.map(o => `
                         <div class="item-box">
                             <div class="item-header">
                                 <span class="item-tipo">OPERAÇÃO</span>
@@ -711,53 +886,84 @@
                                 <strong>Local:</strong> ${o.local}<br>
                                 <strong>Detalhes:</strong> ${o.detalhes}
                             </div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Por: ${o.autor}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                                Publicado por: ${o.autor}
+                            </div>
                         </div>
                     `).join('');
+                }
             });
         }
 
+        // ========================================
+        // DOCUMENTOS - PUBLICAR
+        // ========================================
         document.getElementById('formDocumento').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            const categoria = document.getElementById('categoriaDoc').value;
+            const nome = document.getElementById('nomeDoc').value;
+            const descricao = document.getElementById('descricaoDoc').value;
+            
             try {
                 const now = new Date();
-                await database.ref('documentos').push({
-                    categoria: document.getElementById('categoriaDoc').value,
-                    nome: document.getElementById('nomeDoc').value,
-                    descricao: document.getElementById('descricaoDoc').value,
+                const documento = {
+                    categoria: categoria,
+                    nome: nome,
+                    descricao: descricao,
                     data: now.toISOString(),
                     dataFormatada: now.toLocaleDateString('pt-BR'),
                     autor: currentUser.nome,
                     autorId: currentUser.uid
-                });
+                };
                 
-                const msg = document.getElementById('documentoSuccess');
-                msg.textContent = '✅ Documento publicado!';
-                msg.style.display = 'block';
-                setTimeout(() => msg.style.display = 'none', 3000);
+                await database.ref('documentos').push(documento);
+                
+                const successMsg = document.getElementById('documentoSuccess');
+                successMsg.textContent = '✅ Documento publicado com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+                
                 e.target.reset();
+                
             } catch (error) {
-                alert('Erro ao publicar');
+                console.error('Erro ao publicar documento:', error);
+                alert('Erro ao publicar documento. Tente novamente.');
             }
         });
 
+        // ========================================
+        // DOCUMENTOS - CARREGAR LISTA
+        // ========================================
         function loadDocumentos() {
             database.ref('documentos').orderByChild('data').on('value', (snapshot) => {
                 const lista = document.getElementById('listaDocumentos');
-                const items = [];
-                snapshot.forEach((child) => items.push({id: child.key, ...child.val()}));
-                items.reverse();
+                const documentos = [];
                 
-                lista.innerHTML = items.length === 0 ? 
-                    `<div class="item-box">
-                        <div class="item-header">
-                            <span class="item-tipo">MANUAL</span>
-                            <span class="item-data">15/10/2025</span>
+                snapshot.forEach((childSnapshot) => {
+                    documentos.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                documentos.reverse();
+                
+                if (documentos.length === 0) {
+                    lista.innerHTML = `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span class="item-tipo">MANUAL</span>
+                                <span class="item-data">15/10/2025</span>
+                            </div>
+                            <div class="item-titulo">Código de Posturas Municipal</div>
+                            <div class="item-conteudo">Legislação municipal atualizada.</div>
                         </div>
-                        <div class="item-titulo">Código de Posturas Municipal</div>
-                        <div class="item-conteudo">Legislação municipal atualizada.</div>
-                    </div>` :
-                    items.map(d => `
+                    `;
+                } else {
+                    lista.innerHTML = documentos.map(d => `
                         <div class="item-box">
                             <div class="item-header">
                                 <span class="item-tipo">${d.categoria}</span>
@@ -765,11 +971,38 @@
                             </div>
                             <div class="item-titulo">${d.nome}</div>
                             <div class="item-conteudo">${d.descricao}</div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">Por: ${d.autor}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                                Publicado por: ${d.autor}
+                            </div>
                         </div>
                     `).join('');
+                }
             });
         }
+
+        // ========================================
+        // MONITORAR ESTADO DE AUTENTICAÇÃO
+        // ========================================
+        auth.onAuthStateChanged(async (user) => {
+            if (user && !currentUser) {
+                try {
+                    const snapshot = await database.ref('usuarios/' + user.uid).once('value');
+                    const userData = snapshot.val();
+                    
+                    if (userData) {
+                        currentUser = {
+                            uid: user.uid,
+                            email: user.email,
+                            nome: userData.nome,
+                            admin: userData.admin || false
+                        };
+                        showMainSystem();
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar usuário:', error);
+                }
+            }
+        });
     </script>
 </body>
 </html>
