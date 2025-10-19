@@ -5,466 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Administrativo - Guarda Municipal</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
-        }
-
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .login-box {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .login-header h1 {
-            color: #1e3c72;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .login-header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .form-group input, 
-        .form-group select, 
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: border 0.3s;
-        }
-
-        .form-group input:focus, 
-        .form-group select:focus, 
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #1e3c72;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-group small {
-            display: block;
-            margin-top: 5px;
-            color: #666;
-            font-size: 12px;
-        }
-
-        .btn {
-            width: 100%;
-            background: #1e3c72;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn:hover {
-            background: #2a5298;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
-        }
-
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .error-msg, .success-msg {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .error-msg {
-            background: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
-        }
-
-        .success-msg {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .main-container {
-            display: none;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .header h1 {
-            color: #1e3c72;
-            font-size: 22px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            background: #1e3c72;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .badge-admin {
-            background: #dc3545;
-        }
-
-        .btn-logout {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: background 0.3s ease;
-        }
-
-        .btn-logout:hover {
-            background: #5a6268;
-        }
-
-        .quick-access {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .quick-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: white;
-            color: #1e3c72;
-            text-decoration: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .quick-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-        }
-
-        .quick-icon {
-            font-size: 24px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .tab-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .tab-btn.active {
-            background: #1e3c72;
-            color: white;
-        }
-
-        .content-section {
-            display: none;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .card h3 {
-            color: #1e3c72;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-            font-size: 18px;
-        }
-
-        .item-box {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #1e3c72;
-        }
-
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .item-tipo {
-            background: #1e3c72;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .item-data {
-            color: #666;
-            font-size: 13px;
-        }
-
-        .item-titulo {
-            font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        .item-conteudo {
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .admin-only {
-            display: none;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #1e3c72;
-        }
-
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: background 0.3s ease;
-        }
-
-        .btn-delete:hover {
-            background: #c82333;
-        }
-
-        .arquivo-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 4px solid #1e3c72;
-            gap: 15px;
-        }
-
-        .arquivo-info {
-            flex: 1;
-        }
-
-        .arquivo-nome {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .arquivo-meta {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .arquivo-actions {
-            display: flex;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-
-        .btn-small {
-            padding: 8px 14px;
-            font-size: 12px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-            text-decoration: none;
-            display: inline-block;
-            white-space: nowrap;
-        }
-
-        .btn-view {
-            background: #1e3c72;
-            color: white;
-        }
-
-        .btn-view:hover {
-            background: #2a5298;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); min-height: 100vh; }
+        .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .login-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 400px; }
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-header h1 { color: #1e3c72; font-size: 24px; margin-bottom: 10px; }
+        .login-header p { color: #666; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; transition: border 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #1e3c72; }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-group small { display: block; margin-top: 5px; color: #666; font-size: 12px; }
+        .btn { width: 100%; background: #1e3c72; color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; transition: all 0.3s; }
+        .btn:hover { background: #2a5298; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        .error-msg, .success-msg { padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: none; }
+        .error-msg { background: #fee; color: #c33; border: 1px solid #fcc; }
+        .success-msg { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .main-container { display: none; max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .header h1 { color: #1e3c72; font-size: 22px; }
+        .user-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .badge { background: #1e3c72; color: white; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+        .badge-admin { background: #dc3545; }
+        .btn-logout { background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background 0.3s; }
+        .btn-logout:hover { background: #5a6268; }
+        .quick-access { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .quick-btn { display: flex; align-items: center; gap: 10px; background: white; color: #1e3c72; text-decoration: none; padding: 15px 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s; font-weight: 600; font-size: 15px; }
+        .quick-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.2); background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; }
+        .quick-icon { font-size: 28px; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .tab-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .tab-btn.active { background: #1e3c72; color: white; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .card h3 { color: #1e3c72; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; font-size: 18px; }
+        .item-box { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #1e3c72; }
+        .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+        .item-tipo { background: #1e3c72; color: white; padding: 5px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+        .item-data { color: #666; font-size: 13px; }
+        .item-titulo { font-weight: 600; font-size: 16px; margin-bottom: 8px; color: #333; }
+        .item-conteudo { color: #555; line-height: 1.6; }
+        .admin-only { display: none; }
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+        .loading { text-align: center; padding: 20px; color: #1e3c72; }
+        .btn-delete { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; transition: background 0.3s; }
+        .btn-delete:hover { background: #c82333; }
+        .arquivo-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #1e3c72; gap: 15px; }
+        .arquivo-info { flex: 1; }
+        .arquivo-nome { font-weight: 600; color: #333; margin-bottom: 5px; }
+        .arquivo-meta { font-size: 12px; color: #666; }
+        .arquivo-actions { display: flex; gap: 10px; }
+        .btn-small { padding: 8px 14px; font-size: 12px; border-radius: 5px; border: none; cursor: pointer; transition: all 0.3s; font-weight: 500; text-decoration: none; display: inline-block; }
+        .btn-view { background: #1e3c72; color: white; }
+        .btn-view:hover { background: #2a5298; }
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-            .nav-tabs, .quick-access {
-                flex-direction: column;
-            }
-            .tab-btn, .quick-btn {
-                width: 100%;
-            }
-            .arquivo-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .arquivo-actions {
-                width: 100%;
-            }
+            .header { flex-direction: column; text-align: center; }
+            .nav-tabs, .quick-access { flex-direction: column; }
+            .tab-btn, .quick-btn { width: 100%; justify-content: center; }
+            .arquivo-item { flex-direction: column; align-items: flex-start; }
+            .arquivo-actions { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <!-- TELA DE LOGIN -->
     <div id="loginScreen" class="login-container">
         <div class="login-box">
             <div class="login-header">
                 <h1>🛡️ Portal Administrativo</h1>
                 <p>Guarda Municipal - Sistema de Gestão</p>
             </div>
-            
             <div id="loginError" class="error-msg"></div>
-            
             <form id="loginForm">
                 <div class="form-group">
                     <label>Email</label>
                     <input type="email" id="email" placeholder="comando.marcos@gm.com" required>
                 </div>
-                
                 <div class="form-group">
                     <label>Senha</label>
                     <input type="password" id="password" placeholder="Digite sua senha" required>
                 </div>
-                
                 <button type="submit" class="btn">Entrar</button>
             </form>
-
-            <p style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
-                Teste: comando.marcos@gm.com / gm2025
-            </p>
+            <p style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">Teste: comando.marcos@gm.com / gm2025</p>
         </div>
     </div>
 
-    <!-- SISTEMA PRINCIPAL -->
     <div id="mainSystem" class="main-container">
         <div class="header">
             <h1>🛡️ Portal Administrativo GM</h1>
@@ -475,7 +105,6 @@
             </div>
         </div>
 
-        <!-- BOTÕES DE ACESSO RÁPIDO -->
         <div class="quick-access">
             <a href="https://gmcampolargo.cconet.com.br/login" target="_blank" class="quick-btn">
                 <span class="quick-icon">🌐</span>
@@ -495,7 +124,6 @@
             <button class="tab-btn" onclick="showTab(event, 'arquivos')">📎 Arquivos PDF</button>
         </div>
 
-        <!-- ABA COMUNICADOS -->
         <div id="comunicados" class="content-section active">
             <div class="card admin-only">
                 <h3>📝 Novo Comunicado</h3>
@@ -511,25 +139,21 @@
                     </div>
                     <div class="form-group">
                         <label>Título</label>
-                        <input type="text" id="tituloComunicado" placeholder="Título do comunicado" required>
+                        <input type="text" id="tituloComunicado" required>
                     </div>
                     <div class="form-group">
                         <label>Conteúdo</label>
-                        <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
+                        <textarea id="conteudoComunicado" required></textarea>
                     </div>
                     <button type="submit" class="btn">Publicar Comunicado</button>
                 </form>
             </div>
-
             <div class="card">
                 <h3>Todos os Comunicados</h3>
-                <div id="listaComunicados">
-                    <div class="loading">Carregando comunicados...</div>
-                </div>
+                <div id="listaComunicados"><div class="loading">Carregando...</div></div>
             </div>
         </div>
 
-        <!-- ABA ESCALAS -->
         <div id="escalas" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Escala</h3>
@@ -537,25 +161,21 @@
                 <form id="formEscala">
                     <div class="form-group">
                         <label>Período</label>
-                        <input type="text" id="periodoEscala" placeholder="Ex: 21/10 a 27/10/2025" required>
+                        <input type="text" id="periodoEscala" required>
                     </div>
                     <div class="form-group">
-                        <label>Detalhes da Escala</label>
-                        <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
+                        <label>Detalhes</label>
+                        <textarea id="conteudoEscala" required></textarea>
                     </div>
                     <button type="submit" class="btn">Publicar Escala</button>
                 </form>
             </div>
-
             <div class="card">
                 <h3>Escalas Publicadas</h3>
-                <div id="listaEscalas">
-                    <div class="loading">Carregando escalas...</div>
-                </div>
+                <div id="listaEscalas"><div class="loading">Carregando...</div></div>
             </div>
         </div>
 
-        <!-- ABA OPERAÇÕES -->
         <div id="operacoes" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Operação</h3>
@@ -563,7 +183,7 @@
                 <form id="formOperacao">
                     <div class="form-group">
                         <label>Nome da Operação</label>
-                        <input type="text" id="nomeOperacao" placeholder="Ex: Operação Centro Seguro" required>
+                        <input type="text" id="nomeOperacao" required>
                     </div>
                     <div class="form-group">
                         <label>Data e Horário</label>
@@ -571,25 +191,21 @@
                     </div>
                     <div class="form-group">
                         <label>Local</label>
-                        <input type="text" id="localOperacao" placeholder="Local da operação" required>
+                        <input type="text" id="localOperacao" required>
                     </div>
                     <div class="form-group">
                         <label>Detalhes</label>
-                        <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
+                        <textarea id="detalhesOperacao" required></textarea>
                     </div>
                     <button type="submit" class="btn">Publicar Operação</button>
                 </form>
             </div>
-
             <div class="card">
                 <h3>Operações Programadas</h3>
-                <div id="listaOperacoes">
-                    <div class="loading">Carregando operações...</div>
-                </div>
+                <div id="listaOperacoes"><div class="loading">Carregando...</div></div>
             </div>
         </div>
 
-        <!-- ABA DOCUMENTOS -->
         <div id="documentos" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Novo Documento</h3>
@@ -598,41 +214,36 @@
                     <div class="form-group">
                         <label>Categoria</label>
                         <select id="categoriaDoc">
-                            <option value="Procedimento Operacional">Procedimento Operacional</option>
+                            <option value="Procedimento">Procedimento</option>
                             <option value="Formulário">Formulário</option>
                             <option value="Legislação">Legislação</option>
                             <option value="Manual">Manual</option>
-                            <option value="Outros">Outros</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Nome do Documento</label>
-                        <input type="text" id="nomeDoc" placeholder="Ex: Manual de Abordagem 2025" required>
+                        <label>Nome</label>
+                        <input type="text" id="nomeDoc" required>
                     </div>
                     <div class="form-group">
                         <label>Descrição</label>
-                        <textarea id="descricaoDoc" placeholder="Breve descrição do documento..."></textarea>
+                        <textarea id="descricaoDoc"></textarea>
                     </div>
                     <button type="submit" class="btn">Publicar Documento</button>
                 </form>
             </div>
-
             <div class="card">
-                <h3>Biblioteca de Documentos</h3>
-                <div id="listaDocumentos">
-                    <div class="loading">Carregando documentos...</div>
-                </div>
+                <h3>Biblioteca</h3>
+                <div id="listaDocumentos"><div class="loading">Carregando...</div></div>
             </div>
         </div>
 
-        <!-- ABA ARQUIVOS PDF -->
         <div id="arquivos" class="content-section">
             <div class="card admin-only">
                 <h3>📎 Adicionar Arquivo PDF</h3>
                 <div id="arquivoSuccess" class="success-msg"></div>
                 <form id="formArquivo">
                     <div class="form-group">
-                        <label>Categoria do Arquivo</label>
+                        <label>Categoria</label>
                         <select id="categoriaArquivo">
                             <option value="Escalas">Escalas</option>
                             <option value="Comunicados">Comunicados</option>
@@ -650,51 +261,41 @@
                     </div>
                     <div class="form-group">
                         <label>Descrição (Opcional)</label>
-                        <textarea id="descricaoArquivo" placeholder="Breve descrição do arquivo..." rows="3"></textarea>
+                        <textarea id="descricaoArquivo" rows="3"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Link do Arquivo (Google Drive)</label>
-                        <input type="url" id="linkArquivo" placeholder="Cole aqui o link do arquivo no Google Drive" required>
-                        <small>
-                            📌 <strong>Dica:</strong> Faça upload do PDF no Drive da Guarda, clique com botão direito no arquivo → "Obter link" → "Qualquer pessoa com o link" → Copie e cole aqui
-                        </small>
+                        <label>Link do Google Drive</label>
+                        <input type="url" id="linkArquivo" placeholder="Cole o link do arquivo" required>
+                        <small>📌 Dica: No Drive → Botão direito no arquivo → "Obter link" → Copie e cole aqui</small>
                     </div>
                     <button type="submit" class="btn">Adicionar Arquivo</button>
                 </form>
             </div>
-
             <div class="card">
                 <h3>Biblioteca de Arquivos PDF</h3>
-                
-                <div class="form-group" style="margin-bottom: 20px;">
+                <div class="form-group">
                     <label>Filtrar por Categoria:</label>
                     <select id="filtroCategoria" onchange="filtrarArquivos()">
-                        <option value="todos">📂 Todas as Categorias</option>
-                        <option value="Escalas">📅 Escalas</option>
-                        <option value="Comunicados">📢 Comunicados</option>
-                        <option value="Operações">🚨 Operações</option>
-                        <option value="Procedimentos">📋 Procedimentos</option>
-                        <option value="Formulários">📝 Formulários</option>
-                        <option value="Legislação">⚖️ Legislação</option>
-                        <option value="Treinamento">🎓 Treinamento</option>
-                        <option value="Outros">📎 Outros</option>
+                        <option value="todos">Todas</option>
+                        <option value="Escalas">Escalas</option>
+                        <option value="Comunicados">Comunicados</option>
+                        <option value="Operações">Operações</option>
+                        <option value="Procedimentos">Procedimentos</option>
+                        <option value="Formulários">Formulários</option>
+                        <option value="Legislação">Legislação</option>
+                        <option value="Treinamento">Treinamento</option>
+                        <option value="Outros">Outros</option>
                     </select>
                 </div>
-
-                <div id="listaArquivos">
-                    <div class="loading">Carregando arquivos...</div>
-                </div>
+                <div id="listaArquivos"><div class="loading">Carregando...</div></div>
             </div>
         </div>
     </div>
 
-    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
     <script>
-        // CONFIGURAÇÃO DO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyBVfCbAucFErELqatHP1DgJsAweMR_rzJo",
             authDomain: "sistema-gm-145eb.firebaseapp.com",
@@ -704,77 +305,47 @@
             messagingSenderId: "1033769343247",
             appId: "1:1033769343247:web:24d6934babf8a4eb65867a"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const database = firebase.database();
+        const db = firebase.database();
+        let user = null;
+        let allFiles = [];
 
-        let currentUser = null;
-
-        // SISTEMA DE LOGIN
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const btnLogin = e.target.querySelector('.btn');
-            const errorMsg = document.getElementById('loginError');
-
-            btnLogin.disabled = true;
-            btnLogin.textContent = 'Entrando...';
-            errorMsg.style.display = 'none';
-
+            const btn = e.target.querySelector('.btn');
+            const err = document.getElementById('loginError');
+            btn.disabled = true;
+            btn.textContent = 'Entrando...';
+            err.style.display = 'none';
             try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                
-                const snapshot = await database.ref('usuarios/' + user.uid).once('value');
-                const userData = snapshot.val();
-                
-                if (userData) {
-                    currentUser = {
-                        uid: user.uid,
-                        email: user.email,
-                        nome: userData.nome,
-                        admin: userData.admin || false
-                    };
-                    
-                    showMainSystem();
-                } else {
-                    throw new Error('Usuário não encontrado no banco de dados.');
-                }
-                
+                const cred = await auth.signInWithEmailAndPassword(
+                    document.getElementById('email').value,
+                    document.getElementById('password').value
+                );
+                const snap = await db.ref('usuarios/' + cred.user.uid).once('value');
+                const data = snap.val();
+                if (data) {
+                    user = { uid: cred.user.uid, email: cred.user.email, nome: data.nome, admin: data.admin || false };
+                    showMain();
+                } else throw new Error('Usuário não encontrado');
             } catch (error) {
-                let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
-                if (error.code === 'auth/invalid-email' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                    errorMessage = 'Email ou senha incorretos.';
-                } else if (error.message) {
-                    errorMessage = error.message;
-                }
-                
-                errorMsg.textContent = '❌ ' + errorMessage;
-                errorMsg.style.display = 'block';
-                
+                err.textContent = '❌ ' + (error.code === 'auth/invalid-credential' ? 'Email ou senha incorretos' : error.message);
+                err.style.display = 'block';
             } finally {
-                btnLogin.disabled = false;
-                btnLogin.textContent = 'Entrar';
+                btn.disabled = false;
+                btn.textContent = 'Entrar';
             }
         });
 
-        // MOSTRAR SISTEMA PRINCIPAL
-        function showMainSystem() {
+        function showMain() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainSystem').style.display = 'block';
-            
-            document.getElementById('userBadge').textContent = currentUser.nome;
-            
-            if (currentUser.admin) {
+            document.getElementById('userBadge').textContent = user.nome;
+            if (user.admin) {
                 document.getElementById('adminBadge').style.display = 'inline-block';
-                document.querySelectorAll('.admin-only').forEach(el => {
-                    el.style.display = 'block';
-                });
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
             }
-
             loadComunicados();
             loadEscalas();
             loadOperacoes();
@@ -782,76 +353,165 @@
             loadArquivos();
         }
 
-        // LOGOUT
         async function logout() {
-            try {
-                await auth.signOut();
-                currentUser = null;
-                
-                document.getElementById('loginScreen').style.display = 'flex';
-                document.getElementById('mainSystem').style.display = 'none';
-                document.getElementById('loginForm').reset();
-                
-            } catch (error) {
-                console.error('Erro ao sair:', error);
-                alert('Erro ao sair. Tente novamente.');
-            }
+            await auth.signOut();
+            user = null;
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainSystem').style.display = 'none';
         }
 
-        // NAVEGAÇÃO ENTRE ABAS
-        function showTab(event, tabId) {
-            document.querySelectorAll('.content-section').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('active');
-            });
-            
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+        function showTab(e, id) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            e.target.classList.add('active');
         }
 
-        // COMUNICADOS
-        document.getElementById('formComunicado').addEventListener('submit', async function(e) {
+        document.getElementById('formComunicado').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const tipo = document.getElementById('tipoComunicado').value;
-            const titulo = document.getElementById('tituloComunicado').value;
-            const conteudo = document.getElementById('conteudoComunicado').value;
-            const submitBtn = e.target.querySelector('.btn');
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Publicando...';
-            
+            const btn = e.target.querySelector('.btn');
+            btn.disabled = true;
             try {
                 const now = new Date();
-                const comunicado = {
-                    tipo: tipo,
-                    titulo: titulo,
-                    conteudo: conteudo,
+                await db.ref('comunicados').push({
+                    tipo: document.getElementById('tipoComunicado').value,
+                    titulo: document.getElementById('tituloComunicado').value,
+                    conteudo: document.getElementById('conteudoComunicado').value,
                     data: now.toISOString(),
                     dataFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                    autor: currentUser.nome,
-                    autorId: currentUser.uid
-                };
-                
-                await database.ref('comunicados').push(comunicado);
-                
-                const successMsg = document.getElementById('comunicadoSuccess');
-                successMsg.textContent = '✅ Comunicado publicado com sucesso!';
-                successMsg.style.display = 'block';
-                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
-                
+                    autor: user.nome
+                });
+                const msg = document.getElementById('comunicadoSuccess');
+                msg.textContent = '✅ Publicado!';
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 3000);
                 e.target.reset();
-                
-            } catch (error) {
-                console.error('Erro ao publicar comunicado:', error);
-                alert('Erro ao publicar comunicado: ' + error.message);
+            } catch (err) {
+                alert('Erro: ' + err.message);
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Publicar Comunicado';
+                btn.disabled = false;
             }
         });
 
-        async function deleteComunicado(comunicadoId) {
-            if
+        document.getElementById('formEscala').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('.btn');
+            btn.disabled = true;
+            try {
+                const now = new Date();
+                await db.ref('escalas').push({
+                    periodo: document.getElementById('periodoEscala').value,
+                    conteudo: document.getElementById('conteudoEscala').value,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR'),
+                    autor: user.nome
+                });
+                const msg = document.getElementById('escalaSuccess');
+                msg.textContent = '✅ Publicado!';
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 3000);
+                e.target.reset();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('formOperacao').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('.btn');
+            btn.disabled = true;
+            try {
+                const dt = new Date(document.getElementById('dataOperacao').value);
+                await db.ref('operacoes').push({
+                    nome: document.getElementById('nomeOperacao').value,
+                    data: dt.toISOString(),
+                    dataFormatada: dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    local: document.getElementById('localOperacao').value,
+                    detalhes: document.getElementById('detalhesOperacao').value,
+                    autor: user.nome
+                });
+                const msg = document.getElementById('operacaoSuccess');
+                msg.textContent = '✅ Publicado!';
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 3000);
+                e.target.reset();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('formDocumento').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('.btn');
+            btn.disabled = true;
+            try {
+                const now = new Date();
+                await db.ref('documentos').push({
+                    categoria: document.getElementById('categoriaDoc').value,
+                    nome: document.getElementById('nomeDoc').value,
+                    descricao: document.getElementById('descricaoDoc').value,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR'),
+                    autor: user.nome
+                });
+                const msg = document.getElementById('documentoSuccess');
+                msg.textContent = '✅ Publicado!';
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 3000);
+                e.target.reset();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('formArquivo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const link = document.getElementById('linkArquivo').value;
+            if (!link.includes('drive.google.com')) {
+                alert('⚠️ Insira um link válido do Google Drive');
+                return;
+            }
+            const btn = e.target.querySelector('.btn');
+            btn.disabled = true;
+            btn.textContent = 'Adicionando...';
+            try {
+                const now = new Date();
+                await db.ref('arquivos').push({
+                    categoria: document.getElementById('categoriaArquivo').value,
+                    nome: document.getElementById('nomeArquivo').value,
+                    descricao: document.getElementById('descricaoArquivo').value,
+                    link: link,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR') + ' às ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    autor: user.nome
+                });
+                const msg = document.getElementById('arquivoSuccess');
+                msg.textContent = '✅ Arquivo adicionado!';
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 3000);
+                e.target.reset();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Adicionar Arquivo';
+            }
+        });
+
+        async function deleteCom(id) {
+            if (confirm('Excluir?')) await db.ref('comunicados/' + id).remove();
+        }
+        async function deleteEsc(id) {
+            if (confirm('Excluir?')) await db.ref('escalas/' + id).remove();
+        }
+        async function deleteOp(id) {
+            if (confirm('Excluir?')) await db.ref('operacoes/' + id).remove();
+        }
+        async function deleteDoc(id) {
+            if (confirm('Excluir?')) await db.ref('documentos/' + id).remove
