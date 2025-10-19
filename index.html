@@ -1,3 +1,5 @@
+Ultima versão do código top!!!!
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -502,7 +504,6 @@
     </style>
 </head>
 <body>
-
     <!-- TELA DE LOGIN -->
     <div id="loginScreen" class="login-container">
         <div class="login-box">
@@ -532,6 +533,20 @@
             </p>
         </div>
     </div>
+
+    <!-- SISTEMA PRINCIPAL -->
+    <div id="mainSystem" class="main-container">
+        <div class="header">
+            <div class="logo">
+                <img src="https://i.imgur.com/your-logo.png" alt="Logo da Guarda Municipal" id="gmLogo"> 
+                <h1>Portal Administrativo GM</h1>
+            </div>
+            <div class="user-info">
+                <span class="badge" id="userBadge"></span>
+                <span class="badge badge-admin" id="adminBadge" style="display: none;">ADMINISTRADOR</span>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+        </div>
 
         <!-- BOTÕES DE ACESSO RÁPIDO - NOVO -->
         <div class="quick-access">
@@ -773,7 +788,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
     <script>
-
         // ========================================
         // CONFIGURAÇÃO DO FIREBASE
         // ========================================
@@ -782,22 +796,21 @@
             authDomain: "sistema-gm-145eb.firebaseapp.com",
             databaseURL: "https://sistema-gm-145eb-default-rtdb.firebaseio.com",
             projectId: "sistema-gm-145eb",
-            storageBucket: "sistema-gm-145eb.firebasestorage.app", // Adicionado o Storage Bucket
+            storageBucket: "sistema-gm-145eb.firebasestorage.app",
             messagingSenderId: "1033769343247",
             appId: "1:1033769343247:web:24d6934babf8a4eb65867a"
         };
 
-        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
-        const storage = firebase.storage(); // Inicializar Firebase Storage
+        const storage = firebase.storage();
 
-        // Variável global do usuário atual
         let currentUser = null;
+        let todosArquivos = []; // NOVO - para filtro de arquivos
 
         // ========================================
-        // SISTEMA DE LOGIN
+        // SISTEMA DE LOGIN (MANTIDO ORIGINAL)
         // ========================================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -865,17 +878,16 @@
                     el.style.display = 'block';
                 });
             } else {
-                // Se não for admin, garante que os formulários de adição estejam escondidos
                 document.querySelectorAll('.admin-only').forEach(el => {
                     el.style.display = 'none';
                 });
             }
 
-            // Carregar dados do Firebase
             loadComunicados();
             loadEscalas();
             loadOperacoes();
             loadDocumentos();
+            loadArquivos(); // NOVO
         }
 
         // ========================================
@@ -891,24 +903,24 @@
                 document.getElementById('loginForm').reset();
                 document.getElementById('loginError').style.display = 'none';
                 
-                // Reinicia os estados dos formulários e mensagens de sucesso
                 document.getElementById('formComunicado').reset();
                 document.getElementById('formEscala').reset();
                 document.getElementById('formOperacao').reset();
                 document.getElementById('formDocumento').reset();
+                document.getElementById('formArquivo').reset(); // NOVO
                 document.getElementById('comunicadoSuccess').style.display = 'none';
                 document.getElementById('escalaSuccess').style.display = 'none';
                 document.getElementById('operacaoSuccess').style.display = 'none';
                 document.getElementById('documentoSuccess').style.display = 'none';
+                document.getElementById('arquivoSuccess').style.display = 'none'; // NOVO
 
-                // Garante que a primeira aba ativa seja comunicados e esconde outras
                 document.getElementById('comunicados').classList.add('active');
                 document.getElementById('escalas').classList.remove('active');
                 document.getElementById('operacoes').classList.remove('active');
                 document.getElementById('documentos').classList.remove('active');
+                document.getElementById('arquivos').classList.remove('active'); // NOVO
                 document.querySelector('.nav-tabs .tab-btn.active').classList.remove('active');
                 document.querySelector('.nav-tabs .tab-btn:first-child').classList.add('active');
-
 
             } catch (error) {
                 console.error('Erro ao sair:', error);
@@ -995,7 +1007,7 @@
                     dataFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
                     autor: currentUser.nome,
                     autorId: currentUser.uid,
-                    pdf: pdfInfo // Adiciona informações do PDF
+                    pdf: pdfInfo
                 };
                 
                 await database.ref('comunicados').push(comunicado);
@@ -1005,7 +1017,7 @@
                 successMsg.style.display = 'block';
                 setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
                 
-                e.target.reset(); // Limpar formulário
+                e.target.reset();
                 
             } catch (error) {
                 console.error('Erro ao publicar comunicado:', error);
@@ -1020,7 +1032,7 @@
             if (confirm('Tem certeza que deseja excluir este comunicado?')) {
                 try {
                     await database.ref('comunicados/' + comunicadoId).remove();
-                    await deletePdfFromStorage(pdfPath); // Excluir PDF associado
+                    await deletePdfFromStorage(pdfPath);
                     console.log('Comunicado excluído com sucesso:', comunicadoId);
                 } catch (error) {
                     console.error('Erro ao excluir comunicado:', error);
@@ -1041,7 +1053,7 @@
                     });
                 });
                 
-                comunicados.reverse(); // Mostrar mais recentes primeiro
+                comunicados.reverse();
                 
                 if (comunicados.length === 0) {
                     lista.innerHTML = '<div class="empty-state"><p>Nenhum comunicado publicado ainda</p></div>';
@@ -1057,7 +1069,7 @@
                             <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                 Publicado por: ${c.autor}
                                 ${c.pdf ? `<a href="${c.pdf.url}" target="_blank" class="download-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
                                     ${c.pdf.name}
                                 </a>` : ''}
                                 ${currentUser.admin ? `
@@ -1162,7 +1174,7 @@
                             <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                 Publicado por: ${e.autor}
                                 ${e.pdf ? `<a href="${e.pdf.url}" target="_blank" class="download-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
                                     ${e.pdf.name}
                                 </a>` : ''}
                                 ${currentUser.admin ? `
@@ -1273,7 +1285,7 @@
                             <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                 Publicado por: ${o.autor}
                                 ${o.pdf ? `<a href="${o.pdf.url}" target="_blank" class="download-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
                                     ${o.pdf.name}
                                 </a>` : ''}
                                 ${currentUser.admin ? `
@@ -1297,7 +1309,7 @@
             const categoria = document.getElementById('categoriaDoc').value;
             const nome = document.getElementById('nomeDoc').value;
             const descricao = document.getElementById('descricaoDoc').value;
-            const pdfFile = document.getElementById('pdfDocumento').files[0]; // Este é obrigatório
+            const pdfFile = document.getElementById('pdfDocumento').files[0];
             const submitBtn = e.target.querySelector('.btn');
 
             if (!pdfFile) {
@@ -1309,7 +1321,7 @@
             submitBtn.textContent = 'Publicando...';
             
             try {
-                const pdfInfo = await uploadPdf(pdfFile, 'documentos_pdfs'); // PDF é obrigatório aqui
+                const pdfInfo = await uploadPdf(pdfFile, 'documentos_pdfs');
 
                 const now = new Date();
                 const documento = {
@@ -1320,7 +1332,7 @@
                     dataFormatada: now.toLocaleDateString('pt-BR'),
                     autor: currentUser.nome,
                     autorId: currentUser.uid,
-                    pdf: pdfInfo // Adiciona informações do PDF
+                    pdf: pdfInfo
                 };
                 
                 await database.ref('documentos').push(documento);
@@ -1345,7 +1357,7 @@
             if (confirm('Tem certeza que deseja excluir este documento?')) {
                 try {
                     await database.ref('documentos/' + documentoId).remove();
-                    await deletePdfFromStorage(pdfPath); // Excluir PDF associado
+                    await deletePdfFromStorage(pdfPath);
                     console.log('Documento excluído com sucesso:', documentoId);
                 } catch (error) {
                     console.error('Erro ao excluir documento:', error);
@@ -1382,7 +1394,7 @@
                             <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                 Publicado por: ${d.autor}
                                 ${d.pdf ? `<a href="${d.pdf.url}" target="_blank" class="download-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
                                     ${d.pdf.name}
                                 </a>` : ''}
                                 ${currentUser.admin ? `
@@ -1398,37 +1410,94 @@
         }
 
         // ========================================
-        // MONITORAR ESTADO DE AUTENTICAÇÃO
+        // ARQUIVOS PDF (GOOGLE DRIVE) - NOVO
         // ========================================
-        auth.onAuthStateChanged(async (user) => {
-            if (user && !currentUser) { // Se o usuário estiver logado mas o currentUser ainda não foi definido
-                try {
-                    const snapshot = await database.ref('usuarios/' + user.uid).once('value');
-                    const userData = snapshot.val();
-                    
-                    if (userData) {
-                        currentUser = {
-                            uid: user.uid,
-                            email: user.email,
-                            nome: userData.nome,
-                            admin: userData.admin || false
-                        };
-                        showMainSystem();
-                    } else {
-                        // Se o usuário existir no Auth mas não no DB, pode ser um problema de configuração
-                        console.warn('Usuário autenticado, mas dados não encontrados no Realtime Database.');
-                        await auth.signOut(); // Força o logout
-                    }
-                } catch (error) {
-                    console.error('Erro ao carregar dados do usuário no onAuthStateChanged:', error);
-                    await auth.signOut(); // Em caso de erro, força o logout
-                }
-            } else if (!user && currentUser) { // Se o usuário deslogou
-                currentUser = null;
-                document.getElementById('loginScreen').style.display = 'flex';
-                document.getElementById('mainSystem').style.display = 'none';
+        document.getElementById('formArquivo').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const link = document.getElementById('linkArquivo').value;
+            
+            if (!link.includes('drive.google.com')) {
+                alert('⚠️ Por favor, insira um link válido do Google Drive');
+                return;
+            }
+            
+            const submitBtn = e.target.querySelector('.btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Adicionando...';
+            
+            try {
+                const now = new Date();
+                const arquivo = {
+                    categoria: document.getElementById('categoriaArquivo').value,
+                    nome: document.getElementById('nomeArquivo').value,
+                    descricao: document.getElementById('descricaoArquivo').value,
+                    link: link,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR') + ' às ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid
+                };
+                
+                await database.ref('arquivos').push(arquivo);
+                
+                const successMsg = document.getElementById('arquivoSuccess');
+                successMsg.textContent = '✅ Arquivo adicionado com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+                
+                e.target.reset();
+                
+            } catch (error) {
+                console.error('Erro ao adicionar arquivo:', error);
+                alert('Erro ao adicionar arquivo: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Adicionar Arquivo';
             }
         });
-    </script>
-</body>
-</html>
+
+        async function deleteArquivo(arquivoId) {
+            if (confirm('Tem certeza que deseja excluir este arquivo?')) {
+                try {
+                    await database.ref('arquivos/' + arquivoId).remove();
+                    console.log('Arquivo excluído com sucesso:', arquivoId);
+                } catch (error) {
+                    console.error('Erro ao excluir arquivo:', error);
+                    alert('Erro ao excluir arquivo. Tente novamente.');
+                }
+            }
+        }
+
+        function loadArquivos() {
+            database.ref('arquivos').orderByChild('data').on('value', (snapshot) => {
+                todosArquivos = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    todosArquivos.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                todosArquivos.reverse();
+                renderArquivos(todosArquivos);
+            });
+        }
+
+        function filtrarArquivos() {
+            const filtro = document.getElementById('filtroCategoria').value;
+            
+            if (filtro === 'todos') {
+                renderArquivos(todosArquivos);
+            } else {
+                const arquivosFiltrados = todosArquivos.filter(a => a.categoria === filtro);
+                renderArquivos(arquivosFiltrados);
+            }
+        }
+
+        function renderArquivos(arquivos) {
+            const lista = document.getElementById('listaArquivos');
+            
+            if (arquivos.length === 0) {
+                lista.innerHTML = '<div class="empty-
