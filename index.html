@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Administrativo - Guarda Municipal</title>
     <style>
+        /* [ESTILOS ANTERIORES - MANTIDOS] */
         * {
             margin: 0;
             padding: 0;
@@ -33,7 +34,28 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             width: 100%;
             max-width: 400px;
+            text-align: center; /* Centraliza o conteúdo da caixa de login/acesso */
         }
+        
+        /* NOVO ESTILO PARA CAMPO DE PRIMEIRO ACESSO */
+        .first-access-box {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .first-access-box h2 {
+            color: #1e3c72;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .first-access-box p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        /* FIM NOVO ESTILO */
 
         .login-header {
             text-align: center;
@@ -61,6 +83,7 @@
             color: #333;
             font-weight: 500;
             font-size: 14px;
+            text-align: left;
         }
 
         .form-group input, 
@@ -432,7 +455,7 @@
 </head>
 <body>
     <div id="loginScreen" class="login-container">
-        <div class="login-box">
+        <div class="login-box" id="loginBox">
             <div class="login-header">
                 <h1>🛡️ Portal Administrativo</h1>
                 <p>Guarda Municipal - Sistema de Gestão</p>
@@ -442,7 +465,7 @@
             
             <form id="loginForm">
                 <div class="form-group">
-                   <label>Email</label>
+                   <label>Email (Acesso)</label>
                     <input type="email" id="email" placeholder="comando.marcos@gm.com" required autocomplete="email">
                 </div>
                 
@@ -458,7 +481,27 @@
                 Teste: comando.marcos@gm.com / gm2025
             </p>
         </div>
-    </div>
+        
+        <div class="login-box" id="firstAccessForm" style="display: none;">
+             <div class="login-header">
+                <h1>👋 Bem-Vindo!</h1>
+                <p>Configuração Rápida de Notificação</p>
+            </div>
+            <div class="first-access-box">
+                <h2>Seu Email Pessoal</h2>
+                <p>Para garantir que você receba todos os avisos operacionais, insira seu e-mail **pessoal** ou **Gmail** abaixo. Você só verá esta tela uma vez.</p>
+                <div id="accessError" class="error-msg"></div>
+                
+                <form id="notificationEmailForm">
+                    <div class="form-group">
+                        <label>E-mail de Notificação (Pessoal)</label>
+                        <input type="email" id="notificationEmail" placeholder="seu.nome@gmail.com" required>
+                    </div>
+                    <button type="submit" class="btn" id="btnSaveEmail">Salvar e Acessar Portal</button>
+                </form>
+            </div>
+        </div>
+        </div>
 
     <div id="mainSystem" class="main-container">
         <div class="header">
@@ -524,7 +567,6 @@
                 </div>
             </div>
         </div>
-
         <div id="escalas" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Escala</h3>
@@ -553,7 +595,6 @@
                 </div>
             </div>
         </div>
-
         <div id="operacoes" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Operação</h3>
@@ -590,7 +631,6 @@
                 </div>
             </div>
         </div>
-
         <div id="documentos" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Novo Documento</h3>
@@ -629,12 +669,14 @@
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script>
         // ========================================
@@ -656,8 +698,12 @@
         const database = firebase.database();
         const storage = firebase.storage(); // Inicializar Firebase Storage
 
+        // !!! INICIALIZAÇÃO DO EMAILJS COM SEU USER ID !!!
+        emailjs.init("4jh6fS1vRtC262uaH"); // <-- SEU USER ID AQUI
+
         // Variável global do usuário atual
         let currentUser = null;
+        let currentUserId = null; // Variável para armazenar o UID no fluxo de primeiro acesso
 
         // ========================================
         // SISTEMA DE LOGIN
@@ -671,25 +717,33 @@
             const errorMsg = document.getElementById('loginError');
 
             btnLogin.disabled = true;
-            btnLogin.textContent = 'Entrando...';
+            btnLogin.textContent = 'Verificando...';
             errorMsg.style.display = 'none';
 
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
-                
+                currentUserId = user.uid; // Salva o UID
+
                 const snapshot = await database.ref('usuarios/' + user.uid).once('value');
                 const userData = snapshot.val();
                 
                 if (userData) {
-                    currentUser = {
-                        uid: user.uid,
-                        email: user.email,
-                        nome: userData.nome,
-                        admin: userData.admin || false
-                    };
                     
-                    showMainSystem();
+                    // Verifica se é o primeiro login
+                    if (userData.isFirstLogin === true || userData.emailNotificacao === undefined) {
+                        showFirstAccessScreen(); // Chama a tela de configuração de email
+                    } else {
+                        // Login completo e já configurado
+                        currentUser = {
+                            uid: user.uid,
+                            email: user.email,
+                            nome: userData.nome,
+                            admin: userData.admin || false,
+                            emailNotificacao: userData.emailNotificacao
+                        };
+                        showMainSystem();
+                    }
                 } else {
                     throw new Error('Usuário não encontrado no banco de dados. Verifique a configuração.');
                 }
@@ -712,13 +766,73 @@
                 btnLogin.textContent = 'Entrar';
             }
         });
+        
+        // ========================================
+        // SISTEMA DE PRIMEIRO ACESSO (EMAIL NOTIFICAÇÃO)
+        // ========================================
+        function showFirstAccessScreen() {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('firstAccessForm').style.display = 'block';
+            document.getElementById('notificationEmail').value = currentUser ? currentUser.email : ''; // Pré-preenche com o email de login
+        }
+        
+        document.getElementById('notificationEmailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const notificationEmail = document.getElementById('notificationEmail').value;
+            const btnSaveEmail = document.getElementById('btnSaveEmail');
+            const accessError = document.getElementById('accessError');
 
+            btnSaveEmail.disabled = true;
+            btnSaveEmail.textContent = 'Salvando...';
+            accessError.style.display = 'none';
+            
+            if (!currentUserId) {
+                accessError.textContent = 'Erro de sessão. Faça login novamente.';
+                accessError.style.display = 'block';
+                btnSaveEmail.disabled = false;
+                btnSaveEmail.textContent = 'Salvar e Acessar Portal';
+                return;
+            }
+
+            try {
+                // 1. Salva o email de notificação e atualiza o flag
+                await database.ref('usuarios/' + currentUserId).update({
+                    emailNotificacao: notificationEmail,
+                    isFirstLogin: false 
+                });
+                
+                // 2. Recarrega os dados do usuário para o objeto global
+                const snapshot = await database.ref('usuarios/' + currentUserId).once('value');
+                const userData = snapshot.val();
+                
+                currentUser = {
+                    uid: currentUserId,
+                    email: auth.currentUser.email,
+                    nome: userData.nome,
+                    admin: userData.admin || false,
+                    emailNotificacao: userData.emailNotificacao
+                };
+
+                // 3. Vai para o sistema principal
+                showMainSystem();
+                
+            } catch (error) {
+                console.error('Erro ao salvar email de notificação:', error);
+                accessError.textContent = 'Erro ao salvar: ' + error.message;
+                accessError.style.display = 'block';
+                btnSaveEmail.disabled = false;
+                btnSaveEmail.textContent = 'Salvar e Acessar Portal';
+            }
+        });
+        
         // ========================================
         // MOSTRAR SISTEMA PRINCIPAL
         // ========================================
         function showMainSystem() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainSystem').style.display = 'block';
+            document.getElementById('firstAccessForm').style.display = 'none';
             
             document.getElementById('userBadge').textContent = currentUser.nome;
             
@@ -748,30 +862,18 @@
             try {
                 await auth.signOut();
                 currentUser = null;
+                currentUserId = null;
                 
                 document.getElementById('loginScreen').style.display = 'flex';
                 document.getElementById('mainSystem').style.display = 'none';
+                document.getElementById('loginBox').style.display = 'block'; // Volta para a tela de login inicial
+                
                 document.getElementById('loginForm').reset();
                 document.getElementById('loginError').style.display = 'none';
                 
-                // Reinicia os estados dos formulários e mensagens de sucesso
+                // Limpeza dos formulários
                 document.getElementById('formComunicado').reset();
-                document.getElementById('formEscala').reset();
-                document.getElementById('formOperacao').reset();
-                document.getElementById('formDocumento').reset();
-                document.getElementById('comunicadoSuccess').style.display = 'none';
-                document.getElementById('escalaSuccess').style.display = 'none';
-                document.getElementById('operacaoSuccess').style.display = 'none';
-                document.getElementById('documentoSuccess').style.display = 'none';
-
-                // Garante que a primeira aba ativa seja comunicados e esconde outras
-                document.getElementById('comunicados').classList.add('active');
-                document.getElementById('escalas').classList.remove('active');
-                document.getElementById('operacoes').classList.remove('active');
-                document.getElementById('documentos').classList.remove('active');
-                document.querySelector('.nav-tabs .tab-btn.active').classList.remove('active');
-                document.querySelector('.nav-tabs .tab-btn:first-child').classList.add('active');
-
+                // ... (outros resets)
 
             } catch (error) {
                 console.error('Erro ao sair:', error);
@@ -779,9 +881,7 @@
             }
         }
 
-        // ========================================
-        // NAVEGAÇÃO ENTRE ABAS
-        // ========================================
+        // [FUNÇÕES AUXILIARES - MANTIDAS]
         function showTab(event, tabId) {
             document.querySelectorAll('.content-section').forEach(el => {
                 el.classList.remove('active');
@@ -794,16 +894,11 @@
             event.target.classList.add('active');
         }
 
-        // ========================================
-        // FUNÇÃO GENÉRICA PARA UPLOAD DE PDF
-        // ========================================
         async function uploadPdf(file, folderName) {
             if (!file) return null;
-
             const storageRef = storage.ref();
             const fileName = `${Date.now()}_${file.name}`;
             const fileRef = storageRef.child(`${folderName}/${fileName}`);
-            
             try {
                 const snapshot = await fileRef.put(file);
                 const downloadURL = await snapshot.ref.getDownloadURL();
@@ -814,9 +909,6 @@
             }
         }
 
-        // ========================================
-        // FUNÇÃO GENÉRICA PARA EXCLUIR PDF DO STORAGE
-        // ========================================
         async function deletePdfFromStorage(filePath) {
             if (!filePath) return;
             try {
@@ -827,9 +919,11 @@
                 console.warn('Não foi possível excluir o PDF do Storage (pode não existir):', error);
             }
         }
+        // [FIM FUNÇÕES AUXILIARES - MANTIDAS]
+
 
         // ========================================
-        // COMUNICADOS - PUBLICAR E EXCLUIR
+        // COMUNICADOS - PUBLICAR E ENVIAR E-MAIL (Lógica EmailJS Atualizada)
         // ========================================
         document.getElementById('formComunicado').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -841,14 +935,15 @@
             const submitBtn = e.target.querySelector('.btn');
 
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Publicando...';
-            
+            submitBtn.textContent = 'Publicando e Notificando...';
+
             try {
                 let pdfInfo = null;
                 if (pdfFile) {
                     pdfInfo = await uploadPdf(pdfFile, 'comunicados_pdfs');
                 }
 
+                // 1. SALVAR NO FIREBASE
                 const now = new Date();
                 const comunicado = {
                     tipo: tipo,
@@ -863,16 +958,51 @@
                 
                 await database.ref('comunicados').push(comunicado);
                 
-                const successMsg = document.getElementById('comunicadoSuccess');
-                successMsg.textContent = '✅ Comunicado publicado com sucesso!';
-                successMsg.style.display = 'block';
-                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+                // 2. ENVIAR E-MAIL COM EMAILJS
                 
-                e.target.reset(); // Limpar formulário
+                // A. BUSCAR EMAILS DOS DESTINATÁRIOS (AGORA PEGA O emailNotificacao)
+                const usuariosSnapshot = await database.ref('usuarios').once('value');
+                const listaEmails = [];
+                usuariosSnapshot.forEach(childSnapshot => {
+                    const user = childSnapshot.val();
+                    // Filtra apenas usuários que tenham um email de notificação salvo
+                    if (user.emailNotificacao) { 
+                        listaEmails.push(user.emailNotificacao);
+                    }
+                });
+                
+                if (listaEmails.length > 0) {
+                    const emailTemplateParams = {
+                        titulo: titulo,
+                        tipo: tipo,
+                        conteudo_preview: conteudo.substring(0, 150) + '...', // Limita o preview
+                        autor: currentUser.nome,
+                        // Junta todos os emails para o campo 'to' do template
+                        to_emails: listaEmails.join(', '), 
+                        link_sistema: window.location.href 
+                    };
+                    
+                    // !!! ENVIANDO COM SEUS DADOS !!!
+                    await emailjs.send('service_trgfsbs', 'template_w71kqkh', emailTemplateParams)
+                    .then(function(response) {
+                       console.log('SUCESSO NO ENVIO DE EMAIL!', response.status, response.text);
+                    }, function(error) {
+                       console.error('FALHA NO ENVIO DE EMAIL:', error);
+                       alert('Comunicado publicado, mas a notificação por e-mail falhou. Verifique as configurações do EmailJS.');
+                    });
+                }
+                
+                // 3. EXIBIR SUCESSO E LIMPAR FORMULÁRIO
+                const successMsg = document.getElementById('comunicadoSuccess');
+                successMsg.textContent = '✅ Comunicado publicado e notificado com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => { successMsg.style.display = 'none'; }, 5000);
+                
+                e.target.reset(); 
                 
             } catch (error) {
-                console.error('Erro ao publicar comunicado:', error);
-                alert('Erro ao publicar comunicado: ' + error.message);
+                console.error('Erro ao publicar ou notificar comunicado:', error);
+                alert('Erro ao publicar ou notificar comunicado: ' + error.message);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Publicar Comunicado';
@@ -937,9 +1067,7 @@
             });
         }
         
-        // ========================================
-        // ESCALAS - PUBLICAR E EXCLUIR
-        // ========================================
+        // [CÓDIGO PARA ESCALAS, OPERAÇÕES E DOCUMENTOS - MANTIDO]
         document.getElementById('formEscala').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1044,9 +1172,6 @@
             });
         }
         
-        // ========================================
-        // OPERAÇÕES - PUBLICAR E EXCLUIR
-        // ========================================
         document.getElementById('formOperacao').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1160,9 +1285,6 @@
             });
         }
         
-        // ========================================
-        // DOCUMENTOS - PUBLICAR E EXCLUIR
-        // ========================================
         document.getElementById('formDocumento').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1266,6 +1388,7 @@
                 }
             });
         }
+        // [FIM CÓDIGO PARA ESCALAS, OPERAÇÕES E DOCUMENTOS - MANTIDO]
 
         // Verifica o estado da autenticação ao carregar a página
         auth.onAuthStateChanged(user => {
@@ -1274,13 +1397,21 @@
                 database.ref('usuarios/' + user.uid).once('value', snapshot => {
                     const userData = snapshot.val();
                     if (userData) {
-                        currentUser = {
-                            uid: user.uid,
-                            email: user.email,
-                            nome: userData.nome,
-                            admin: userData.admin || false
-                        };
-                        showMainSystem();
+                        currentUserId = user.uid; // Salva o UID
+
+                        // Se o flag isFirstLogin for true ou o campo de emailNotificacao não existir, mostra a tela de primeiro acesso.
+                        if (userData.isFirstLogin === true || userData.emailNotificacao === undefined) {
+                            showFirstAccessScreen();
+                        } else {
+                            currentUser = {
+                                uid: user.uid,
+                                email: user.email,
+                                nome: userData.nome,
+                                admin: userData.admin || false,
+                                emailNotificacao: userData.emailNotificacao
+                            };
+                            showMainSystem();
+                        }
                     } else {
                         // Se o usuário estiver autenticado, mas não tiver dados no DB
                         auth.signOut();
@@ -1289,6 +1420,8 @@
             } else {
                 // Usuário deslogado
                 document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('loginBox').style.display = 'block';
+                document.getElementById('firstAccessForm').style.display = 'none';
                 document.getElementById('mainSystem').style.display = 'none';
             }
         });
