@@ -26,7 +26,6 @@
         }
 
 
-
         .login-box {
             background: white;
             padding: 40px;
@@ -205,6 +204,43 @@
         .btn-logout:hover {
             background: #5a6268;
         }
+
+        /* --- BOTÕES DE ATALHO ADICIONADOS --- */
+        .shortcut-btns {
+            display: flex;
+            gap: 10px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .shortcut-btns a {
+            text-decoration: none;
+        }
+
+        .shortcut-btn {
+            background: #f0f0f0;
+            color: #1e3c72;
+            border: 1px solid #ccc;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .shortcut-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-1px);
+        }
+        /* ------------------------------------- */
 
         .nav-tabs {
             display: flex;
@@ -385,11 +421,14 @@
             .item-actions {
                 justify-content: flex-start;
             }
+            .shortcut-btns {
+                justify-content: center;
+                margin-top: 15px; /* Adicionado para separar o header dos atalhos no mobile */
+            }
         }
     </style>
 </head>
 <body>
-    <!-- TELA DE LOGIN -->
     <div id="loginScreen" class="login-container">
         <div class="login-box">
             <div class="login-header">
@@ -401,12 +440,12 @@
             
             <form id="loginForm">
                 <div class="form-group">
-                    <label>Email</label>
+                   <label>Email</label>
                     <input type="email" id="email" placeholder="comando.marcos@gm.com" required autocomplete="email">
                 </div>
                 
                 <div class="form-group">
-                    <label>Senha</label>
+                   <label>Senha</label>
                     <input type="password" id="password" placeholder="Digite sua senha" required autocomplete="current-password">
                 </div>
                 
@@ -419,12 +458,9 @@
         </div>
     </div>
 
-    <!-- SISTEMA PRINCIPAL -->
     <div id="mainSystem" class="main-container">
         <div class="header">
             <div class="logo">
-                <!-- Substitua 'sua-logo.png' pela URL da sua logo. -->
-                <!-- Use uma logo em PNG com fundo transparente para melhor resultado -->
                 <img src="https://i.imgur.com/your-logo.png" alt="Logo da Guarda Municipal" id="gmLogo"> 
                 <h1>Portal Administrativo GM</h1>
             </div>
@@ -435,6 +471,14 @@
             </div>
         </div>
 
+        <div class="shortcut-btns">
+            <a href="https://gmcampolargo.cconet.com.br/login" target="_blank" class="shortcut-btn">
+                📡 CCOnet
+            </a>
+            <a href="https://drive.google.com/drive/folders/1TRFDUKphKLr2PZ-4uNFIDoxXEWeMTgJM" target="_blank" class="shortcut-btn">
+                🗂️ DriveGM
+            </a>
+        </div>
         <div class="nav-tabs">
             <button class="tab-btn active" onclick="showTab(event, 'comunicados')">📢 Comunicados</button>
             <button class="tab-btn" onclick="showTab(event, 'escalas')">📅 Escalas</button>
@@ -442,7 +486,6 @@
             <button class="tab-btn" onclick="showTab(event, 'documentos')">📁 Documentos</button>
         </div>
 
-        <!-- ABA COMUNICADOS -->
         <div id="comunicados" class="content-section active">
             <div class="card admin-only">
                 <h3>📝 Novo Comunicado</h3>
@@ -480,7 +523,6 @@
             </div>
         </div>
 
-        <!-- ABA ESCALAS -->
         <div id="escalas" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Escala</h3>
@@ -510,7 +552,6 @@
             </div>
         </div>
 
-        <!-- ABA OPERAÇÕES -->
         <div id="operacoes" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Nova Operação</h3>
@@ -548,7 +589,6 @@
             </div>
         </div>
 
-        <!-- ABA DOCUMENTOS -->
         <div id="documentos" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Novo Documento</h3>
@@ -589,7 +629,6 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -878,14 +917,16 @@
                             <div class="item-conteudo">${c.conteudo}</div>
                             <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                 Publicado por: ${c.autor}
-                                ${c.pdf ? `<a href="${c.pdf.url}" target="_blank" class="download-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
-                                    ${c.pdf.name}
-                                </a>` : ''}
-                                ${currentUser.admin ? `
-                                    <div class="item-actions" style="margin-top: 5px;">
-                                        <button class="btn-delete" onclick="deleteComunicado('${c.id}', '${c.pdf ? c.pdf.path : ''}')">Excluir</button>
-                                    </div>
+                            </div>
+                            <div class="item-actions">
+                                ${c.pdf ? `
+                                    <a href="${c.pdf.url}" target="_blank" class="download-link">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 0 24 24" width="15"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                                        Anexo (${c.pdf.name})
+                                    </a>
+                                ` : ''}
+                                ${currentUser && currentUser.admin ? `
+                                    <button class="btn-delete" onclick="deleteComunicado('${c.id}', '${c.pdf ? c.pdf.path : ''}')">Excluir</button>
                                 ` : ''}
                             </div>
                         </div>
@@ -893,7 +934,7 @@
                 }
             });
         }
-
+        
         // ========================================
         // ESCALAS - PUBLICAR E EXCLUIR
         // ========================================
@@ -907,7 +948,7 @@
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Publicando...';
-            
+
             try {
                 let pdfInfo = null;
                 if (pdfFile) {
@@ -919,10 +960,10 @@
                     periodo: periodo,
                     conteudo: conteudo,
                     data: now.toISOString(),
-                    dataFormatada: now.toLocaleDateString('pt-BR'),
+                    dataFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
                     autor: currentUser.nome,
                     autorId: currentUser.uid,
-                    pdf: pdfInfo
+                    pdf: pdfInfo 
                 };
                 
                 await database.ref('escalas').push(escala);
@@ -979,18 +1020,20 @@
                                 <span class="item-tipo">ESCALA</span>
                                 <span class="item-data">${e.dataFormatada}</span>
                             </div>
-                            <div class="item-titulo">Período: ${e.periodo}</div>
+                            <div class="item-titulo">${e.periodo}</div>
                             <div class="item-conteudo">${e.conteudo}</div>
                             <div style="margin-top: 10px; font-size: 12px; color: #999;">
                                 Publicado por: ${e.autor}
-                                ${e.pdf ? `<a href="${e.pdf.url}" target="_blank" class="download-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
-                                    ${e.pdf.name}
-                                </a>` : ''}
-                                ${currentUser.admin ? `
-                                    <div class="item-actions" style="margin-top: 5px;">
-                                        <button class="btn-delete" onclick="deleteEscala('${e.id}', '${e.pdf ? e.pdf.path : ''}')">Excluir</button>
-                                    </div>
+                            </div>
+                            <div class="item-actions">
+                                ${e.pdf ? `
+                                    <a href="${e.pdf.url}" target="_blank" class="download-link">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 0 24 24" width="15"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                                        Anexo (${e.pdf.name})
+                                    </a>
+                                ` : ''}
+                                ${currentUser && currentUser.admin ? `
+                                    <button class="btn-delete" onclick="deleteEscala('${e.id}', '${e.pdf ? e.pdf.path : ''}')">Excluir</button>
                                 ` : ''}
                             </div>
                         </div>
@@ -998,7 +1041,7 @@
                 }
             });
         }
-
+        
         // ========================================
         // OPERAÇÕES - PUBLICAR E EXCLUIR
         // ========================================
@@ -1006,7 +1049,7 @@
             e.preventDefault();
             
             const nome = document.getElementById('nomeOperacao').value;
-            const data = document.getElementById('dataOperacao').value;
+            const dataHora = document.getElementById('dataOperacao').value;
             const local = document.getElementById('localOperacao').value;
             const detalhes = document.getElementById('detalhesOperacao').value;
             const pdfFile = document.getElementById('pdfOperacao').files[0];
@@ -1014,23 +1057,24 @@
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Publicando...';
-            
+
             try {
                 let pdfInfo = null;
                 if (pdfFile) {
                     pdfInfo = await uploadPdf(pdfFile, 'operacoes_pdfs');
                 }
 
-                const dataObj = new Date(data);
+                const now = new Date();
                 const operacao = {
                     nome: nome,
-                    data: dataObj.toISOString(),
-                    dataFormatada: dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    dataHora: dataHora,
                     local: local,
                     detalhes: detalhes,
+                    criacaoData: now.toISOString(),
+                    criacaoFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
                     autor: currentUser.nome,
                     autorId: currentUser.uid,
-                    pdf: pdfInfo
+                    pdf: pdfInfo 
                 };
                 
                 await database.ref('operacoes').push(operacao);
@@ -1065,7 +1109,7 @@
         }
 
         function loadOperacoes() {
-            database.ref('operacoes').orderByChild('data').on('value', (snapshot) => {
+            database.ref('operacoes').orderByChild('dataHora').on('value', (snapshot) => {
                 const lista = document.getElementById('listaOperacoes');
                 const operacoes = [];
                 
@@ -1081,35 +1125,39 @@
                 if (operacoes.length === 0) {
                     lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada ainda</p></div>';
                 } else {
-                    lista.innerHTML = operacoes.map(o => `
-                        <div class="item-box">
-                            <div class="item-header">
-                                <span class="item-tipo">OPERAÇÃO</span>
-                                <span class="item-data">${o.dataFormatada}</span>
-                            </div>
-                            <div class="item-titulo">${o.nome}</div>
-                            <div class="item-conteudo">
-                                <strong>Local:</strong> ${o.local}<br>
-                                <strong>Detalhes:</strong> ${o.detalhes}
-                            </div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                                Publicado por: ${o.autor}
-                                ${o.pdf ? `<a href="${o.pdf.url}" target="_blank" class="download-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
-                                    ${o.pdf.name}
-                                </a>` : ''}
-                                ${currentUser.admin ? `
-                                    <div class="item-actions" style="margin-top: 5px;">
+                    lista.innerHTML = operacoes.map(o => {
+                        const dataOperacao = new Date(o.dataHora);
+                        const dataFormatadaOp = dataOperacao.toLocaleDateString('pt-BR') + ' às ' + dataOperacao.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+
+                        return `
+                            <div class="item-box" style="border-left-color: #ffc107;">
+                                <div class="item-header">
+                                    <span class="item-tipo" style="background: #ffc107; color: #343a40;">OPERAÇÃO</span>
+                                    <span class="item-data">Programada para: ${dataFormatadaOp}</span>
+                                </div>
+                                <div class="item-titulo">${o.nome}</div>
+                                <div class="item-conteudo">Local: ${o.local}<br>Detalhes: ${o.detalhes}</div>
+                                <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                                    Criada por: ${o.autor} em ${o.criacaoFormatada}
+                                </div>
+                                <div class="item-actions">
+                                    ${o.pdf ? `
+                                        <a href="${o.pdf.url}" target="_blank" class="download-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 0 24 24" width="15"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                                            Plano (${o.pdf.name})
+                                        </a>
+                                    ` : ''}
+                                    ${currentUser && currentUser.admin ? `
                                         <button class="btn-delete" onclick="deleteOperacao('${o.id}', '${o.pdf ? o.pdf.path : ''}')">Excluir</button>
-                                    </div>
-                                ` : ''}
+                                    ` : ''}
+                                </div>
                             </div>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 }
             });
         }
-
+        
         // ========================================
         // DOCUMENTOS - PUBLICAR E EXCLUIR
         // ========================================
@@ -1119,19 +1167,20 @@
             const categoria = document.getElementById('categoriaDoc').value;
             const nome = document.getElementById('nomeDoc').value;
             const descricao = document.getElementById('descricaoDoc').value;
-            const pdfFile = document.getElementById('pdfDocumento').files[0]; // Este é obrigatório
+            const pdfFile = document.getElementById('pdfDocumento').files[0];
             const submitBtn = e.target.querySelector('.btn');
-
-            if (!pdfFile) {
-                alert('Por favor, anexe um arquivo PDF para o documento.');
-                return;
-            }
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Publicando...';
-            
+
             try {
-                const pdfInfo = await uploadPdf(pdfFile, 'documentos_pdfs'); // PDF é obrigatório aqui
+                let pdfInfo = null;
+                // O PDF é obrigatório neste formulário
+                if (pdfFile) {
+                    pdfInfo = await uploadPdf(pdfFile, 'documentos_pdfs');
+                } else {
+                    throw new Error('É necessário anexar um arquivo PDF.');
+                }
 
                 const now = new Date();
                 const documento = {
@@ -1142,7 +1191,7 @@
                     dataFormatada: now.toLocaleDateString('pt-BR'),
                     autor: currentUser.nome,
                     autorId: currentUser.uid,
-                    pdf: pdfInfo // Adiciona informações do PDF
+                    pdf: pdfInfo 
                 };
                 
                 await database.ref('documentos').push(documento);
@@ -1167,7 +1216,7 @@
             if (confirm('Tem certeza que deseja excluir este documento?')) {
                 try {
                     await database.ref('documentos/' + documentoId).remove();
-                    await deletePdfFromStorage(pdfPath); // Excluir PDF associado
+                    await deletePdfFromStorage(pdfPath);
                     console.log('Documento excluído com sucesso:', documentoId);
                 } catch (error) {
                     console.error('Erro ao excluir documento:', error);
@@ -1191,26 +1240,23 @@
                 documentos.reverse();
                 
                 if (documentos.length === 0) {
-                    lista.innerHTML = '<div class="empty-state"><p>Nenhum documento publicado ainda</p></div>';
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum documento na biblioteca ainda</p></div>';
                 } else {
                     lista.innerHTML = documentos.map(d => `
-                        <div class="item-box">
+                        <div class="item-box" style="border-left-color: #28a745;">
                             <div class="item-header">
-                                <span class="item-tipo">${d.categoria}</span>
-                                <span class="item-data">${d.dataFormatada}</span>
+                                <span class="item-tipo" style="background: #28a745;">${d.categoria.toUpperCase()}</span>
+                                <span class="item-data">Publicado em: ${d.dataFormatada}</span>
                             </div>
                             <div class="item-titulo">${d.nome}</div>
-                            <div class="item-conteudo">${d.descricao}</div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                                Publicado por: ${d.autor}
-                                ${d.pdf ? `<a href="${d.pdf.url}" target="_blank" class="download-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
-                                    ${d.pdf.name}
-                                </a>` : ''}
-                                ${currentUser.admin ? `
-                                    <div class="item-actions" style="margin-top: 5px;">
-                                        <button class="btn-delete" onclick="deleteDocumento('${d.id}', '${d.pdf ? d.pdf.path : ''}')">Excluir</button>
-                                    </div>
+                            <div class="item-conteudo">${d.descricao || 'Sem descrição.'}</div>
+                            <div class="item-actions">
+                                <a href="${d.pdf.url}" target="_blank" class="download-link" style="color: #28a745;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 0 24 24" width="15" style="fill: #28a745;"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                                    Baixar Documento (${d.pdf.name})
+                                </a>
+                                ${currentUser && currentUser.admin ? `
+                                    <button class="btn-delete" onclick="deleteDocumento('${d.id}', '${d.pdf.path}')">Excluir</button>
                                 ` : ''}
                             </div>
                         </div>
@@ -1219,15 +1265,12 @@
             });
         }
 
-        // ========================================
-        // MONITORAR ESTADO DE AUTENTICAÇÃO
-        // ========================================
-        auth.onAuthStateChanged(async (user) => {
-            if (user && !currentUser) { // Se o usuário estiver logado mas o currentUser ainda não foi definido
-                try {
-                    const snapshot = await database.ref('usuarios/' + user.uid).once('value');
+        // Verifica o estado da autenticação ao carregar a página
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Usuário logado
+                database.ref('usuarios/' + user.uid).once('value', snapshot => {
                     const userData = snapshot.val();
-                    
                     if (userData) {
                         currentUser = {
                             uid: user.uid,
@@ -1237,16 +1280,12 @@
                         };
                         showMainSystem();
                     } else {
-                        // Se o usuário existir no Auth mas não no DB, pode ser um problema de configuração
-                        console.warn('Usuário autenticado, mas dados não encontrados no Realtime Database.');
-                        await auth.signOut(); // Força o logout
+                        // Se o usuário estiver autenticado, mas não tiver dados no DB
+                        auth.signOut();
                     }
-                } catch (error) {
-                    console.error('Erro ao carregar dados do usuário no onAuthStateChanged:', error);
-                    await auth.signOut(); // Em caso de erro, força o logout
-                }
-            } else if (!user && currentUser) { // Se o usuário deslogou
-                currentUser = null;
+                });
+            } else {
+                // Usuário deslogado
                 document.getElementById('loginScreen').style.display = 'flex';
                 document.getElementById('mainSystem').style.display = 'none';
             }
