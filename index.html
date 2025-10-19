@@ -117,11 +117,13 @@
         .error-msg {
             background: #fee;
             color: #c33;
+            border: 1px solid #fcc;
         }
 
         .success-msg {
             background: #d4edda;
             color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
         .main-container {
@@ -311,6 +313,12 @@
             margin-bottom: 20px;
         }
 
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #1e3c72;
+        }
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -337,8 +345,8 @@
             
             <form id="loginForm">
                 <div class="form-group">
-                    <label>Usuário</label>
-                    <input type="text" id="username" placeholder="Digite seu usuário" required autocomplete="off">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="seu.email@exemplo.com" required>
                 </div>
                 
                 <div class="form-group">
@@ -346,27 +354,12 @@
                     <input type="password" id="password" placeholder="Digite sua senha" required>
                 </div>
                 
-                <button type="submit" class="btn">Entrar</button>
+                <button type="submit" class="btn" id="btnLogin">Entrar</button>
             </form>
 
             <p style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
-                Primeiro acesso? Use suas credenciais fornecidas pela administração
+                Primeiro acesso? Entre em contato com a administração
             </p>
-        </div>
-    </div>
-
-    <div id="emailModal" class="modal">
-        <div class="modal-content">
-            <h2>Bem-vindo! 👋</h2>
-            <p style="margin-bottom: 20px;">Para receber notificações, cadastre seu email:</p>
-            
-            <form id="emailForm">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="userEmail" placeholder="seu.email@exemplo.com" required>
-                </div>
-                <button type="submit" class="btn">Confirmar</button>
-            </form>
         </div>
     </div>
 
@@ -410,21 +403,14 @@
                         <label>Conteúdo</label>
                         <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
                     </div>
-                    <button type="submit" class="btn" id="btnComunicado">Publicar e Notificar Todos</button>
+                    <button type="submit" class="btn">Publicar Comunicado</button>
                 </form>
             </div>
 
             <div class="card">
                 <h3>Todos os Comunicados</h3>
                 <div id="listaComunicados">
-                    <div class="item-box">
-                        <div class="item-header">
-                            <span class="item-tipo">INFORMATIVO</span>
-                            <span class="item-data">18/10/2025 09:00</span>
-                        </div>
-                        <div class="item-titulo">Bem-vindo ao Portal Administrativo</div>
-                        <div class="item-conteudo">Sistema implementado para melhorar a comunicação interna da corporação.</div>
-                    </div>
+                    <div class="loading">Carregando...</div>
                 </div>
             </div>
         </div>
@@ -442,16 +428,14 @@
                         <label>Detalhes da Escala</label>
                         <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
                     </div>
-                    <button type="submit" class="btn" id="btnEscala">Publicar Escala e Notificar</button>
+                    <button type="submit" class="btn">Publicar Escala</button>
                 </form>
             </div>
 
             <div class="card">
                 <h3>Escalas Publicadas</h3>
                 <div id="listaEscalas">
-                    <div class="empty-state">
-                        <p>Nenhuma escala publicada ainda</p>
-                    </div>
+                    <div class="loading">Carregando...</div>
                 </div>
             </div>
         </div>
@@ -477,17 +461,14 @@
                         <label>Detalhes</label>
                         <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
                     </div>
-                    <button type="submit" class="btn" id="btnOperacao">Publicar Operação e Notificar</button>
+                    <button type="submit" class="btn">Publicar Operação</button>
                 </form>
             </div>
 
             <div class="card">
                 <h3>Operações Programadas</h3>
                 <div id="listaOperacoes">
-                    <div class="empty-state">
-                        
-<p>Nenhuma operação programada</p>
-                    </div>
+                    <div class="loading">Carregando...</div>
                 </div>
             </div>
         </div>
@@ -495,7 +476,8 @@
         <div id="documentos" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Novo Documento</h3>
-                <form onsubmit="addDocumento(event)">
+                <div id="documentoSuccess" class="success-msg"></div>
+                <form id="formDocumento">
                     <div class="form-group">
                         <label>Categoria</label>
                         <select id="categoriaDoc">
@@ -514,78 +496,96 @@
                         <label>Descrição</label>
                         <textarea id="descricaoDoc" placeholder="Breve descrição do documento..."></textarea>
                     </div>
-                    <button type="submit" class="btn">Publicar Documento e Notificar</button>
+                    <button type="submit" class="btn">Publicar Documento</button>
                 </form>
             </div>
 
             <div class="card">
                 <h3>Biblioteca de Documentos</h3>
                 <div id="listaDocumentos">
-                    <div class="item-box">
-                        <div class="item-header">
-                            <span class="item-tipo">MANUAL</span>
-                            <span class="item-data">15/10/2025</span>
-                        </div>
-                        <div class="item-titulo">Código de Posturas Municipal</div>
-                        <div class="item-conteudo">Legislação municipal atualizada.</div>
-                    </div>
+                    <div class="loading">Carregando...</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <script>
-        let currentUser = null;
-        
-        const usuarios = {
-            'comando.marcos': { senha: 'gm2025', nome: 'Comando Marcos', admin: true, email: '' },
-            'subcomando.messias': { senha: 'gm2025', nome: 'Subcomando Messias', admin: true, email: '' },
-            'inspetor.almeida': { senha: 'gm2025', nome: 'Inspetor Almeida', admin: true, email: '' },
-            'inspetor.engel': { senha: 'gm2025', nome: 'Inspetor Engel', admin: true, email: '' },
-            'inspetor.silva': { senha: 'gm2025', nome: 'Inspetor Silva', admin: true, email: '' },
-            'gm.usuario1': { senha: 'gm2025', nome: 'GM Usuário 1', admin: false, email: '' },
-            'gm.usuario2': { senha: 'gm2025', nome: 'GM Usuário 2', admin: false, email: '' },
-            'gm.usuario3': { senha: 'gm2025', nome: 'GM Usuário 3', admin: false, email: '' }
+        // ========== CONFIGURAÇÃO DO FIREBASE ==========
+        // IMPORTANTE: Substitua estas configurações pelas suas do Firebase Console
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "seu-projeto.firebaseapp.com",
+            databaseURL: "https://seu-projeto-default-rtdb.firebaseio.com",
+            projectId: "seu-projeto",
+            storageBucket: "seu-projeto.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "sua-app-id"
         };
 
-        let comunicados = [];
-        let escalas = [];
-        let operacoes = [];
-        let documentos = [];
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        let currentUser = null;
+
+        // ========== AUTENTICAÇÃO ==========
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const username = document.getElementById('username').value.trim().toLowerCase();
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            
-            if (usuarios[username] && usuarios[username].senha === password) {
-                currentUser = {
-                    username: username,
-                    nome: usuarios[username].nome,
-                    admin: usuarios[username].admin,
-                    email: usuarios[username].email
-                };
+            const btnLogin = document.getElementById('btnLogin');
+            const errorMsg = document.getElementById('loginError');
+
+            btnLogin.disabled = true;
+            btnLogin.textContent = 'Entrando...';
+            errorMsg.style.display = 'none';
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
                 
-                if (!currentUser.email) {
-                    document.getElementById('emailModal').style.display = 'flex';
-                } else {
+                // Buscar dados do usuário no database
+                const snapshot = await database.ref('usuarios/' + user.uid).once('value');
+                const userData = snapshot.val();
+                
+                if (userData) {
+                    currentUser = {
+                        uid: user.uid,
+                        email: user.email,
+                        nome: userData.nome,
+                        admin: userData.admin || false
+                    };
                     showMainSystem();
+                } else {
+                    throw new Error('Usuário não encontrado no sistema');
                 }
-            } else {
-                const errorMsg = document.getElementById('loginError');
-                errorMsg.textContent = '❌ Usuário ou senha incorretos';
+            } catch (error) {
+                console.error('Erro no login:', error);
+                errorMsg.textContent = '❌ ' + getErrorMessage(error.code);
                 errorMsg.style.display = 'block';
+            } finally {
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'Entrar';
             }
         });
 
-        document.getElementById('emailForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('userEmail').value;
-            currentUser.email = email;
-            usuarios[currentUser.username].email = email;
-            document.getElementById('emailModal').style.display = 'none';
-            showMainSystem();
-        });
+        function getErrorMessage(errorCode) {
+            const messages = {
+                'auth/invalid-email': 'Email inválido',
+                'auth/user-disabled': 'Usuário desabilitado',
+                'auth/user-not-found': 'Usuário não encontrado',
+                'auth/wrong-password': 'Senha incorreta',
+                'auth/invalid-credential': 'Email ou senha incorretos',
+                'auth/too-many-requests': 'Muitas tentativas. Tente novamente mais tarde'
+            };
+            return messages[errorCode] || 'Erro ao fazer login. Tente novamente.';
+        }
 
         function showMainSystem() {
             document.getElementById('loginScreen').style.display = 'none';
@@ -596,16 +596,28 @@
                 document.getElementById('adminBadge').style.display = 'inline-block';
                 document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
             }
+
+            // Carregar dados
+            loadComunicados();
+            loadEscalas();
+            loadOperacoes();
+            loadDocumentos();
         }
 
-        function logout() {
-            currentUser = null;
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('mainSystem').style.display = 'none';
-            document.getElementById('loginForm').reset();
-            document.getElementById('loginError').style.display = 'none';
+        async function logout() {
+            try {
+                await auth.signOut();
+                currentUser = null;
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainSystem').style.display = 'none';
+                document.getElementById('loginForm').reset();
+            } catch (error) {
+                console.error('Erro ao sair:', error);
+                alert('Erro ao sair. Tente novamente.');
+            }
         }
 
+        // ========== NAVEGAÇÃO ==========
         function showTab(tabId) {
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -614,168 +626,233 @@
             event.target.classList.add('active');
         }
 
-        function addComunicado(e) {
+        // ========== COMUNICADOS ==========
+        document.getElementById('formComunicado').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
             const tipo = document.getElementById('tipoComunicado').value;
             const titulo = document.getElementById('tituloComunicado').value;
             const conteudo = document.getElementById('conteudoComunicado').value;
             
-            const now = new Date();
-            const comunicado = {
-                tipo: tipo,
-                titulo: titulo,
-                conteudo: conteudo,
-                data: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                autor: currentUser.nome
-            };
-            
-            comunicados.unshift(comunicado);
-            renderComunicados();
-            e.target.reset();
-            alert('✅ Comunicado publicado!\n📧 Notificações enviadas para todos os usuários.');
+            try {
+                const now = new Date();
+                const comunicado = {
+                    tipo: tipo,
+                    titulo: titulo,
+                    conteudo: conteudo,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid
+                };
+                
+                await database.ref('comunicados').push(comunicado);
+                
+                const successMsg = document.getElementById('comunicadoSuccess');
+                successMsg.textContent = '✅ Comunicado publicado com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => successMsg.style.display = 'none', 3000);
+                
+                e.target.reset();
+            } catch (error) {
+                console.error('Erro ao publicar:', error);
+                alert('Erro ao publicar comunicado. Tente novamente.');
+            }
+        });
+
+        function loadComunicados() {
+            database.ref('comunicados').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaComunicados');
+                const comunicados = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    comunicados.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                comunicados.reverse(); // Mais recentes primeiro
+                
+                if (comunicados.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum comunicado publicado</p></div>';
+                    return;
+                }
+                
+                lista.innerHTML = comunicados.map(c => `
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">${c.tipo}</span>
+                            <span class="item-data">${c.dataFormatada}</span>
+                        </div>
+                        <div class="item-titulo">${c.titulo}</div>
+                        <div class="item-conteudo">${c.conteudo}</div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                            Publicado por: ${c.autor}
+                        </div>
+                    </div>
+                `).join('');
+            });
         }
 
-        function renderComunicados() {
-            const lista = document.getElementById('listaComunicados');
-            lista.innerHTML = comunicados.map(c => `
-                <div class="item-box">
-                    <div class="item-header">
-                        <span class="item-tipo">${c.tipo}</span>
-                        <span class="item-data">${c.data}</span>
-                    </div>
-                    <div class="item-titulo">${c.titulo}</div>
-                    <div class="item-conteudo">${c.conteudo}</div>
-                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                        Publicado por: ${c.autor}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function addEscala(e) {
+        // ========== ESCALAS ==========
+        document.getElementById('formEscala').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
             const periodo = document.getElementById('periodoEscala').value;
             const conteudo = document.getElementById('conteudoEscala').value;
             
-            const now = new Date();
-            const escala = {
-                periodo: periodo,
-                conteudo: conteudo,
-                data: now.toLocaleDateString('pt-BR'),
-                autor: currentUser.nome
-            };
-            
-            escalas.unshift(escala);
-            renderEscalas();
-            e.target.reset();
-            alert('✅ Escala publicada!\n📧 Notificações enviadas para todos.');
-        }
-
-        function renderEscalas() {
-            const lista = document.getElementById('listaEscalas');
-            if (escalas.length === 0) {
-                lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala publicada ainda</p></div>';
-                return;
+            try {
+                const now = new Date();
+                const escala = {
+                    periodo: periodo,
+                    conteudo: conteudo,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR'),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid
+                };
+                
+                await database.ref('escalas').push(escala);
+                
+                const successMsg = document.getElementById('escalaSuccess');
+                successMsg.textContent = '✅ Escala publicada com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => successMsg.style.display = 'none', 3000);
+                
+                e.target.reset();
+            } catch (error) {
+                console.error('Erro ao publicar:', error);
+                alert('Erro ao publicar escala. Tente novamente.');
             }
-            lista.innerHTML = escalas.map(e => `
-                <div class="item-box">
-                    <div class="item-header">
-                        <span class="item-tipo">ESCALA</span>
-                        <span class="item-data">${e.data}</span>
+        });
+
+        function loadEscalas() {
+            database.ref('escalas').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaEscalas');
+                const escalas = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    escalas.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                escalas.reverse();
+                
+                if (escalas.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala publicada</p></div>';
+                    return;
+                }
+                
+                lista.innerHTML = escalas.map(e => `
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">ESCALA</span>
+                            <span class="item-data">${e.dataFormatada}</span>
+                        </div>
+                        <div class="item-titulo">Período: ${e.periodo}</div>
+                        <div class="item-conteudo">${e.conteudo}</div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                            Publicado por: ${e.autor}
+                        </div>
                     </div>
-                    <div class="item-titulo">Período: ${e.periodo}</div>
-                    <div class="item-conteudo">${e.conteudo}</div>
-                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                        Publicado por: ${e.autor}
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            });
         }
 
-        function addOperacao(e) {
+        // ========== OPERAÇÕES ==========
+        document.getElementById('formOperacao').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
             const nome = document.getElementById('nomeOperacao').value;
             const data = document.getElementById('dataOperacao').value;
             const local = document.getElementById('localOperacao').value;
             const detalhes = document.getElementById('detalhesOperacao').value;
             
-            const dataObj = new Date(data);
-            const operacao = {
-                nome: nome,
-                data: dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                local: local,
-                detalhes: detalhes,
-                autor: currentUser.nome
-            };
-            
-            operacoes.unshift(operacao);
-            renderOperacoes();
-            e.target.reset();
-            alert('✅ Operação publicada!\n📧 Notificações enviadas para todos.');
-        }
-
-        function renderOperacoes() {
-            const lista = document.getElementById('listaOperacoes');
-            if (operacoes.length === 0) {
-                lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada</p></div>';
-                return;
+            try {
+                const dataObj = new Date(data);
+                const operacao = {
+                    nome: nome,
+                    data: dataObj.toISOString(),
+                    dataFormatada: dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    local: local,
+                    detalhes: detalhes,
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid
+                };
+                
+                await database.ref('operacoes').push(operacao);
+                
+                const successMsg = document.getElementById('operacaoSuccess');
+                successMsg.textContent = '✅ Operação publicada com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => successMsg.style.display = 'none', 3000);
+                
+                e.target.reset();
+            } catch (error) {
+                console.error('Erro ao publicar:', error);
+                alert('Erro ao publicar operação. Tente novamente.');
             }
-            lista.innerHTML = operacoes.map(o => `
-                <div class="item-box">
-                    <div class="item-header">
-                        <span class="item-tipo">OPERAÇÃO</span>
-                        <span class="item-data">${o.data}</span>
+        });
+
+        function loadOperacoes() {
+            database.ref('operacoes').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaOperacoes');
+                const operacoes = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    operacoes.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                operacoes.reverse();
+                
+                if (operacoes.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada</p></div>';
+                    return;
+                }
+                
+                lista.innerHTML = operacoes.map(o => `
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">OPERAÇÃO</span>
+                            <span class="item-data">${o.dataFormatada}</span>
+                        </div>
+                        <div class="item-titulo">${o.nome}</div>
+                        <div class="item-conteudo">
+                            <strong>Local:</strong> ${o.local}<br>
+                            <strong>Detalhes:</strong> ${o.detalhes}
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                            Publicado por: ${o.autor}
+                        </div>
                     </div>
-                    <div class="item-titulo">${o.nome}</div>
-                    <div class="item-conteudo">
-                        <strong>Local:</strong> ${o.local}<br>
-                        <strong>Detalhes:</strong> ${o.detalhes}
-                    </div>
-                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                        Publicado por: ${o.autor}
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            });
         }
 
-        function addDocumento(e) {
+        // ========== DOCUMENTOS ==========
+        document.getElementById('formDocumento').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
             const categoria = document.getElementById('categoriaDoc').value;
             const nome = document.getElementById('nomeDoc').value;
             const descricao = document.getElementById('descricaoDoc').value;
             
-            const now = new Date();
-            const documento = {
-                categoria: categoria,
-                nome: nome,
-                descricao: descricao,
-                data: now.toLocaleDateString('pt-BR'),
-                autor: currentUser.nome
-            };
-            
-            documentos.unshift(documento);
-            renderDocumentos();
-            e.target.reset();
-            alert('✅ Documento publicado!\n📧 Notificações enviadas para todos.');
-        }
-
-        function renderDocumentos() {
-            const lista = document.getElementById('listaDocumentos');
-            lista.innerHTML = documentos.map(d => `
-                <div class="item-box">
-                    <div class="item-header">
-                        <span class="item-tipo">${d.categoria}</span>
-                        <span class="item-data">${d.data}</span>
-                    </div>
-                    <div class="item-titulo">${d.nome}</div>
-                    <div class="item-conteudo">${d.descricao}</div>
-                    <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                        Publicado por: ${d.autor}
-                    </div>
-                </div>
-            `).join('');
-        }
-    </script>
-</body>
-</html>
-
+            try {
+                const now = new Date();
+                const documento = {
+                    categoria: categoria,
+                    nome: nome,
+                    descricao: descricao,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR'),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid
+                };
+                
+                await database.ref('
