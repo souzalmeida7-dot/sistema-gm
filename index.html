@@ -533,20 +533,16 @@
         </div>
     </div>
 
-    <!-- SISTEMA PRINCIPAL -->
-    <div id="mainSystem" class="main-container">
-        <div class="header">
-            <div class="logo">
-                <!-- Substitua 'sua-logo.png' pela URL da sua logo. -->
-                <!-- Use uma logo em PNG com fundo transparente para melhor resultado -->
-                <img src="https://i.imgur.com/your-logo.png" alt="Logo da Guarda Municipal" id="gmLogo"> 
-                <h1>Portal Administrativo GM</h1>
-            </div>
-            <div class="user-info">
-                <span class="badge" id="userBadge"></span>
-                <span class="badge badge-admin" id="adminBadge" style="display: none;">ADMINISTRADOR</span>
-                <button class="btn-logout" onclick="logout()">Sair</button>
-            </div>
+        <!-- BOTÕES DE ACESSO RÁPIDO - NOVO -->
+        <div class="quick-access">
+            <a href="https://gmcampolargo.cconet.com.br/login" target="_blank" class="quick-btn">
+                <span class="quick-icon">🌐</span>
+                <span class="quick-text">Acessar CCOnet</span>
+            </a>
+            <a href="https://drive.google.com/drive/u/0/folders/1TRFDUKphKLr2PZ-4uNFIDoxXEWeMTgJM" target="_blank" class="quick-btn">
+                <span class="quick-icon">☁️</span>
+                <span class="quick-text">Drive da Guarda</span>
+            </a>
         </div>
 
         <div class="nav-tabs">
@@ -554,6 +550,7 @@
             <button class="tab-btn" onclick="showTab(event, 'escalas')">📅 Escalas</button>
             <button class="tab-btn" onclick="showTab(event, 'operacoes')">🚨 Operações</button>
             <button class="tab-btn" onclick="showTab(event, 'documentos')">📁 Documentos</button>
+            <button class="tab-btn" onclick="showTab(event, 'arquivos')">📎 Arquivos PDF</button>
         </div>
 
         <!-- ABA COMUNICADOS -->
@@ -701,6 +698,72 @@
                 </div>
             </div>
         </div>
+
+        <!-- ABA ARQUIVOS PDF - NOVA -->
+        <div id="arquivos" class="content-section">
+            <div class="card admin-only">
+                <h3>📎 Adicionar Arquivo PDF</h3>
+                <div id="arquivoSuccess" class="success-msg"></div>
+                <form id="formArquivo">
+                    <div class="form-group">
+                        <label>Categoria do Arquivo</label>
+                        <select id="categoriaArquivo">
+                            <option value="Escalas">Escalas</option>
+                            <option value="Comunicados">Comunicados</option>
+                            <option value="Operações">Operações</option>
+                            <option value="Procedimentos">Procedimentos</option>
+                            <option value="Formulários">Formulários</option>
+                            <option value="Legislação">Legislação</option>
+                            <option value="Treinamento">Treinamento</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do Arquivo</label>
+                        <input type="text" id="nomeArquivo" placeholder="Ex: Escala Outubro 2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição (Opcional)</label>
+                        <textarea id="descricaoArquivo" placeholder="Breve descrição do arquivo..." rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Link do Arquivo (Google Drive)</label>
+                        <input type="url" id="linkArquivo" placeholder="Cole aqui o link do arquivo no Google Drive" required>
+                        <small>
+                            📌 <strong>Como obter o link:</strong><br>
+                            1. Faça upload do PDF no Drive da Guarda<br>
+                            2. Clique com botão direito no arquivo → "Compartilhar"<br>
+                            3. Clique em "Qualquer pessoa com o link"<br>
+                            4. Copie o link e cole aqui
+                        </small>
+                    </div>
+                    <button type="submit" class="btn">Adicionar Arquivo</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Biblioteca de Arquivos PDF</h3>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Filtrar por Categoria:</label>
+                    <select id="filtroCategoria" onchange="filtrarArquivos()">
+                        <option value="todos">📂 Todas as Categorias</option>
+                        <option value="Escalas">📅 Escalas</option>
+                        <option value="Comunicados">📢 Comunicados</option>
+                        <option value="Operações">🚨 Operações</option>
+                        <option value="Procedimentos">📋 Procedimentos</option>
+                        <option value="Formulários">📝 Formulários</option>
+                        <option value="Legislação">⚖️ Legislação</option>
+                        <option value="Treinamento">🎓 Treinamento</option>
+                        <option value="Outros">📎 Outros</option>
+                    </select>
+                </div>
+
+                <div id="listaArquivos">
+                    <div class="loading">Carregando arquivos...</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- FIREBASE SDK -->
@@ -710,6 +773,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
     <script>
+
         // ========================================
         // CONFIGURAÇÃO DO FIREBASE
         // ========================================
