@@ -1501,3 +1501,1506 @@ Ultima versão do código top!!!!
             
             if (arquivos.length === 0) {
                 lista.innerHTML = '<div class="empty-
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Administrativo - Guarda Municipal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #1e3c72;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea,
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus,
+        .form-group input[type="file"]:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .btn {
+            width: 100%;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #2a5298;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-msg, .success-msg {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-msg {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .main-container {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 22px;
+            margin: 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #1e3c72;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .badge-admin {
+            background: #dc3545;
+        }
+
+        .btn-logout {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #5a6268;
+        }
+
+        /* BOTÕES DE ACESSO RÁPIDO - NOVO */
+        .quick-access {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            color: #1e3c72;
+            text-decoration: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 15px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+
+        .quick-icon {
+            font-size: 28px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .tab-btn.active {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 18px;
+        }
+
+        .item-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .item-tipo {
+            background: #1e3c72;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .item-data {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .item-titulo {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .item-conteudo {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .admin-only {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #1e3c72;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+        
+        .item-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #1e3c72;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 13px;
+            padding: 5px 0;
+            transition: color 0.3s;
+        }
+
+        .download-link:hover {
+            color: #2a5298;
+        }
+
+        .download-link svg {
+            fill: #1e3c72;
+            transition: fill 0.3s;
+        }
+
+        .download-link:hover svg {
+            fill: #2a5298;
+        }
+
+        /* ESTILOS PARA ABA DE ARQUIVOS PDF - NOVO */
+        .arquivo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #1e3c72;
+            gap: 15px;
+        }
+
+        .arquivo-info {
+            flex: 1;
+        }
+
+        .arquivo-nome {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .arquivo-meta {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .arquivo-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn-small {
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .btn-view {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #2a5298;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-tabs {
+                flex-direction: column;
+            }
+            .tab-btn {
+                width: 100%;
+            }
+            .item-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .item-actions {
+                justify-content: flex-start;
+            }
+            .quick-access {
+                flex-direction: column;
+            }
+            .quick-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .arquivo-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .arquivo-actions {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- TELA DE LOGIN -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🛡️ Portal Administrativo</h1>
+                <p>Guarda Municipal - Sistema de Gestão</p>
+            </div>
+            
+            <div id="loginError" class="error-msg"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="comando.marcos@gm.com" required autocomplete="email">
+                </div>
+                
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="password" placeholder="Digite sua senha" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="btn" id="btnLogin">Entrar</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
+                Teste: comando.marcos@gm.com / gm2025
+            </p>
+        </div>
+    </div>
+
+    <!-- SISTEMA PRINCIPAL -->
+    <div id="mainSystem" class="main-container">
+        <div class="header">
+            <div class="logo">
+                <img src="https://i.imgur.com/your-logo.png" alt="Logo da Guarda Municipal" id="gmLogo"> 
+                <h1>Portal Administrativo GM</h1>
+            </div>
+            <div class="user-info">
+                <span class="badge" id="userBadge"></span>
+                <span class="badge badge-admin" id="adminBadge" style="display: none;">ADMINISTRADOR</span>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+        </div>
+
+        <!-- BOTÕES DE ACESSO RÁPIDO - NOVO -->
+        <div class="quick-access">
+            <a href="https://gmcampolargo.cconet.com.br/login" target="_blank" class="quick-btn">
+                <span class="quick-icon">🌐</span>
+                <span class="quick-text">Acessar CCOnet</span>
+            </a>
+            <a href="https://drive.google.com/drive/u/0/folders/1TRFDUKphKLr2PZ-4uNFIDoxXEWeMTgJM" target="_blank" class="quick-btn">
+                <span class="quick-icon">☁️</span>
+                <span class="quick-text">Drive da Guarda</span>
+            </a>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab(event, 'comunicados')">📢 Comunicados</button>
+            <button class="tab-btn" onclick="showTab(event, 'escalas')">📅 Escalas</button>
+            <button class="tab-btn" onclick="showTab(event, 'operacoes')">🚨 Operações</button>
+            <button class="tab-btn" onclick="showTab(event, 'documentos')">📁 Documentos</button>
+            <button class="tab-btn" onclick="showTab(event, 'arquivos')">📎 Arquivos PDF</button>
+        </div>
+
+        <!-- ABA COMUNICADOS -->
+        <div id="comunicados" class="content-section active">
+            <div class="card admin-only">
+                <h3>📝 Novo Comunicado</h3>
+                <div id="comunicadoSuccess" class="success-msg"></div>
+                <form id="formComunicado">
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select id="tipoComunicado">
+                            <option value="INFORMATIVO">INFORMATIVO</option>
+                            <option value="URGENTE">URGENTE</option>
+                            <option value="OPERACIONAL">OPERACIONAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" id="tituloComunicado" placeholder="Título do comunicado" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Conteúdo</label>
+                        <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Anexar PDF (Opcional)</label>
+                        <input type="file" id="pdfComunicado" accept="application/pdf">
+                    </div>
+                    <button type="submit" class="btn">Publicar Comunicado</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Todos os Comunicados</h3>
+                <div id="listaComunicados">
+                    <div class="loading">Carregando comunicados...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA ESCALAS -->
+        <div id="escalas" class="content-section">
+            <div class="card admin-only">
+                <h3>📝 Nova Escala</h3>
+                <div id="escalaSuccess" class="success-msg"></div>
+                <form id="formEscala">
+                    <div class="form-group">
+                        <label>Período</label>
+                        <input type="text" id="periodoEscala" placeholder="Ex: 21/10 a 27/10/2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Detalhes da Escala</label>
+                        <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Anexar PDF (Opcional)</label>
+                        <input type="file" id="pdfEscala" accept="application/pdf">
+                    </div>
+                    <button type="submit" class="btn">Publicar Escala</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Escalas Publicadas</h3>
+                <div id="listaEscalas">
+                    <div class="loading">Carregando escalas...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA OPERAÇÕES -->
+        <div id="operacoes" class="content-section">
+            <div class="card admin-only">
+                <h3>📝 Nova Operação</h3>
+                <div id="operacaoSuccess" class="success-msg"></div>
+                <form id="formOperacao">
+                    <div class="form-group">
+                        <label>Nome da Operação</label>
+                        <input type="text" id="nomeOperacao" placeholder="Ex: Operação Centro Seguro" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Data e Horário</label>
+                        <input type="datetime-local" id="dataOperacao" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Local</label>
+                        <input type="text" id="localOperacao" placeholder="Local da operação" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Detalhes</label>
+                        <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Anexar PDF (Opcional)</label>
+                        <input type="file" id="pdfOperacao" accept="application/pdf">
+                    </div>
+                    <button type="submit" class="btn">Publicar Operação</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Operações Programadas</h3>
+                <div id="listaOperacoes">
+                    <div class="loading">Carregando operações...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA DOCUMENTOS -->
+        <div id="documentos" class="content-section">
+            <div class="card admin-only">
+                <h3>📝 Novo Documento</h3>
+                <div id="documentoSuccess" class="success-msg"></div>
+                <form id="formDocumento">
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="categoriaDoc">
+                            <option value="Procedimento Operacional">Procedimento Operacional</option>
+                            <option value="Formulário">Formulário</option>
+                            <option value="Legislação">Legislação</option>
+                            <option value="Manual">Manual</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do Documento</label>
+                        <input type="text" id="nomeDoc" placeholder="Ex: Manual de Abordagem 2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea id="descricaoDoc" placeholder="Breve descrição do documento..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Anexar PDF</label>
+                        <input type="file" id="pdfDocumento" accept="application/pdf" required>
+                    </div>
+                    <button type="submit" class="btn">Publicar Documento</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Biblioteca de Documentos</h3>
+                <div id="listaDocumentos">
+                    <div class="loading">Carregando documentos...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA ARQUIVOS PDF - NOVA -->
+        <div id="arquivos" class="content-section">
+            <div class="card admin-only">
+                <h3>📎 Adicionar Arquivo PDF</h3>
+                <div id="arquivoSuccess" class="success-msg"></div>
+                <form id="formArquivo">
+                    <div class="form-group">
+                        <label>Categoria do Arquivo</label>
+                        <select id="categoriaArquivo">
+                            <option value="Escalas">Escalas</option>
+                            <option value="Comunicados">Comunicados</option>
+                            <option value="Operações">Operações</option>
+                            <option value="Procedimentos">Procedimentos</option>
+                            <option value="Formulários">Formulários</option>
+                            <option value="Legislação">Legislação</option>
+                            <option value="Treinamento">Treinamento</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do Arquivo</label>
+                        <input type="text" id="nomeArquivo" placeholder="Ex: Escala Outubro 2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição (Opcional)</label>
+                        <textarea id="descricaoArquivo" placeholder="Breve descrição do arquivo..." rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Link do Arquivo (Google Drive)</label>
+                        <input type="url" id="linkArquivo" placeholder="Cole aqui o link do arquivo no Google Drive" required>
+                        <small>
+                            📌 <strong>Como obter o link:</strong><br>
+                            1. Faça upload do PDF no Drive da Guarda<br>
+                            2. Clique com botão direito no arquivo → "Compartilhar"<br>
+                            3. Clique em "Qualquer pessoa com o link"<br>
+                            4. Copie o link e cole aqui
+                        </small>
+                    </div>
+                    <button type="submit" class="btn">Adicionar Arquivo</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Biblioteca de Arquivos PDF</h3>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Filtrar por Categoria:</label>
+                    <select id="filtroCategoria" onchange="filtrarArquivos()">
+                        <option value="todos">📂 Todas as Categorias</option>
+                        <option value="Escalas">📅 Escalas</option>
+                        <option value="Comunicados">📢 Comunicados</option>
+                        <option value="Operações">🚨 Operações</option>
+                        <option value="Procedimentos">📋 Procedimentos</option>
+                        <option value="Formulários">📝 Formulários</option>
+                        <option value="Legislação">⚖️ Legislação</option>
+                        <option value="Treinamento">🎓 Treinamento</option>
+                        <option value="Outros">📎 Outros</option>
+                    </select>
+                </div>
+
+                <div id="listaArquivos">
+                    <div class="loading">Carregando arquivos...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+    <script>
+        // ========================================
+        // CONFIGURAÇÃO DO FIREBASE
+        // ========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVfCbAucFErELqatHP1DgJsAweMR_rzJo",
+            authDomain: "sistema-gm-145eb.firebaseapp.com",
+            databaseURL: "https://sistema-gm-145eb-default-rtdb.firebaseio.com",
+            projectId: "sistema-gm-145eb",
+            storageBucket: "sistema-gm-145eb.firebasestorage.app",
+            messagingSenderId: "1033769343247",
+            appId: "1:1033769343247:web:24d6934babf8a4eb65867a"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        let currentUser = null;
+        let todosArquivos = []; // NOVO - para filtro de arquivos
+
+        // ========================================
+        // SISTEMA DE LOGIN (MANTIDO ORIGINAL)
+        // ========================================
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btnLogin = document.getElementById('btnLogin');
+            const errorMsg = document.getElementById('loginError');
+
+            btnLogin.disabled = true;
+            btnLogin.textContent = 'Entrando...';
+            errorMsg.style.display = 'none';
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                const snapshot = await database.ref('usuarios/' + user.uid).once('value');
+                const userData = snapshot.val();
+                
+                if (userData) {
+                    currentUser = {
+                        uid: user.uid,
+                        email: user.email,
+                        nome: userData.nome,
+                        admin: userData.admin || false
+                    };
+                    
+                    showMainSystem();
+                } else {
+                    throw new Error('Usuário não encontrado no banco de dados. Verifique a configuração.');
+                }
+                
+            } catch (error) {
+                let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
+                if (error.code === 'auth/invalid-email' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Email ou senha incorretos.';
+                } else if (error.code === 'auth/user-disabled') {
+                    errorMessage = 'Sua conta foi desativada.';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                errorMsg.textContent = '❌ ' + errorMessage;
+                errorMsg.style.display = 'block';
+                
+            } finally {
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'Entrar';
+            }
+        });
+
+        // ========================================
+        // MOSTRAR SISTEMA PRINCIPAL
+        // ========================================
+        function showMainSystem() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainSystem').style.display = 'block';
+            
+            document.getElementById('userBadge').textContent = currentUser.nome;
+            
+            if (currentUser.admin) {
+                document.getElementById('adminBadge').style.display = 'inline-block';
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.style.display = 'block';
+                });
+            } else {
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.style.display = 'none';
+                });
+            }
+
+            loadComunicados();
+            loadEscalas();
+            loadOperacoes();
+            loadDocumentos();
+            loadArquivos(); // NOVO
+        }
+
+        // ========================================
+        // LOGOUT
+        // ========================================
+        async function logout() {
+            try {
+                await auth.signOut();
+                currentUser = null;
+                
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainSystem').style.display = 'none';
+                document.getElementById('loginForm').reset();
+                document.getElementById('loginError').style.display = 'none';
+                
+                document.getElementById('formComunicado').reset();
+                document.getElementById('formEscala').reset();
+                document.getElementById('formOperacao').reset();
+                document.getElementById('formDocumento').reset();
+                document.getElementById('formArquivo').reset(); // NOVO
+                document.getElementById('comunicadoSuccess').style.display = 'none';
+                document.getElementById('escalaSuccess').style.display = 'none';
+                document.getElementById('operacaoSuccess').style.display = 'none';
+                document.getElementById('documentoSuccess').style.display = 'none';
+                document.getElementById('arquivoSuccess').style.display = 'none'; // NOVO
+
+                document.getElementById('comunicados').classList.add('active');
+                document.getElementById('escalas').classList.remove('active');
+                document.getElementById('operacoes').classList.remove('active');
+                document.getElementById('documentos').classList.remove('active');
+                document.getElementById('arquivos').classList.remove('active'); // NOVO
+                document.querySelector('.nav-tabs .tab-btn.active').classList.remove('active');
+                document.querySelector('.nav-tabs .tab-btn:first-child').classList.add('active');
+
+            } catch (error) {
+                console.error('Erro ao sair:', error);
+                alert('Erro ao sair. Tente novamente.');
+            }
+        }
+
+        // ========================================
+        // NAVEGAÇÃO ENTRE ABAS
+        // ========================================
+        function showTab(event, tabId) {
+            document.querySelectorAll('.content-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ========================================
+        // FUNÇÃO GENÉRICA PARA UPLOAD DE PDF
+        // ========================================
+        async function uploadPdf(file, folderName) {
+            if (!file) return null;
+
+            const storageRef = storage.ref();
+            const fileName = `${Date.now()}_${file.name}`;
+            const fileRef = storageRef.child(`${folderName}/${fileName}`);
+            
+            try {
+                const snapshot = await fileRef.put(file);
+                const downloadURL = await snapshot.ref.getDownloadURL();
+                return { name: file.name, url: downloadURL, path: fileRef.fullPath };
+            } catch (error) {
+                console.error('Erro ao fazer upload do PDF:', error);
+                throw new Error('Falha ao fazer upload do arquivo. Tente novamente.');
+            }
+        }
+
+        // ========================================
+        // FUNÇÃO GENÉRICA PARA EXCLUIR PDF DO STORAGE
+        // ========================================
+        async function deletePdfFromStorage(filePath) {
+            if (!filePath) return;
+            try {
+                const fileRef = storage.ref(filePath);
+                await fileRef.delete();
+                console.log('PDF excluído do Storage:', filePath);
+            } catch (error) {
+                console.warn('Não foi possível excluir o PDF do Storage (pode não existir):', error);
+            }
+        }
+
+        // ========================================
+        // COMUNICADOS - PUBLICAR E EXCLUIR
+        // ========================================
+        document.getElementById('formComunicado').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const tipo = document.getElementById('tipoComunicado').value;
+            const titulo = document.getElementById('tituloComunicado').value;
+            const conteudo = document.getElementById('conteudoComunicado').value;
+            const pdfFile = document.getElementById('pdfComunicado').files[0];
+            const submitBtn = e.target.querySelector('.btn');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publicando...';
+            
+            try {
+                let pdfInfo = null;
+                if (pdfFile) {
+                    pdfInfo = await uploadPdf(pdfFile, 'comunicados_pdfs');
+                }
+
+                const now = new Date();
+                const comunicado = {
+                    tipo: tipo,
+                    titulo: titulo,
+                    conteudo: conteudo,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid,
+                    pdf: pdfInfo
+                };
+                
+                await database.ref('comunicados').push(comunicado);
+                
+                const successMsg = document.getElementById('comunicadoSuccess');
+                successMsg.textContent = '✅ Comunicado publicado com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+                
+                e.target.reset();
+                
+            } catch (error) {
+                console.error('Erro ao publicar comunicado:', error);
+                alert('Erro ao publicar comunicado: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publicar Comunicado';
+            }
+        });
+
+        async function deleteComunicado(comunicadoId, pdfPath) {
+            if (confirm('Tem certeza que deseja excluir este comunicado?')) {
+                try {
+                    await database.ref('comunicados/' + comunicadoId).remove();
+                    await deletePdfFromStorage(pdfPath);
+                    console.log('Comunicado excluído com sucesso:', comunicadoId);
+                } catch (error) {
+                    console.error('Erro ao excluir comunicado:', error);
+                    alert('Erro ao excluir comunicado. Tente novamente.');
+                }
+            }
+        }
+
+        function loadComunicados() {
+            database.ref('comunicados').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaComunicados');
+                const comunicados = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    comunicados.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                comunicados.reverse();
+                
+                if (comunicados.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum comunicado publicado ainda</p></div>';
+                } else {
+                    lista.innerHTML = comunicados.map(c => `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span class="item-tipo">${c.tipo}</span>
+                                <span class="item-data">${c.dataFormatada}</span>
+                            </div>
+                            <div class="item-titulo">${c.titulo}</div>
+                            <div class="item-conteudo">${c.conteudo}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                                Publicado por: ${c.autor}
+                                ${c.pdf ? `<a href="${c.pdf.url}" target="_blank" class="download-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    ${c.pdf.name}
+                                </a>` : ''}
+                                ${currentUser.admin ? `
+                                    <div class="item-actions" style="margin-top: 5px;">
+                                        <button class="btn-delete" onclick="deleteComunicado('${c.id}', '${c.pdf ? c.pdf.path : ''}')">Excluir</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        // ========================================
+        // ESCALAS - PUBLICAR E EXCLUIR
+        // ========================================
+        document.getElementById('formEscala').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const periodo = document.getElementById('periodoEscala').value;
+            const conteudo = document.getElementById('conteudoEscala').value;
+            const pdfFile = document.getElementById('pdfEscala').files[0];
+            const submitBtn = e.target.querySelector('.btn');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publicando...';
+            
+            try {
+                let pdfInfo = null;
+                if (pdfFile) {
+                    pdfInfo = await uploadPdf(pdfFile, 'escalas_pdfs');
+                }
+
+                const now = new Date();
+                const escala = {
+                    periodo: periodo,
+                    conteudo: conteudo,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR'),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid,
+                    pdf: pdfInfo
+                };
+                
+                await database.ref('escalas').push(escala);
+                
+                const successMsg = document.getElementById('escalaSuccess');
+                successMsg.textContent = '✅ Escala publicada com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+                
+                e.target.reset();
+                
+            } catch (error) {
+                console.error('Erro ao publicar escala:', error);
+                alert('Erro ao publicar escala: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publicar Escala';
+            }
+        });
+
+        async function deleteEscala(escalaId, pdfPath) {
+            if (confirm('Tem certeza que deseja excluir esta escala?')) {
+                try {
+                    await database.ref('escalas/' + escalaId).remove();
+                    await deletePdfFromStorage(pdfPath);
+                    console.log('Escala excluída com sucesso:', escalaId);
+                } catch (error) {
+                    console.error('Erro ao excluir escala:', error);
+                    alert('Erro ao excluir escala. Tente novamente.');
+                }
+            }
+        }
+
+        function loadEscalas() {
+            database.ref('escalas').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaEscalas');
+                const escalas = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    escalas.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                escalas.reverse();
+                
+                if (escalas.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala publicada ainda</p></div>';
+                } else {
+                    lista.innerHTML = escalas.map(e => `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span class="item-tipo">ESCALA</span>
+                                <span class="item-data">${e.dataFormatada}</span>
+                            </div>
+                            <div class="item-titulo">Período: ${e.periodo}</div>
+                            <div class="item-conteudo">${e.conteudo}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                                Publicado por: ${e.autor}
+                                ${e.pdf ? `<a href="${e.pdf.url}" target="_blank" class="download-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    ${e.pdf.name}
+                                </a>` : ''}
+                                ${currentUser.admin ? `
+                                    <div class="item-actions" style="margin-top: 5px;">
+                                        <button class="btn-delete" onclick="deleteEscala('${e.id}', '${e.pdf ? e.pdf.path : ''}')">Excluir</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        // ========================================
+        // OPERAÇÕES - PUBLICAR E EXCLUIR
+        // ========================================
+        document.getElementById('formOperacao').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('nomeOperacao').value;
+            const data = document.getElementById('dataOperacao').value;
+            const local = document.getElementById('localOperacao').value;
+            const detalhes = document.getElementById('detalhesOperacao').value;
+            const pdfFile = document.getElementById('pdfOperacao').files[0];
+            const submitBtn = e.target.querySelector('.btn');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publicando...';
+            
+            try {
+                let pdfInfo = null;
+                if (pdfFile) {
+                    pdfInfo = await uploadPdf(pdfFile, 'operacoes_pdfs');
+                }
+
+                const dataObj = new Date(data);
+                const operacao = {
+                    nome: nome,
+                    data: dataObj.toISOString(),
+                    dataFormatada: dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    local: local,
+                    detalhes: detalhes,
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid,
+                    pdf: pdfInfo
+                };
+                
+                await database.ref('operacoes').push(operacao);
+                
+                const successMsg = document.getElementById('operacaoSuccess');
+                successMsg.textContent = '✅ Operação publicada com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+                
+                e.target.reset();
+                
+            } catch (error) {
+                console.error('Erro ao publicar operação:', error);
+                alert('Erro ao publicar operação: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publicar Operação';
+            }
+        });
+
+        async function deleteOperacao(operacaoId, pdfPath) {
+            if (confirm('Tem certeza que deseja excluir esta operação?')) {
+                try {
+                    await database.ref('operacoes/' + operacaoId).remove();
+                    await deletePdfFromStorage(pdfPath);
+                    console.log('Operação excluída com sucesso:', operacaoId);
+                } catch (error) {
+                    console.error('Erro ao excluir operação:', error);
+                    alert('Erro ao excluir operação. Tente novamente.');
+                }
+            }
+        }
+
+        function loadOperacoes() {
+            database.ref('operacoes').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaOperacoes');
+                const operacoes = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    operacoes.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                operacoes.reverse();
+                
+                if (operacoes.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada ainda</p></div>';
+                } else {
+                    lista.innerHTML = operacoes.map(o => `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span class="item-tipo">OPERAÇÃO</span>
+                                <span class="item-data">${o.dataFormatada}</span>
+                            </div>
+                            <div class="item-titulo">${o.nome}</div>
+                            <div class="item-conteudo">
+                                <strong>Local:</strong> ${o.local}<br>
+                                <strong>Detalhes:</strong> ${o.detalhes}
+                            </div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                                Publicado por: ${o.autor}
+                                ${o.pdf ? `<a href="${o.pdf.url}" target="_blank" class="download-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    ${o.pdf.name}
+                                </a>` : ''}
+                                ${currentUser.admin ? `
+                                    <div class="item-actions" style="margin-top: 5px;">
+                                        <button class="btn-delete" onclick="deleteOperacao('${o.id}', '${o.pdf ? o.pdf.path : ''}')">Excluir</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        // ========================================
+        // DOCUMENTOS - PUBLICAR E EXCLUIR
+        // ========================================
+        document.getElementById('formDocumento').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const categoria = document.getElementById('categoriaDoc').value;
+            const nome = document.getElementById('nomeDoc').value;
+            const descricao = document.getElementById('descricaoDoc').value;
+            const pdfFile = document.getElementById('pdfDocumento').files[0];
+            const submitBtn = e.target.querySelector('.btn');
+
+            if (!pdfFile) {
+                alert('Por favor, anexe um arquivo PDF para o documento.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publicando...';
+            
+            try {
+                const pdfInfo = await uploadPdf(pdfFile, 'documentos_pdfs');
+
+                const now = new Date();
+                const documento = {
+                    categoria: categoria,
+                    nome: nome,
+                    descricao: descricao,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR'),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid,
+                    pdf: pdfInfo
+                };
+                
+                await database.ref('documentos').push(documento);
+                
+                const successMsg = document.getElementById('documentoSuccess');
+                successMsg.textContent = '✅ Documento publicado com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+                
+                e.target.reset();
+                
+            } catch (error) {
+                console.error('Erro ao publicar documento:', error);
+                alert('Erro ao publicar documento: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publicar Documento';
+            }
+        });
+
+        async function deleteDocumento(documentoId, pdfPath) {
+            if (confirm('Tem certeza que deseja excluir este documento?')) {
+                try {
+                    await database.ref('documentos/' + documentoId).remove();
+                    await deletePdfFromStorage(pdfPath);
+                    console.log('Documento excluído com sucesso:', documentoId);
+                } catch (error) {
+                    console.error('Erro ao excluir documento:', error);
+                    alert('Erro ao excluir documento. Tente novamente.');
+                }
+            }
+        }
+
+        function loadDocumentos() {
+            database.ref('documentos').orderByChild('data').on('value', (snapshot) => {
+                const lista = document.getElementById('listaDocumentos');
+                const documentos = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    documentos.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                documentos.reverse();
+                
+                if (documentos.length === 0) {
+                    lista.innerHTML = '<div class="empty-state"><p>Nenhum documento publicado ainda</p></div>';
+                } else {
+                    lista.innerHTML = documentos.map(d => `
+                        <div class="item-box">
+                            <div class="item-header">
+                                <span class="item-tipo">${d.categoria}</span>
+                                <span class="item-data">${d.dataFormatada}</span>
+                            </div>
+                            <div class="item-titulo">${d.nome}</div>
+                            <div class="item-conteudo">${d.descricao}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
+                                Publicado por: ${d.autor}
+                                ${d.pdf ? `<a href="${d.pdf.url}" target="_blank" class="download-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>
+                                    ${d.pdf.name}
+                                </a>` : ''}
+                                ${currentUser.admin ? `
+                                    <div class="item-actions" style="margin-top: 5px;">
+                                        <button class="btn-delete" onclick="deleteDocumento('${d.id}', '${d.pdf ? d.pdf.path : ''}')">Excluir</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        // ========================================
+        // ARQUIVOS PDF (GOOGLE DRIVE) - NOVO
+        // ========================================
+        document.getElementById('formArquivo').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const link = document.getElementById('linkArquivo').value;
+            
+            if (!link.includes('drive.google.com')) {
+                alert('⚠️ Por favor, insira um link válido do Google Drive');
+                return;
+            }
+            
+            const submitBtn = e.target.querySelector('.btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Adicionando...';
+            
+            try {
+                const now = new Date();
+                const arquivo = {
+                    categoria: document.getElementById('categoriaArquivo').value,
+                    nome: document.getElementById('nomeArquivo').value,
+                    descricao: document.getElementById('descricaoArquivo').value,
+                    link: link,
+                    data: now.toISOString(),
+                    dataFormatada: now.toLocaleDateString('pt-BR') + ' às ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                    autor: currentUser.nome,
+                    autorId: currentUser.uid
+                };
+                
+                await database.ref('arquivos').push(arquivo);
+                
+                const successMsg = document.getElementById('arquivoSuccess');
+                successMsg.textContent = '✅ Arquivo adicionado com sucesso!';
+                successMsg.style.display = 'block';
+                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+                
+                e.target.reset();
+                
+            } catch (error) {
+                console.error('Erro ao adicionar arquivo:', error);
+                alert('Erro ao adicionar arquivo: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Adicionar Arquivo';
+            }
+        });
+
+        async function deleteArquivo(arquivoId) {
+            if (confirm('Tem certeza que deseja excluir este arquivo?')) {
+                try {
+                    await database.ref('arquivos/' + arquivoId).remove();
+                    console.log('Arquivo excluído com sucesso:', arquivoId);
+                } catch (error) {
+                    console.error('Erro ao excluir arquivo:', error);
+                    alert('Erro ao excluir arquivo. Tente novamente.');
+                }
+            }
+        }
+
+        function loadArquivos() {
+            database.ref('arquivos').orderByChild('data').on('value', (snapshot) => {
+                todosArquivos = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    todosArquivos.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                
+                todosArquivos.reverse();
+                renderArquivos(todosArquivos);
+            });
+        }
+
+        function filtrarArquivos() {
+            const filtro = document.getElementById('filtroCategoria').value;
+            
+            if (filtro === 'todos') {
+                renderArquivos(todosArquivos);
+            } else {
+                const arquivosFiltrados = todosArquivos.filter(a => a.categoria === filtro);
+                renderArquivos(arquivosFiltrados);
+            }
+        }
+
+        function renderArquivos(arquivos) {
+            const lista = document.getElementById('listaArquivos');
+            
+            if (arquivos.length === 0) {
+                lista.innerHTML = '<div class="empty-
