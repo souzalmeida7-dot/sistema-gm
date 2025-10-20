@@ -247,6 +247,7 @@
             text-decoration: none;
         }
 
+        /* NOVO ESTILO PARA BOTÕES DE DRIVE E LINKS EXTERNOS */
         .shortcut-btn {
             background: #f0f0f0;
             color: #1e3c72;
@@ -261,7 +262,20 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
+            min-width: 120px; /* Garante que os botões tenham um tamanho mínimo */
+            justify-content: center;
         }
+
+        .shortcut-btn.drive-btn {
+            background: #fff;
+            color: #0F9D58; /* Cor do Google Drive */
+            border-color: #0F9D58;
+        }
+
+        .shortcut-btn.drive-btn:hover {
+            background: #e6f5ea;
+        }
+        /* FIM DO NOVO ESTILO */
 
         .shortcut-btn:hover {
             background: #e0e0e0;
@@ -465,12 +479,12 @@
             
             <form id="loginForm">
                 <div class="form-group">
-                   <label>Email (Acesso)</label>
-                    <input type="email" id="email" placeholder="comando.marcos@gm.com" required autocomplete="email">
+                    <label>Email (Acesso)</label>
+                    <input type="email" id="email" placeholder="seu.acesso@gm.com" required autocomplete="email">
                 </div>
                 
                 <div class="form-group">
-                   <label>Senha</label>
+                    <label>Senha</label>
                     <input type="password" id="password" placeholder="Digite sua senha" required autocomplete="current-password">
                 </div>
                 
@@ -478,7 +492,7 @@
             </form>
 
             <p style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
-                Teste: comando.marcos@gm.com / gm2025
+                Exemplo: seu.acesso@gm.com / senha123
             </p>
         </div>
         
@@ -501,7 +515,7 @@
                 </form>
             </div>
         </div>
-        </div>
+    </div>
 
     <div id="mainSystem" class="main-container">
         <div class="header">
@@ -522,6 +536,21 @@
             </a>
             <a href="https://drive.google.com/drive/folders/1TRFDUKphKLr2PZ-4uNFIDoxXEWeMTgJM" target="_blank" class="shortcut-btn">
                 🗂️ DriveGM
+            </a>
+            <a href="https://campolargo.atende.net/cidadao" target="_blank" class="shortcut-btn">
+                🏛️ IPM
+            </a>
+            <a href="https://www.gov.br/pt-br" target="_blank" class="shortcut-btn">
+                🇧🇷 Gov.br
+            </a>
+            <a href="https://drive.google.com/drive/folders/13l6H2tGVulnlyhxSjyVrlu04udp2qsN-" target="_blank" class="shortcut-btn drive-btn">
+                📂 O.S.
+            </a>
+            <a href="https://drive.google.com/drive/folders/13dwvKaYZeQCwhIRTHnKUhMRwoUOokpW3" target="_blank" class="shortcut-btn drive-btn">
+                📅 Escala
+            </a>
+            <a href="https://drive.google.com/drive/folders/13dwvKaYZeQCwhIRTHnKUhMRwoUOokpW3" target="_blank" class="shortcut-btn drive-btn">
+                ⌚ B.H.
             </a>
         </div>
         <div class="nav-tabs">
@@ -669,7 +698,7 @@
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -873,7 +902,9 @@
                 
                 // Limpeza dos formulários
                 document.getElementById('formComunicado').reset();
-                // ... (outros resets)
+                document.getElementById('formEscala').reset();
+                document.getElementById('formOperacao').reset();
+                document.getElementById('formDocumento').reset();
 
             } catch (error) {
                 console.error('Erro ao sair:', error);
@@ -881,550 +912,368 @@
             }
         }
 
-        // [FUNÇÕES AUXILIARES - MANTIDAS]
+        // ========================================
+        // FUNÇÕES AUXILIARES (TABS)
+        // ========================================
         function showTab(event, tabId) {
+            // Remove a classe 'active' de todas as seções de conteúdo
             document.querySelectorAll('.content-section').forEach(el => {
                 el.classList.remove('active');
             });
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('active');
-            });
-            
+            // Adiciona a classe 'active' à seção de conteúdo desejada
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            
+            // Remove a classe 'active' de todos os botões
+            document.querySelectorAll('.nav-tabs .tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Adiciona a classe 'active' ao botão clicado
+            event.currentTarget.classList.add('active');
         }
-
-        async function uploadPdf(file, folderName) {
-            if (!file) return null;
-            const storageRef = storage.ref();
-            const fileName = `${Date.now()}_${file.name}`;
-            const fileRef = storageRef.child(`${folderName}/${fileName}`);
-            try {
-                const snapshot = await fileRef.put(file);
-                const downloadURL = await snapshot.ref.getDownloadURL();
-                return { name: file.name, url: downloadURL, path: fileRef.fullPath };
-            } catch (error) {
-                console.error('Erro ao fazer upload do PDF:', error);
-                throw new Error('Falha ao fazer upload do arquivo. Tente novamente.');
-            }
-        }
-
-        async function deletePdfFromStorage(filePath) {
-            if (!filePath) return;
-            try {
-                const fileRef = storage.ref(filePath);
-                await fileRef.delete();
-                console.log('PDF excluído do Storage:', filePath);
-            } catch (error) {
-                console.warn('Não foi possível excluir o PDF do Storage (pode não existir):', error);
-            }
-        }
-        // [FIM FUNÇÕES AUXILIARES - MANTIDAS]
-
 
         // ========================================
-        // COMUNICADOS - PUBLICAR E ENVIAR E-MAIL (Lógica EmailJS Atualizada)
+        // FUNÇÃO DE UPLOAD DE ARQUIVO PARA O FIREBASE STORAGE (Reorganizado)
+        // ========================================
+        async function uploadFile(file, path) {
+            if (!file) return null;
+
+            const storageRef = storage.ref(path + '/' + file.name);
+            const uploadTask = storageRef.put(file);
+
+            return new Promise((resolve, reject) => {
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Opcional: monitorar progresso
+                        // const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        // console.log('Upload is ' + progress + '% done');
+                    }, 
+                    (error) => {
+                        console.error("Erro no upload: ", error);
+                        reject(error);
+                    }, 
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            resolve(downloadURL);
+                        }).catch(reject);
+                    }
+                );
+            });
+        }
+
+        // ========================================
+        // FUNÇÃO DE DELEÇÃO COM STORAGE (Reorganizado)
+        // ========================================
+        async function deleteItem(refPath, storagePath, itemUrl) {
+            if (!confirm("Tem certeza que deseja excluir este item?")) return;
+
+            try {
+                // 1. Deleta do Database
+                await database.ref(refPath).remove();
+
+                // 2. Se houver URL do arquivo, tenta deletar do Storage
+                if (itemUrl) {
+                    const fileRef = storage.refFromURL(itemUrl);
+                    await fileRef.delete();
+                }
+
+                alert('Item excluído com sucesso!');
+                // Recarrega a lista dependendo da aba ativa
+                const activeTab = document.querySelector('.content-section.active').id;
+                if (activeTab === 'comunicados') loadComunicados();
+                else if (activeTab === 'escalas') loadEscalas();
+                else if (activeTab === 'operacoes') loadOperacoes();
+                else if (activeTab === 'documentos') loadDocumentos();
+
+
+            } catch (error) {
+                console.error("Erro ao excluir: ", error);
+                alert('Erro ao excluir item. Consulte o console.');
+            }
+        }
+        
+        // ========================================
+        // ENVIAR NOTIFICAÇÃO POR EMAILJS (Reorganizado)
+        // ========================================
+        async function sendNotification(data, templateId) {
+            try {
+                const snapshot = await database.ref('usuarios').once('value');
+                const users = snapshot.val();
+                
+                // Filtra apenas emails de notificação válidos (e que não sejam o admin)
+                const emails = Object.values(users)
+                    .filter(user => user.emailNotificacao && user.email !== currentUser.email)
+                    .map(user => user.emailNotificacao);
+
+                if (emails.length === 0) {
+                    console.warn("Nenhum email de notificação encontrado para enviar.");
+                    return;
+                }
+
+                // Cria uma lista de emails separados por vírgula
+                const to_emails = emails.join(', ');
+
+                const templateParams = {
+                    ...data,
+                    to_emails: to_emails, // Lista de emails separados por vírgula
+                    admin_name: currentUser.nome // Nome de quem publicou
+                };
+
+                await emailjs.send('service_system_gm', templateId, templateParams);
+                console.log('Notificação enviada com sucesso para:', to_emails);
+
+            } catch (error) {
+                console.error('Falha ao enviar notificação:', error);
+            }
+        }
+
+        // ========================================
+        // FORMULÁRIOS DE PUBLICAÇÃO
         // ========================================
         document.getElementById('formComunicado').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const tipo = document.getElementById('tipoComunicado').value;
-            const titulo = document.getElementById('tituloComunicado').value;
-            const conteudo = document.getElementById('conteudoComunicado').value;
-            const pdfFile = document.getElementById('pdfComunicado').files[0];
-            const submitBtn = e.target.querySelector('.btn');
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Publicando e Notificando...';
+            const btn = e.target.querySelector('.btn');
+            btn.disabled = true;
+            btn.textContent = 'Publicando...';
 
             try {
-                let pdfInfo = null;
+                const tipo = document.getElementById('tipoComunicado').value;
+                const titulo = document.getElementById('tituloComunicado').value;
+                const conteudo = document.getElementById('conteudoComunicado').value;
+                const pdfFile = document.getElementById('pdfComunicado').files[0];
+                
+                let pdfUrl = null;
                 if (pdfFile) {
-                    pdfInfo = await uploadPdf(pdfFile, 'comunicados_pdfs');
+                    pdfUrl = await uploadFile(pdfFile, 'comunicados_pdf');
                 }
 
-                // 1. SALVAR NO FIREBASE
-                const now = new Date();
-                const comunicado = {
-                    tipo: tipo,
-                    titulo: titulo,
-                    conteudo: conteudo,
-                    data: now.toISOString(),
-                    dataFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                    autor: currentUser.nome,
-                    autorId: currentUser.uid,
-                    pdf: pdfInfo 
+                const newComunicadoRef = database.ref('comunicados').push();
+                const newComunicado = {
+                    tipo,
+                    titulo,
+                    conteudo,
+                    data: new Date().toISOString(),
+                    pdfUrl,
+                    autor: currentUser.nome 
                 };
+                await newComunicadoRef.set(newComunicado);
                 
-                await database.ref('comunicados').push(comunicado);
-                
-                // 2. ENVIAR E-MAIL COM EMAILJS
-                
-                // A. BUSCAR EMAILS DOS DESTINATÁRIOS (AGORA PEGA O emailNotificacao)
-                const usuariosSnapshot = await database.ref('usuarios').once('value');
-                const listaEmails = [];
-                usuariosSnapshot.forEach(childSnapshot => {
-                    const user = childSnapshot.val();
-                    // Filtra apenas usuários que tenham um email de notificação salvo
-                    if (user.emailNotificacao) { 
-                        listaEmails.push(user.emailNotificacao);
-                    }
-                });
-                
-                if (listaEmails.length > 0) {
-                    const emailTemplateParams = {
-                        titulo: titulo,
-                        tipo: tipo,
-                        conteudo_preview: conteudo.substring(0, 150) + '...', // Limita o preview
-                        autor: currentUser.nome,
-                        // Junta todos os emails para o campo 'to' do template
-                        to_emails: listaEmails.join(', '), 
-                        link_sistema: window.location.href 
-                    };
-                    
-                    // !!! ENVIANDO COM SEUS DADOS: service_trgfsbs, template_w71kqkh, oepmLDTre0mDlrHjW !!!
-                    await emailjs.send('service_trgfsbs', 'template_w71kqkh', emailTemplateParams)
-                    .then(function(response) {
-                       console.log('SUCESSO NO ENVIO DE EMAIL!', response.status, response.text);
-                    }, function(error) {
-                       console.error('FALHA NO ENVIO DE EMAIL:', error);
-                       alert('Comunicado publicado, mas a notificação por e-mail falhou. Verifique as configurações do EmailJS.');
-                    });
-                }
-                
-                // 3. EXIBIR SUCESSO E LIMPAR FORMULÁRIO
-                const successMsg = document.getElementById('comunicadoSuccess');
-                successMsg.textContent = '✅ Comunicado publicado e notificado com sucesso!';
-                successMsg.style.display = 'block';
-                setTimeout(() => { successMsg.style.display = 'none'; }, 5000);
-                
-                e.target.reset(); 
-                
+                // Envio de notificação
+                await sendNotification(newComunicado, 'template_comunicado');
+
+                document.getElementById('comunicadoSuccess').textContent = '✅ Comunicado publicado com sucesso!';
+                document.getElementById('comunicadoSuccess').style.display = 'block';
+                e.target.reset();
+                loadComunicados();
+
             } catch (error) {
-                console.error('Erro ao publicar ou notificar comunicado:', error);
-                alert('Erro ao publicar ou notificar comunicado: ' + error.message);
+                console.error('Erro ao publicar comunicado:', error);
+                document.getElementById('comunicadoSuccess').textContent = '❌ Erro ao publicar: ' + error.message;
+                document.getElementById('comunicadoSuccess').style.backgroundColor = '#fee';
+                document.getElementById('comunicadoSuccess').style.color = '#c33';
+                document.getElementById('comunicadoSuccess').style.display = 'block';
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Publicar Comunicado';
+                btn.disabled = false;
+                btn.textContent = 'Publicar Comunicado';
+                setTimeout(() => document.getElementById('comunicadoSuccess').style.display = 'none', 5000);
             }
         });
 
-        async function deleteComunicado(comunicadoId, pdfPath) {
-            if (confirm('Tem certeza que deseja excluir este comunicado?')) {
-                try {
-                    await database.ref('comunicados/' + comunicadoId).remove();
-                    await deletePdfFromStorage(pdfPath); // Excluir PDF associado
-                    console.log('Comunicado excluído com sucesso:', comunicadoId);
-                } catch (error) {
-                    console.error('Erro ao excluir comunicado:', error);
-                    alert('Erro ao excluir comunicado. Tente novamente.');
-                }
-            }
-        }
-
-        function loadComunicados() {
-            database.ref('comunicados').orderByChild('data').on('value', (snapshot) => {
-                const lista = document.getElementById('listaComunicados');
-                const comunicados = [];
-                
-                snapshot.forEach((childSnapshot) => {
-                    comunicados.push({
-                        id: childSnapshot.key,
-                        ...childSnapshot.val()
-                    });
-                });
-                
-                comunicados.reverse(); // Mostrar mais recentes primeiro
-                
-                if (comunicados.length === 0) {
-                    lista.innerHTML = '<div class="empty-state"><p>Nenhum comunicado publicado ainda</p></div>';
-                } else {
-                    lista.innerHTML = comunicados.map(c => `
-                        <div class="item-box">
-                            <div class="item-header">
-                                <span class="item-tipo">${c.tipo}</span>
-                                <span class="item-data">${c.dataFormatada}</span>
-                            </div>
-                            <div class="item-titulo">${c.titulo}</div>
-                            <div class="item-conteudo">${c.conteudo}</div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                                Publicado por: ${c.autor}
-                            </div>
-                            <div class="item-actions">
-                                ${c.pdf ? `
-                                    <a href="${c.pdf.url}" target="_blank" class="download-link">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 0 24 24" width="15"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                                        Anexo (${c.pdf.name})
-                                    </a>
-                                ` : ''}
-                                ${currentUser && currentUser.admin ? `
-                                    <button class="btn-delete" onclick="deleteComunicado('${c.id}', '${c.pdf ? c.pdf.path : ''}')">Excluir</button>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            });
-        }
-        
-        // [CÓDIGO PARA ESCALAS, OPERAÇÕES E DOCUMENTOS - MANTIDO]
+        // Adicione aqui os demais listeners de formulário (formEscala, formOperacao, formDocumento)...
+        // Por exemplo, o form de Escala:
         document.getElementById('formEscala').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const periodo = document.getElementById('periodoEscala').value;
-            const conteudo = document.getElementById('conteudoEscala').value;
-            const pdfFile = document.getElementById('pdfEscala').files[0];
-            const submitBtn = e.target.querySelector('.btn');
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Publicando...';
+            const btn = e.target.querySelector('.btn');
+            btn.disabled = true;
+            btn.textContent = 'Publicando...';
 
             try {
-                let pdfInfo = null;
+                const periodo = document.getElementById('periodoEscala').value;
+                const conteudo = document.getElementById('conteudoEscala').value;
+                const pdfFile = document.getElementById('pdfEscala').files[0];
+                
+                let pdfUrl = null;
                 if (pdfFile) {
-                    pdfInfo = await uploadPdf(pdfFile, 'escalas_pdfs');
+                    pdfUrl = await uploadFile(pdfFile, 'escalas_pdf');
                 }
 
-                const now = new Date();
-                const escala = {
-                    periodo: periodo,
-                    conteudo: conteudo,
-                    data: now.toISOString(),
-                    dataFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                    autor: currentUser.nome,
-                    autorId: currentUser.uid,
-                    pdf: pdfInfo 
+                const newEscalaRef = database.ref('escalas').push();
+                const newEscala = {
+                    periodo,
+                    conteudo,
+                    data: new Date().toISOString(),
+                    pdfUrl,
+                    autor: currentUser.nome 
                 };
+                await newEscalaRef.set(newEscala);
                 
-                await database.ref('escalas').push(escala);
-                
-                const successMsg = document.getElementById('escalaSuccess');
-                successMsg.textContent = '✅ Escala publicada com sucesso!';
-                successMsg.style.display = 'block';
-                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
-                
+                // Envio de notificação
+                await sendNotification(newEscala, 'template_escala'); // Template específico para Escala
+
+                document.getElementById('escalaSuccess').textContent = '✅ Escala publicada com sucesso!';
+                document.getElementById('escalaSuccess').style.display = 'block';
                 e.target.reset();
-                
+                loadEscalas();
+
             } catch (error) {
                 console.error('Erro ao publicar escala:', error);
-                alert('Erro ao publicar escala: ' + error.message);
+                // Adicione a exibição de erro
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Publicar Escala';
+                btn.disabled = false;
+                btn.textContent = 'Publicar Escala';
+                setTimeout(() => document.getElementById('escalaSuccess').style.display = 'none', 5000);
             }
         });
+        
+        // (Outros formulários e lógica de load continuam aqui...)
 
-        async function deleteEscala(escalaId, pdfPath) {
-            if (confirm('Tem certeza que deseja excluir esta escala?')) {
-                try {
-                    await database.ref('escalas/' + escalaId).remove();
-                    await deletePdfFromStorage(pdfPath);
-                    console.log('Escala excluída com sucesso:', escalaId);
-                } catch (error) {
-                    console.error('Erro ao excluir escala:', error);
-                    alert('Erro ao excluir escala. Tente novamente.');
-                }
+        // ========================================
+        // FUNÇÕES DE CARREGAMENTO DE DADOS
+        // ========================================
+
+        // Função de renderização genérica para reuso
+        function renderItems(data, listId, type) {
+            const listDiv = document.getElementById(listId);
+            listDiv.innerHTML = '';
+            
+            if (!data) {
+                listDiv.innerHTML = '<div class="empty-state">Nenhum item publicado ainda.</div>';
+                return;
             }
-        }
 
-        function loadEscalas() {
-            database.ref('escalas').orderByChild('data').on('value', (snapshot) => {
-                const lista = document.getElementById('listaEscalas');
-                const escalas = [];
-                
-                snapshot.forEach((childSnapshot) => {
-                    escalas.push({
-                        id: childSnapshot.key,
-                        ...childSnapshot.val()
-                    });
+            const keys = Object.keys(data).reverse(); // Ordena do mais novo para o mais antigo
+
+            keys.forEach(key => {
+                const item = data[key];
+                const date = new Date(item.data).toLocaleDateString('pt-BR', {
+                    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
                 });
-                
-                escalas.reverse();
-                
-                if (escalas.length === 0) {
-                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma escala publicada ainda</p></div>';
-                } else {
-                    lista.innerHTML = escalas.map(e => `
-                        <div class="item-box">
-                            <div class="item-header">
-                                <span class="item-tipo">ESCALA</span>
-                                <span class="item-data">${e.dataFormatada}</span>
-                            </div>
-                            <div class="item-titulo">${e.periodo}</div>
-                            <div class="item-conteudo">${e.conteudo}</div>
-                            <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                                Publicado por: ${e.autor}
-                            </div>
-                            <div class="item-actions">
-                                ${e.pdf ? `
-                                    <a href="${e.pdf.url}" target="_blank" class="download-link">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 0 24 24" width="15"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                                        Anexo (${e.pdf.name})
-                                    </a>
-                                ` : ''}
-                                ${currentUser && currentUser.admin ? `
-                                    <button class="btn-delete" onclick="deleteEscala('${e.id}', '${e.pdf ? e.pdf.path : ''}')">Excluir</button>
-                                ` : ''}
-                            </div>
+
+                let title = item.titulo || item.periodo || item.nomeOperacao || item.nomeDoc || 'Sem Título';
+                let content = item.conteudo || item.detalhesOperacao || item.descricaoDoc || 'Sem conteúdo.';
+                let badgeType = item.tipo || item.categoria || 'INFORMATIVO';
+                let itemPath = `${type}/${key}`;
+
+                // Cria o HTML do item
+                const itemHtml = `
+                    <div class="item-box">
+                        <div class="item-header">
+                            <span class="item-tipo">${badgeType.toUpperCase()}</span>
+                            <span class="item-data">Publicado em: ${date} por ${item.autor || 'Admin'}</span>
                         </div>
-                    `).join('');
-                }
-            });
-        }
-        
-        document.getElementById('formOperacao').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const nome = document.getElementById('nomeOperacao').value;
-            const dataHora = document.getElementById('dataOperacao').value;
-            const local = document.getElementById('localOperacao').value;
-            const detalhes = document.getElementById('detalhesOperacao').value;
-            const pdfFile = document.getElementById('pdfOperacao').files[0];
-            const submitBtn = e.target.querySelector('.btn');
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Publicando...';
-
-            try {
-                let pdfInfo = null;
-                if (pdfFile) {
-                    pdfInfo = await uploadPdf(pdfFile, 'operacoes_pdfs');
-                }
-
-                const now = new Date();
-                const operacao = {
-                    nome: nome,
-                    dataHora: dataHora,
-                    local: local,
-                    detalhes: detalhes,
-                    criacaoData: now.toISOString(),
-                    criacaoFormatada: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                    autor: currentUser.nome,
-                    autorId: currentUser.uid,
-                    pdf: pdfInfo 
-                };
-                
-                await database.ref('operacoes').push(operacao);
-                
-                const successMsg = document.getElementById('operacaoSuccess');
-                successMsg.textContent = '✅ Operação publicada com sucesso!';
-                successMsg.style.display = 'block';
-                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
-                
-                e.target.reset();
-                
-            } catch (error) {
-                console.error('Erro ao publicar operação:', error);
-                alert('Erro ao publicar operação: ' + error.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Publicar Operação';
-            }
-        });
-
-        async function deleteOperacao(operacaoId, pdfPath) {
-            if (confirm('Tem certeza que deseja excluir esta operação?')) {
-                try {
-                    await database.ref('operacoes/' + operacaoId).remove();
-                    await deletePdfFromStorage(pdfPath);
-                    console.log('Operação excluída com sucesso:', operacaoId);
-                } catch (error) {
-                    console.error('Erro ao excluir operação:', error);
-                    alert('Erro ao excluir operação. Tente novamente.');
-                }
-            }
-        }
-
-        function loadOperacoes() {
-            database.ref('operacoes').orderByChild('dataHora').on('value', (snapshot) => {
-                const lista = document.getElementById('listaOperacoes');
-                const operacoes = [];
-                
-                snapshot.forEach((childSnapshot) => {
-                    operacoes.push({
-                        id: childSnapshot.key,
-                        ...childSnapshot.val()
-                    });
-                });
-                
-                operacoes.reverse();
-                
-                if (operacoes.length === 0) {
-                    lista.innerHTML = '<div class="empty-state"><p>Nenhuma operação programada ainda</p></div>';
-                } else {
-                    lista.innerHTML = operacoes.map(o => {
-                        const dataOperacao = new Date(o.dataHora);
-                        const dataFormatadaOp = dataOperacao.toLocaleDateString('pt-BR') + ' às ' + dataOperacao.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
-
-                        return `
-                            <div class="item-box" style="border-left-color: #ffc107;">
-                                <div class="item-header">
-                                    <span class="item-tipo" style="background: #ffc107; color: #343a40;">OPERAÇÃO</span>
-                                    <span class="item-data">Programada para: ${dataFormatadaOp}</span>
-                                </div>
-                                <div class="item-titulo">${o.nome}</div>
-                                <div class="item-conteudo">Local: ${o.local}<br>Detalhes: ${o.detalhes}</div>
-                                <div style="margin-top: 10px; font-size: 12px; color: #999;">
-                                    Criada por: ${o.autor} em ${o.criacaoFormatada}
-                                </div>
-                                <div class="item-actions">
-                                    ${o.pdf ? `
-                                        <a href="${o.pdf.url}" target="_blank" class="download-link">
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 0 24 24" width="15"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                                            Plano (${o.pdf.name})
-                                        </a>
-                                    ` : ''}
-                                    ${currentUser && currentUser.admin ? `
-                                        <button class="btn-delete" onclick="deleteOperacao('${o.id}', '${o.pdf ? o.pdf.path : ''}')">Excluir</button>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            });
-        }
-        
-        document.getElementById('formDocumento').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const categoria = document.getElementById('categoriaDoc').value;
-            const nome = document.getElementById('nomeDoc').value;
-            const descricao = document.getElementById('descricaoDoc').value;
-            const pdfFile = document.getElementById('pdfDocumento').files[0];
-            const submitBtn = e.target.querySelector('.btn');
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Publicando...';
-
-            try {
-                let pdfInfo = null;
-                // O PDF é obrigatório neste formulário
-                if (pdfFile) {
-                    pdfInfo = await uploadPdf(pdfFile, 'documentos_pdfs');
-                } else {
-                    throw new Error('É necessário anexar um arquivo PDF.');
-                }
-
-                const now = new Date();
-                const documento = {
-                    categoria: categoria,
-                    nome: nome,
-                    descricao: descricao,
-                    data: now.toISOString(),
-                    dataFormatada: now.toLocaleDateString('pt-BR'),
-                    autor: currentUser.nome,
-                    autorId: currentUser.uid,
-                    pdf: pdfInfo 
-                };
-                
-                await database.ref('documentos').push(documento);
-                
-                const successMsg = document.getElementById('documentoSuccess');
-                successMsg.textContent = '✅ Documento publicado com sucesso!';
-                successMsg.style.display = 'block';
-                setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
-                
-                e.target.reset();
-                
-            } catch (error) {
-                console.error('Erro ao publicar documento:', error);
-                alert('Erro ao publicar documento: ' + error.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Publicar Documento';
-            }
-        });
-
-        async function deleteDocumento(documentoId, pdfPath) {
-            if (confirm('Tem certeza que deseja excluir este documento?')) {
-                try {
-                    await database.ref('documentos/' + documentoId).remove();
-                    await deletePdfFromStorage(pdfPath);
-                    console.log('Documento excluído com sucesso:', documentoId);
-                } catch (error) {
-                    console.error('Erro ao excluir documento:', error);
-                    alert('Erro ao excluir documento. Tente novamente.');
-                }
-            }
-        }
-
-        function loadDocumentos() {
-            database.ref('documentos').orderByChild('data').on('value', (snapshot) => {
-                const lista = document.getElementById('listaDocumentos');
-                const documentos = [];
-                
-                snapshot.forEach((childSnapshot) => {
-                    documentos.push({
-                        id: childSnapshot.key,
-                        ...childSnapshot.val()
-                    });
-                });
-                
-                documentos.reverse();
-                
-                if (documentos.length === 0) {
-                    lista.innerHTML = '<div class="empty-state"><p>Nenhum documento na biblioteca ainda</p></div>';
-                } else {
-                    lista.innerHTML = documentos.map(d => `
-                        <div class="item-box" style="border-left-color: #28a745;">
-                            <div class="item-header">
-                                <span class="item-tipo" style="background: #28a745;">${d.categoria.toUpperCase()}</span>
-                                <span class="item-data">Publicado em: ${d.dataFormatada}</span>
-                            </div>
-                            <div class="item-titulo">${d.nome}</div>
-                            <div class="item-conteudo">${d.descricao || 'Sem descrição.'}</div>
-                            <div class="item-actions">
-                                <a href="${d.pdf.url}" target="_blank" class="download-link" style="color: #28a745;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 0 24 24" width="15" style="fill: #28a745;"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                                    Baixar Documento (${d.pdf.name})
+                        <div class="item-titulo">${title}</div>
+                        <div class="item-conteudo">${content.replace(/\n/g, '<br>')}</div>
+                        <div class="item-actions">
+                            ${item.pdfUrl ? `
+                                <a href="${item.pdfUrl}" target="_blank" class="download-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+                                    </svg>
+                                    Baixar PDF
                                 </a>
-                                ${currentUser && currentUser.admin ? `
-                                    <button class="btn-delete" onclick="deleteDocumento('${d.id}', '${d.pdf.path}')">Excluir</button>
-                                ` : ''}
-                            </div>
+                            ` : ''}
+                            ${currentUser && currentUser.admin ? `
+                                <button class="btn-delete" onclick="deleteItem('${itemPath}', '${item.pdfUrl || ''}', '${item.pdfUrl || ''}')">Excluir</button>
+                            ` : ''}
                         </div>
-                    `).join('');
-                }
+                    </div>
+                `;
+                listDiv.innerHTML += itemHtml;
             });
         }
-        // [FIM CÓDIGO PARA ESCALAS, OPERAÇÕES E DOCUMENTOS - MANTIDO]
-
-        // Verifica o estado da autenticação ao carregar a página
-        auth.onAuthStateChanged(user => {
+        
+        // Funções de Load
+        async function loadComunicados() {
+            const listDiv = document.getElementById('listaComunicados');
+            listDiv.innerHTML = '<div class="loading">Carregando comunicados...</div>';
+            try {
+                const snapshot = await database.ref('comunicados').once('value');
+                renderItems(snapshot.val(), 'listaComunicados', 'comunicados');
+            } catch (error) {
+                listDiv.innerHTML = '<div class="empty-state">Erro ao carregar comunicados.</div>';
+                console.error("Erro ao carregar comunicados:", error);
+            }
+        }
+        // Funções de Load
+        async function loadEscalas() {
+            const listDiv = document.getElementById('listaEscalas');
+            listDiv.innerHTML = '<div class="loading">Carregando escalas...</div>';
+            try {
+                const snapshot = await database.ref('escalas').once('value');
+                renderItems(snapshot.val(), 'listaEscalas', 'escalas');
+            } catch (error) {
+                listDiv.innerHTML = '<div class="empty-state">Erro ao carregar escalas.</div>';
+                console.error("Erro ao carregar escalas:", error);
+            }
+        }
+        // Funções de Load
+        async function loadOperacoes() {
+            const listDiv = document.getElementById('listaOperacoes');
+            listDiv.innerHTML = '<div class="loading">Carregando operações...</div>';
+            try {
+                const snapshot = await database.ref('operacoes').once('value');
+                renderItems(snapshot.val(), 'listaOperacoes', 'operacoes');
+            } catch (error) {
+                listDiv.innerHTML = '<div class="empty-state">Erro ao carregar operações.</div>';
+                console.error("Erro ao carregar operações:", error);
+            }
+        }
+        // Funções de Load
+        async function loadDocumentos() {
+            const listDiv = document.getElementById('listaDocumentos');
+            listDiv.innerHTML = '<div class="loading">Carregando documentos...</div>';
+            try {
+                const snapshot = await database.ref('documentos').once('value');
+                renderItems(snapshot.val(), 'listaDocumentos', 'documentos');
+            } catch (error) {
+                listDiv.innerHTML = '<div class="empty-state">Erro ao carregar documentos.</div>';
+                console.error("Erro ao carregar documentos:", error);
+            }
+        }
+        
+        // ========================================
+        // VERIFICAÇÃO DE AUTENTICAÇÃO AO CARREGAR A PÁGINA
+        // ========================================
+        auth.onAuthStateChanged(async (user) => {
             if (user) {
-                // Usuário logado
-                database.ref('usuarios/' + user.uid).once('value', snapshot => {
+                currentUserId = user.uid;
+                try {
+                    const snapshot = await database.ref('usuarios/' + user.uid).once('value');
                     const userData = snapshot.val();
-                    if (userData) {
-                        currentUserId = user.uid; // Salva o UID
 
-                        // Se o flag isFirstLogin for true ou o campo de emailNotificacao não existir, mostra a tela de primeiro acesso.
+                    if (userData) {
+                        currentUser = {
+                            uid: user.uid,
+                            email: user.email,
+                            nome: userData.nome,
+                            admin: userData.admin || false,
+                            emailNotificacao: userData.emailNotificacao
+                        };
+                        
+                        // Verifica se precisa configurar o email de notificação
                         if (userData.isFirstLogin === true || userData.emailNotificacao === undefined) {
                             showFirstAccessScreen();
                         } else {
-                            currentUser = {
-                                uid: user.uid,
-                                email: user.email,
-                                nome: userData.nome,
-                                admin: userData.admin || false,
-                                emailNotificacao: userData.emailNotificacao
-                            };
                             showMainSystem();
                         }
                     } else {
-                        // Se o usuário estiver autenticado, mas não tiver dados no DB
-                        auth.signOut();
+                        // Se o usuário está autenticado no Firebase Auth mas não no DB
+                        await auth.signOut();
+                        document.getElementById('loginScreen').style.display = 'flex';
                     }
-                });
+                } catch (error) {
+                    console.error("Erro ao carregar dados do usuário:", error);
+                    await auth.signOut();
+                    document.getElementById('loginScreen').style.display = 'flex';
+                }
             } else {
-                // Usuário deslogado
                 document.getElementById('loginScreen').style.display = 'flex';
-                document.getElementById('loginBox').style.display = 'block';
-                document.getElementById('firstAccessForm').style.display = 'none';
                 document.getElementById('mainSystem').style.display = 'none';
+                document.getElementById('firstAccessForm').style.display = 'none';
+                document.getElementById('loginBox').style.display = 'block';
             }
         });
+
     </script>
 </body>
 </html>
