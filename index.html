@@ -906,9 +906,31 @@ ATUALIZADO ATÉ 20/10/2025
         </div>
 
         <!-- ========================================
-             NOVA ABA: PROJETOS EM ANDAMENTO
+           <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Visualização Primeiro</title>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- ========================================
+             ABA: PROJETOS EM ANDAMENTO
+             (Dashboard primeiro, formulários depois)
              ======================================== -->
         <div id="projetos" class="content-section">
+            
+            <!-- VISUALIZAÇÃO PRIMEIRO -->
+            <div class="card">
+                <h3>📊 Projetos Cadastrados</h3>
+                <div id="listaProjetos">
+                    <div class="loading">Carregando projetos...</div>
+                </div>
+            </div>
+
+            <!-- FORMULÁRIOS DEPOIS -->
             <div class="card admin-only">
                 <h3>🚀 Novo Projeto</h3>
                 <div id="projetoSuccess" class="success-msg"></div>
@@ -979,20 +1001,25 @@ ATUALIZADO ATÉ 20/10/2025
                 </form>
             </div>
 
-            <div class="card">
-                <h3>Projetos Cadastrados</h3>
-                <div id="listaProjetos">
-                    <div class="loading">Carregando projetos...</div>
-                </div>
-            </div>
         </div>
 
         <!-- ========================================
-             NOVA ABA: PAINEL DE OCORRÊNCIAS
+             ABA: PAINEL DE OCORRÊNCIAS
+             (Dashboard primeiro, formulário depois)
              ======================================== -->
         <div id="ocorrencias" class="content-section">
+            
+            <!-- VISUALIZAÇÃO PRIMEIRO -->
+            <div class="card">
+                <h3>📊 Dashboard de Estatísticas</h3>
+                <div id="dashboardOcorrencias">
+                    <div class="loading">Carregando estatísticas...</div>
+                </div>
+            </div>
+
+            <!-- FORMULÁRIO DEPOIS -->
             <div class="card admin-only">
-                <h3>📊 Registrar Dados do Mês</h3>
+                <h3>📝 Registrar Dados do Mês</h3>
                 <div id="ocorrenciaSuccess" class="success-msg"></div>
                 <form id="formOcorrencia">
                     <div class="form-group">
@@ -1026,12 +1053,6 @@ ATUALIZADO ATÉ 20/10/2025
                 </form>
             </div>
 
-            <div class="card">
-                <h3>Dashboard de Estatísticas</h3>
-                <div id="dashboardOcorrencias">
-                    <div class="loading">Carregando estatísticas...</div>
-                </div>
-            </div>
         </div>
 
     </div>
@@ -1043,6 +1064,11 @@ ATUALIZADO ATÉ 20/10/2025
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script>
+        // Seu código JavaScript aqui
+    </script>
+
+</body>
+</html>
         // ========================================
         // CONFIGURAÇÃO DO FIREBASE
         // ========================================
