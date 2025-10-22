@@ -756,9 +756,6 @@
 
         <div class="nav-tabs">
             <button class="tab-btn active" onclick="showTab(event, 'comunicados')">📢 Comunicados</button>
-            <button class="tab-btn" onclick="showTab(event, 'escalas')">📅 Escalas</button>
-            <button class="tab-btn" onclick="showTab(event, 'operacoes')">🚨 Operações</button>
-            <button class="tab-btn" onclick="showTab(event, 'documentos')">📁 Documentos</button>
             <button class="tab-btn" onclick="showTab(event, 'projetos')">🚀 Projetos</button>
             <button class="tab-btn" onclick="showTab(event, 'ocorrencias')">📊 Ocorrências</button>
         </div>
@@ -785,10 +782,6 @@
                         <label>Conteúdo</label>
                         <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>Anexar PDF (Opcional)</label>
-                        <input type="file" id="pdfComunicado" accept="application/pdf">
-                    </div>
                     <button type="submit" class="btn">Publicar Comunicado</button>
                 </form>
             </div>
@@ -801,110 +794,6 @@
             </div>
         </div>
 
-        <div id="escalas" class="content-section">
-            <div class="card admin-only">
-                <h3>📝 Nova Escala</h3>
-                <div id="escalaSuccess" class="success-msg"></div>
-                <form id="formEscala">
-                    <div class="form-group">
-                        <label>Período</label>
-                        <input type="text" id="periodoEscala" placeholder="Ex: 21/10 a 27/10/2025" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Detalhes da Escala</label>
-                        <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Anexar PDF (Opcional)</label>
-                        <input type="file" id="pdfEscala" accept="application/pdf">
-                    </div>
-                    <button type="submit" class="btn">Publicar Escala</button>
-                </form>
-            </div>
-
-            <div class="card">
-                <h3>Escalas Publicadas</h3>
-                <div id="listaEscalas">
-                    <div class="loading">Carregando escalas...</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="operacoes" class="content-section">
-            <div class="card admin-only">
-                <h3>📝 Nova Operação</h3>
-                <div id="operacaoSuccess" class="success-msg"></div>
-                <form id="formOperacao">
-                    <div class="form-group">
-                        <label>Nome da Operação</label>
-                        <input type="text" id="nomeOperacao" placeholder="Ex: Operação Centro Seguro" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Data e Horário</label>
-                        <input type="datetime-local" id="dataOperacao" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Local</label>
-                        <input type="text" id="localOperacao" placeholder="Local da operação" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Detalhes</label>
-                        <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Anexar PDF (Opcional)</label>
-                        <input type="file" id="pdfOperacao" accept="application/pdf">
-                    </div>
-                    <button type="submit" class="btn">Publicar Operação</button>
-                </form>
-            </div>
-
-            <div class="card">
-                <h3>Operações Programadas</h3>
-                <div id="listaOperacoes">
-                    <div class="loading">Carregando operações...</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="documentos" class="content-section">
-            <div class="card admin-only">
-                <h3>📝 Novo Documento</h3>
-                <div id="documentoSuccess" class="success-msg"></div>
-                <form id="formDocumento">
-                    <div class="form-group">
-                        <label>Categoria</label>
-                        <select id="categoriaDoc">
-                            <option value="Procedimento Operacional">Procedimento Operacional</option>
-                            <option value="Formulário">Formulário</option>
-                            <option value="Legislação">Legislação</option>
-                            <option value="Manual">Manual</option>
-                            <option value="Outros">Outros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Nome do Documento</label>
-                        <input type="text" id="nomeDoc" placeholder="Ex: Manual de Abordagem 2025" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Descrição</label>
-                        <textarea id="descricaoDoc" placeholder="Breve descrição do documento..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Anexar PDF</label>
-                        <input type="file" id="pdfDocumento" accept="application/pdf" required>
-                    </div>
-                    <button type="submit" class="btn">Publicar Documento</button>
-                </form>
-            </div>
-
-            <div class="card">
-                <h3>Biblioteca de Documentos</h3>
-                <div id="listaDocumentos">
-                    <div class="loading">Carregando documentos...</div>
-                </div>
-            </div>
-        </div>
 
         <!-- ========================================
              NOVA ABA: PROJETOS EM ANDAMENTO
