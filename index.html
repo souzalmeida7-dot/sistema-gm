@@ -754,12 +754,331 @@
             
         </div>
 
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="showTab(event, 'comunicados')">📢 Comunicados</button>
-            <button class="tab-btn" onclick="showTab(event, 'projetos')">🚀 Projetos</button>
-            <button class="tab-btn" onclick="showTab(event, 'ocorrencias')">📊 Ocorrências</button>
-        </div>
+<div class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab(event, 'comunicados')">📢 Comunicados</button>
+    <button class="tab-btn" onclick="showTab(event, 'projetos')">🚀 Projetos</button>
+    <button class="tab-btn" onclick="showTab(event, 'ocorrencias')">📊 Ocorrências</button>
+    <button class="tab-btn" onclick="showTab(event, 'supervisor')">⭐ Supervisor</button>
+</div>
 
+<div id="comunicados" class="content-section active">
+    <div class="card admin-only">
+        <h3>📝 Novo Comunicado</h3>
+        <div id="comunicadoSuccess" class="success-msg"></div>
+        <form id="formComunicado">
+            <div class="form-group">
+                <label>Tipo</label>
+                <select id="tipoComunicado">
+                    <option value="INFORMATIVO">INFORMATIVO</option>
+                    <option value="URGENTE">URGENTE</option>
+                    <option value="OPERACIONAL">OPERACIONAL</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Título</label>
+                <input type="text" id="tituloComunicado" placeholder="Título do comunicado" required>
+            </div>
+            <div class="form-group">
+                <label>Conteúdo</label>
+                <textarea id="conteudoComunicado" placeholder="Escreva o comunicado..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Anexar PDF (Opcional)</label>
+                <input type="file" id="pdfComunicado" accept="application/pdf">
+            </div>
+            <button type="submit" class="btn">Publicar Comunicado</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Todos os Comunicados</h3>
+        <div id="listaComunicados">
+            <div class="loading">Carregando comunicados...</div>
+        </div>
+    </div>
+</div>
+
+<div id="escalas" class="content-section">
+    <div class="card admin-only">
+        <h3>📝 Nova Escala</h3>
+        <div id="escalaSuccess" class="success-msg"></div>
+        <form id="formEscala">
+            <div class="form-group">
+                <label>Período</label>
+                <input type="text" id="periodoEscala" placeholder="Ex: 21/10 a 27/10/2025" required>
+            </div>
+            <div class="form-group">
+                <label>Detalhes da Escala</label>
+                <textarea id="conteudoEscala" placeholder="Descreva a escala completa..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Anexar PDF (Opcional)</label>
+                <input type="file" id="pdfEscala" accept="application/pdf">
+            </div>
+            <button type="submit" class="btn">Publicar Escala</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Escalas Publicadas</h3>
+        <div id="listaEscalas">
+            <div class="loading">Carregando escalas...</div>
+        </div>
+    </div>
+</div>
+
+<div id="operacoes" class="content-section">
+    <div class="card admin-only">
+        <h3>📝 Nova Operação</h3>
+        <div id="operacaoSuccess" class="success-msg"></div>
+        <form id="formOperacao">
+            <div class="form-group">
+                <label>Nome da Operação</label>
+                <input type="text" id="nomeOperacao" placeholder="Ex: Operação Centro Seguro" required>
+            </div>
+            <div class="form-group">
+                <label>Data e Horário</label>
+                <input type="datetime-local" id="dataOperacao" required>
+            </div>
+            <div class="form-group">
+                <label>Local</label>
+                <input type="text" id="localOperacao" placeholder="Local da operação" required>
+            </div>
+            <div class="form-group">
+                <label>Detalhes</label>
+                <textarea id="detalhesOperacao" placeholder="Instruções, objetivos, observações..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Anexar PDF (Opcional)</label>
+                <input type="file" id="pdfOperacao" accept="application/pdf">
+            </div>
+            <button type="submit" class="btn">Publicar Operação</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Operações Programadas</h3>
+        <div id="listaOperacoes">
+            <div class="loading">Carregando operações...</div>
+        </div>
+    </div>
+</div>
+
+<div id="documentos" class="content-section">
+    <div class="card admin-only">
+        <h3>📝 Novo Documento</h3>
+        <div id="documentoSuccess" class="success-msg"></div>
+        <form id="formDocumento">
+            <div class="form-group">
+                <label>Categoria</label>
+                <select id="categoriaDoc">
+                    <option value="Procedimento Operacional">Procedimento Operacional</option>
+                    <option value="Formulário">Formulário</option>
+                    <option value="Legislação">Legislação</option>
+                    <option value="Manual">Manual</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nome do Documento</label>
+                <input type="text" id="nomeDoc" placeholder="Ex: Manual de Abordagem 2025" required>
+            </div>
+            <div class="form-group">
+                <label>Descrição</label>
+                <textarea id="descricaoDoc" placeholder="Breve descrição do documento..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Anexar PDF</label>
+                <input type="file" id="pdfDocumento" accept="application/pdf" required>
+            </div>
+            <button type="submit" class="btn">Publicar Documento</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Biblioteca de Documentos</h3>
+        <div id="listaDocumentos">
+            <div class="loading">Carregando documentos...</div>
+        </div>
+    </div>
+</div>
+
+<div id="solicitacoes" class="content-section">
+    <div class="card">
+        <h3>📝 Enviar Nova Solicitação/Sugestão</h3>
+        <div id="solicitacaoSuccess" class="success-msg"></div>
+        <div id="solicitacaoError" class="error-msg"></div>
+        <form id="formSolicitacao">
+            <div class="form-group">
+                <label>Tipo de Solicitação</label>
+                <select id="tipoSolicitacao" required>
+                    <option value="SUGESTAO">Sugestão de Melhoria</option>
+                    <option value="AFASTAMENTO">Solicitação de Afastamento/Férias</option>
+                    <option value="OUTRO">Outro Assunto Operacional</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Título Breve</label>
+                <input type="text" id="tituloSolicitacao" placeholder="Ex: Pedido de Afastamento dia 30/11" required>
+            </div>
+            <div class="form-group">
+                <label>Detalhes (Motivo, datas, etc.)</label>
+                <textarea id="detalhesSolicitacao" placeholder="Descreva sua solicitação ou sugestão em detalhes..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Anexar PDF (Opcional)</label>
+                <input type="file" id="pdfSolicitacao" accept="application/pdf">
+            </div>
+            <button type="submit" class="btn" id="btnEnviarSolicitacao">Enviar Solicitação</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Minhas Solicitações Enviadas</h3>
+        <div id="listaMinhasSolicitacoes">
+            <div class="loading">Carregando suas solicitações...</div>
+        </div>
+    </div>
+
+    <div class="card admin-only">
+        <h3>🗃️ Solicitações PENDENTES (Ação Administrativa)</h3>
+        <div id="listaSolicitacoesPendentes">
+            <div class="loading">Carregando solicitações pendentes...</div>
+        </div>
+    </div>
+</div>
+
+<div id="projetos" class="content-section">
+    
+    <div class="card">
+        <h3>📊 Projetos Cadastrados</h3>
+        <div id="listaProjetos">
+            <div class="loading">Carregando projetos...</div>
+        </div>
+    </div>
+
+    <div class="card admin-only">
+        <h3>🚀 Novo Projeto</h3>
+        <div id="projetoSuccess" class="success-msg"></div>
+        <form id="formProjeto">
+            <div class="form-group">
+                <label>Categoria do Projeto</label>
+                <select id="categoriaProjeto">
+                    <option value="Base">Base Nova</option>
+                    <option value="Viaturas">Viaturas</option>
+                    <option value="Munições">Munições</option>
+                    <option value="Equipamentos">Equipamentos</option>
+                    <option value="Processos">Processos Administrativos</option>
+                    <option value="Infraestrutura">Infraestrutura</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nome do Projeto</label>
+                <input type="text" id="nomeProjeto" placeholder="Ex: Aquisição de Nova Base" required>
+            </div>
+            <div class="form-group">
+                <label>Descrição</label>
+                <textarea id="descricaoProjeto" placeholder="Descrição detalhada do projeto..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Status Inicial</label>
+                <select id="statusProjeto">
+                    <option value="andamento">Em Andamento</option>
+                    <option value="pausado">Pausado</option>
+                    <option value="concluido">Concluído</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Progresso Inicial (%)</label>
+                <input type="number" id="progressoProjeto" min="0" max="100" value="0" required>
+            </div>
+            <button type="submit" class="btn">Criar Projeto</button>
+        </form>
+    </div>
+
+    <div class="card admin-only">
+        <h3>➕ Adicionar Atualização</h3>
+        <div id="atualizacaoSuccess" class="success-msg"></div>
+        <form id="formAtualizacao">
+            <div class="form-group">
+                <label>Selecione o Projeto</label>
+                <select id="projetoSelect" required>
+                    <option value="">-- Selecione --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Descrição da Atualização</label>
+                <textarea id="descricaoAtualizacao" placeholder="Descreva o progresso ou mudança..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Novo Progresso (%)</label>
+                <input type="number" id="novoProgresso" min="0" max="100" required>
+            </div>
+            <div class="form-group">
+                <label>Novo Status</label>
+                <select id="novoStatus">
+                    <option value="andamento">Em Andamento</option>
+                    <option value="pausado">Pausado</option>
+                    <option value="concluido">Concluído</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">Adicionar Atualização</button>
+        </form>
+    </div>
+</div>
+
+
+<div id="ocorrencias" class="content-section">
+    <div class="card">
+        <h3>Ocorrências...</h3>
+        <p>Conteúdo da aba Ocorrências.</p>
+    </div>
+</div>
+
+
+<div id="supervisor" class="content-section admin-only"> 
+    <div class="card">
+        <h3>📊 Registrar Avaliação F.O.+ / F.O.-</h3>
+        <div id="avaliacaoSuccess" class="success-msg" style="display: none;"></div>
+        <div id="avaliacaoError" class="error-msg" style="display: none;"></div>
+        <form id="formAvaliacao">
+            <div class="form-group">
+                <label>Servidor Avaliado</label>
+                <select id="servidorAvaliadoUid" required>
+                    <option value="">-- Carregando Servidores... --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Fator de Avaliação</label>
+                <select id="fatorAvaliacao" required>
+                    <option value="FO_POSITIVO">Fator Observável Positivo (F.O.+)</option>
+                    <option value="FO_NEGATIVO">Fator Observável Negativo (F.O.-)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Data e Horário do Ocorrido</label>
+                <input type="datetime-local" id="dataOcorrido" required>
+            </div>
+
+            <div class="form-group">
+                <label>Relato do Ocorrido (Breve)</label>
+                <textarea id="relatoOcorrido" placeholder="Descreva o que gerou o F.O.+ ou F.O.- (máx. 500 caracteres)" maxlength="500" required></textarea>
+            </div>
+
+            <button type="submit" class="btn" id="btnRegistrarAvaliacao">Registrar Avaliação</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Exportar Dados de Avaliação</h3>
+        <p>Clique abaixo para exportar o registro completo de avaliações em formato CSV (compatível com Excel e Google Sheets).</p>
+        <button class="btn" style="background-color: #008000;" onclick="exportAvaliationsToCsv()">⬇️ Exportar TUDO (CSV)</button>
+        <div id="exportStatus" style="margin-top: 10px; font-size: 14px;"></div>
+    </div>
+</div>
         <!-- ABAS ORIGINAIS (MANTIDAS) -->
         <div id="comunicados" class="content-section active">
             <div class="card admin-only">
@@ -1035,7 +1354,183 @@
             </div>
 
         </div>
+// =========================================
+// MÓDULO: SUPERVISOR (AVALIAÇÕES F.O.+ / F.O.-)
+// =========================================
 
+// Função principal de carregamento da aba Supervisor
+function loadSupervisor() {
+    // Garante que só carregue se o usuário logado for Admin (Supervisor)
+    if (currentUser && currentUser.admin) {
+        loadServidoresSelect();
+    }
+}
+
+// -----------------------------------------
+// A. CARREGAR LISTA DE SERVIDORES PARA O SELECT
+// -----------------------------------------
+function loadServidoresSelect() {
+    const select = document.getElementById('servidorAvaliadoUid');
+    // Verifica se o elemento existe (para evitar erros caso o admin-only não funcione)
+    if (!select) return; 
+
+    select.innerHTML = '<option value="">-- Carregando Servidores... --</option>';
+
+    // Puxa a lista de todos os usuários do Firebase
+    database.ref('usuarios').once('value')
+        .then(snapshot => {
+            select.innerHTML = '<option value="">-- Selecione o Servidor --</option>';
+            snapshot.forEach(childSnapshot => {
+                const uid = childSnapshot.key;
+                const userData = childSnapshot.val();
+                
+                // Exclui o próprio supervisor da lista de avaliados (opcional)
+                if (uid !== currentUser.uid) { 
+                    const nome = userData.nome || userData.email;
+                    // Monta o nome e email para facilitar a identificação
+                    select.innerHTML += `<option value="${uid}">${nome} (${userData.email})</option>`;
+                }
+            });
+        })
+        .catch(error => {
+            console.error("Erro ao carregar lista de servidores:", error);
+            select.innerHTML = '<option value="">-- Erro ao carregar (ver console) --</option>';
+        });
+}
+
+// -----------------------------------------
+// B. REGISTRO DE AVALIAÇÃO (F.O.+ / F.O.-)
+// -----------------------------------------
+document.getElementById('formAvaliacao').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnRegistrarAvaliacao');
+    const successMsg = document.getElementById('avaliacaoSuccess');
+    const errorMsg = document.getElementById('avaliacaoError');
+
+    btn.disabled = true;
+    btn.textContent = 'Registrando...';
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    try {
+        const servidorUid = document.getElementById('servidorAvaliadoUid').value;
+        const fator = document.getElementById('fatorAvaliacao').value;
+        const dataOcorridoStr = document.getElementById('dataOcorrido').value;
+        const relato = document.getElementById('relatoOcorrido').value;
+
+        if (!servidorUid) throw new Error("Selecione um servidor para continuar.");
+
+        // Busca o nome do servidor avaliado (para salvar no log e na planilha)
+        const userSnapshot = await database.ref('usuarios/' + servidorUid).once('value');
+        const servidorNome = userSnapshot.val().nome || userSnapshot.val().email;
+
+        const novaAvaliacao = {
+            servidorUid: servidorUid,
+            servidorNome: servidorNome,
+            supervisorUid: currentUser.uid,
+            supervisorNome: currentUser.nome,
+            fator: fator,
+            relato: relato,
+            dataOcorrido: dataOcorridoStr, // Formato yyyy-mm-ddThh:mm (do input datetime-local)
+            dataRegistro: firebase.database.ServerValue.TIMESTAMP // Timestamp do Firebase
+        };
+
+        // Salva a avaliação no novo nó '/avaliacoes'
+        await database.ref('avaliacoes').push(novaAvaliacao);
+        
+        successMsg.textContent = `✅ F.O. (${fator.replace('FO_', '').replace('_', ' ')}) registrado com sucesso para ${servidorNome}!`;
+        successMsg.style.display = 'block';
+        document.getElementById('formAvaliacao').reset();
+        
+    } catch (error) {
+        console.error('Erro ao registrar avaliação:', error);
+        errorMsg.textContent = '❌ Erro ao registrar: ' + error.message;
+        errorMsg.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Registrar Avaliação';
+    }
+});
+
+
+// -----------------------------------------
+// C. EXPORTAÇÃO PARA CSV (PLANILHA)
+// -----------------------------------------
+
+/**
+ * Puxa todas as avaliações do Firebase e as exporta como um arquivo CSV.
+ * O separador é o ponto e vírgula (;), ideal para importação no Google Sheets/Excel no Brasil.
+ */
+function exportAvaliationsToCsv() {
+    const statusDiv = document.getElementById('exportStatus');
+    statusDiv.textContent = 'Preparando exportação...';
+
+    database.ref('avaliacoes').once('value')
+        .then(snapshot => {
+            const avaliacoes = [];
+            snapshot.forEach(childSnapshot => {
+                // Adiciona o ID do registro (chave do Firebase) para rastreamento
+                avaliacoes.push({ id: childSnapshot.key, ...childSnapshot.val() }); 
+            });
+
+            if (avaliacoes.length === 0) {
+                statusDiv.textContent = 'Nenhuma avaliação encontrada para exportar.';
+                return;
+            }
+
+            // 1. Definir os cabeçalhos (colunas da planilha)
+            const headers = [
+                "ID_Registro", "ID_Servidor", "Nome_Servidor", "Fator", "Relato", 
+                "Data_Ocorrido", "Supervisor_Nome", "Data_Registro_Sistema"
+            ];
+            
+            // Usando ponto e vírgula (;) como separador para compatibilidade BR
+            let csv = headers.join(';') + '\n'; 
+
+            // 2. Mapear e formatar os dados
+            avaliacoes.forEach(item => {
+                // Converte o Timestamp do registro para formato legível
+                const dataRegistroFormatada = new Date(item.dataRegistro).toLocaleString('pt-BR');
+                
+                // Sanitiza o relato para evitar que caracteres especiais quebrem o CSV.
+                // Coloca aspas e escapa aspas internas.
+                const relatoSanitizado = `"${item.relato.replace(/"/g, '""')}"`; 
+                
+                const row = [
+                    item.id,
+                    item.servidorUid,
+                    item.servidorNome,
+                    item.fator.replace('FO_', '').replace('_', ' '), // Exibe "POSITIVO" ou "NEGATIVO"
+                    relatoSanitizado,
+                    item.dataOcorrido,
+                    item.supervisorNome,
+                    dataRegistroFormatada
+                ].join(';');
+                
+                csv += row + '\n';
+            });
+
+            // 3. Criar e forçar o download do arquivo CSV
+            // O "\ufeff" é o BOM (Byte Order Mark), que força o Excel a reconhecer UTF-8 (acentos).
+            const blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const filename = `Avaliacoes_GM_${new Date().toISOString().slice(0, 10)}.csv`;
+            
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link); // Necessário para simular o clique
+            link.click();
+            document.body.removeChild(link);
+            
+            statusDiv.textContent = `✅ Exportação concluída! Baixado: ${filename}`;
+
+        })
+        .catch(error => {
+            console.error("Erro na exportação CSV:", error);
+            statusDiv.textContent = `❌ Erro na exportação. Verifique o console. (${error.message})`;
+        });
+}
         <!-- ========================================
              ABA OCORRÊNCIAS - DASHBOARD PRIMEIRO
              ======================================== -->
