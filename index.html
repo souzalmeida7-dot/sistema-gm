@@ -760,7 +760,60 @@ Perfeito 23/10/2025
             <button class="tab-btn" onclick="showTab(event, 'projetos')">🚀 Projetos</button>
             <button class="tab-btn" onclick="showTab(event, 'ocorrencias')">📊 Ocorrências</button>
         </div>
+<div id="supervisor" class="content-section admin-only"> 
+    
+    <div class="card">
+        <h3>🔗 Planilha de Controle de Avaliações</h3>
+        <p>Acesse o documento oficial para visualização e edição em tempo real das avaliações F.O.</p>
+        <a href="https://docs.google.com/spreadsheets/d/1jNlQR17mV1_XFvod2EUbcNyNxPcqr4Sl/edit?usp=drive_link&ouid=100731118381755526787&rtpof=true&sd=true" 
+           target="_blank" 
+           class="btn" 
+           style="background-color: #34a853; width: 100%; text-align: center; text-decoration: none; padding: 10px 0; display: block;">
+            📈 Abrir Planilha (Google Sheets)
+        </a>
+    </div>
 
+    <div class="card">
+        <h3>📊 Registrar Avaliação F.O.+ / F.O.-</h3>
+        <div id="avaliacaoSuccess" class="success-msg" style="display: none;"></div>
+        <div id="avaliacaoError" class="error-msg" style="display: none;"></div>
+        <form id="formAvaliacao">
+            <div class="form-group">
+                <label>Servidor Avaliado</label>
+                <select id="servidorAvaliadoUid" required>
+                    <option value="">-- Carregando Servidores... --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Fator de Avaliação</label>
+                <select id="fatorAvaliacao" required>
+                    <option value="FO_POSITIVO">Fator Observável Positivo (F.O.+)</option>
+                    <option value="FO_NEGATIVO">Fator Observável Negativo (F.O.-)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Data e Horário do Ocorrido</label>
+                <input type="datetime-local" id="dataOcorrido" required>
+            </div>
+
+            <div class="form-group">
+                <label>Relato do Ocorrido (Breve)</label>
+                <textarea id="relatoOcorrido" placeholder="Descreva o que gerou o F.O.+ ou F.O.- (máx. 500 caracteres)" maxlength="500" required></textarea>
+            </div>
+
+            <button type="submit" class="btn" id="btnRegistrarAvaliacao">Registrar Avaliação</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Exportar Dados de Avaliação (CSV)</h3>
+        <p>Use esta opção para baixar um arquivo CSV com todos os dados salvos no sistema (para backup).</p>
+        <button class="btn" style="background-color: #008000;" onclick="exportAvaliationsToCsv()">⬇️ Exportar TUDO (CSV)</button>
+        <div id="exportStatus" style="margin-top: 10px; font-size: 14px;"></div>
+    </div>
+</div>
         <!-- ABAS ORIGINAIS (MANTIDAS) -->
         <div id="comunicados" class="content-section active">
             <div class="card admin-only">
