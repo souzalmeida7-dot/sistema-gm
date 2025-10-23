@@ -758,6 +758,7 @@
             <button class="tab-btn active" onclick="showTab(event, 'comunicados')">📢 Comunicados</button>
             <button class="tab-btn" onclick="showTab(event, 'projetos')">🚀 Projetos</button>
             <button class="tab-btn" onclick="showTab(event, 'ocorrencias')">📊 Ocorrências</button>
+            <button class="tab-btn" onclick="showTab(event, 'solicitacoes')">📄 Solicitações</button>
         </div>
 
         <!-- ABAS ORIGINAIS (MANTIDAS) -->
@@ -863,7 +864,323 @@
                 </div>
             </div>
         </div>
+<div id="solicitacoes" class="content-section">
+        <div class="card">
+            <h3>📝 Enviar Nova Solicitação/Sugestão</h3>
+            <div id="solicitacaoSuccess" class="success-msg"></div>
+            <div id="solicitacaoError" class="error-msg"></div>
+            <form id="formSolicitacao">
+                <div class="form-group">
+                    <label>Tipo de Solicitação</label>
+                    <select id="tipoSolicitacao" required>
+                        <option value="SUGESTAO">Sugestão de Melhoria</option>
+                        <option value="AFASTAMENTO">Solicitação de Afastamento/Férias</option>
+                        <option value="OUTRO">Outro Assunto Operacional</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Título Breve</label>
+                    <input type="text" id="tituloSolicitacao" placeholder="Ex: Pedido de Afastamento dia 30/11" required>
+                </div>
+                <div class="form-group">
+                    <label>Detalhes (Motivo, datas, etc.)</label>
+                    <textarea id="detalhesSolicitacao" placeholder="Descreva sua solicitação ou sugestão em detalhes..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Anexar PDF (Opcional)</label>
+                    <input type="file" id="pdfSolicitacao" accept="application/pdf">
+                </div>
+                <button type="submit" class="btn" id="btnEnviarSolicitacao">Enviar Solicitação</button>
+            </form>
+        </div>
 
+        <div class="card">
+            <h3>Minhas Solicitações Enviadas</h3>
+            <div id="listaMinhasSolicitacoes">
+                <div class="loading">Carregando suas solicitações...</div>
+            </div>
+        </div>
+
+        <div class="card admin-only">
+            <h3>🗃️ Solicitações PENDENTES (Ação Administrativa)</h3>
+            <div id="listaSolicitacoesPendentes">
+                <div class="loading">Carregando solicitações pendentes...</div>
+            </div>
+        </div>
+    </div>
+    ```
+
+---
+
+## 2. Código JavaScript (Lógica da Aba)
+
+Insira este bloco de código **no final da sua tag `<script>`**, antes do `</script>`.
+
+Ele contém a lógica para:
+
+1.  Enviar a solicitação (e notificar o Admin via EmailJS).
+2.  Carregar e exibir as solicitações do usuário.
+3.  Carregar as solicitações pendentes (Admin-Only).
+4.  Funções de Ação (Deferir/Indeferir) e Notificação de volta para o usuário.
+
+```javascript
+// =========================================
+// MÓDULO: SOLICITAÇÕES
+// =========================================
+
+// Função principal de carregamento da aba de solicitações
+function loadSolicitacoes() {
+    loadMinhasSolicitacoes();
+    if (currentUser && currentUser.admin) {
+        loadSolicitacoesPendentes();
+    }
+}
+
+// Chame a nova função de carregamento na inicialização (showMainSystem)
+// Adicione 'loadSolicitacoes();' dentro da função showMainSystem()
+
+// -----------------------------------------
+// A. ENVIO DE NOVA SOLICITAÇÃO (Servidor)
+// -----------------------------------------
+document.getElementById('formSolicitacao').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnEnviarSolicitacao');
+    const successMsg = document.getElementById('solicitacaoSuccess');
+    const errorMsg = document.getElementById('solicitacaoError');
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    try {
+        const tipo = document.getElementById('tipoSolicitacao').value;
+        const titulo = document.getElementById('tituloSolicitacao').value;
+        const detalhes = document.getElementById('detalhesSolicitacao').value;
+        const fileInput = document.getElementById('pdfSolicitacao');
+        const file = fileInput.files[0];
+        
+        let anexo = null;
+        if (file) {
+            anexo = await uploadPdf(file, 'solicitacoes_anexos');
+        }
+
+        const novaSolicitacao = {
+            uid: currentUser.uid,
+            nomeUsuario: currentUser.nome,
+            emailNotificacao: currentUser.emailNotificacao, // Armazena o email para notificação de resposta
+            tipo: tipo,
+            titulo: titulo,
+            detalhes: detalhes,
+            dataEnvio: firebase.database.ServerValue.TIMESTAMP,
+            status: 'PENDENTE',
+            anexo: anexo
+        };
+
+        await database.ref('solicitacoes').push(novaSolicitacao);
+        
+        // ** EMAILJS: NOTIFICAÇÃO PARA O COMANDO (ADMIN) **
+        const adminEmail = "comando.marcos@gm.com"; // <-- DEFINA O EMAIL DO COMANDO AQUI
+        const templateParams = {
+            to_email: adminEmail,
+            from_name: currentUser.nome,
+            subject_line: `[NOVA SOLICITAÇÃO] ${titulo}`,
+            message_html: `O Servidor ${currentUser.nome} (E-mail: ${currentUser.email}) enviou uma nova solicitação do tipo: <b>${tipo}</b>.<br><br>Detalhes: ${detalhes}<br><br>Status: PENDENTE.<br>Acesse o Portal para gerenciar.`,
+        };
+        
+        // Assumindo que você tem um Template ID configurado no EmailJS para notificações internas
+        await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID_ADMIN', templateParams); // Mude os IDs
+
+        successMsg.textContent = '✅ Solicitação enviada com sucesso! O comando será notificado.';
+        successMsg.style.display = 'block';
+        document.getElementById('formSolicitacao').reset();
+        loadSolicitacoes(); // Recarrega as listas
+        
+    } catch (error) {
+        console.error('Erro ao enviar solicitação:', error);
+        errorMsg.textContent = '❌ Erro ao enviar solicitação: ' + error.message;
+        errorMsg.style.display = 'block';
+        if (error.code === 'storage/unauthorized') {
+             errorMsg.textContent = '❌ Erro no anexo: Permissão negada no Storage. Verifique as regras do Firebase Storage.';
+        }
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Enviar Solicitação';
+    }
+});
+
+
+// -----------------------------------------
+// B. CARREGAR MINHAS SOLICITAÇÕES (Servidor)
+// -----------------------------------------
+function loadMinhasSolicitacoes() {
+    const listDiv = document.getElementById('listaMinhasSolicitacoes');
+    listDiv.innerHTML = '<div class="loading">Carregando suas solicitações...</div>';
+
+    database.ref('solicitacoes')
+        .orderByChild('uid')
+        .equalTo(currentUser.uid)
+        .on('value', (snapshot) => {
+            const solicitacoes = [];
+            snapshot.forEach(childSnapshot => {
+                solicitacoes.push({ id: childSnapshot.key, ...childSnapshot.val() });
+            });
+            
+            solicitacoes.reverse(); // Mais recente primeiro
+            
+            if (solicitacoes.length === 0) {
+                listDiv.innerHTML = '<div class="empty-state">Nenhuma solicitação encontrada.</div>';
+                return;
+            }
+
+            let html = '';
+            solicitacoes.forEach(solic => {
+                const dataFormatada = new Date(solic.dataEnvio).toLocaleString('pt-BR');
+                let statusClass = '';
+                let statusText = '';
+                
+                if (solic.status === 'DEFERIDO') {
+                    statusClass = 'background: #d4edda; color: #155724; border-left-color: #28a745;';
+                    statusText = 'APROVADA';
+                } else if (solic.status === 'INDEFERIDO') {
+                    statusClass = 'background: #f8d7da; color: #721c24; border-left-color: #dc3545;';
+                    statusText = 'REPROVADA';
+                } else {
+                    statusClass = 'background: #fff3cd; color: #856404; border-left-color: #ffc107;';
+                    statusText = 'PENDENTE';
+                }
+                
+                html += `
+                <div class="item-box" style="${statusClass}">
+                    <div class="item-header">
+                        <span class="item-tipo" style="background: #007bff;">${solic.tipo}</span>
+                        <span class="item-data">Enviada: ${dataFormatada}</span>
+                    </div>
+                    <div class="item-titulo">${solic.titulo} (${statusText})</div>
+                    <div class="item-conteudo">${solic.detalhes}</div>
+                    ${solic.respostaAdmin ? `<p style="margin-top: 10px; font-style: italic; font-size: 13px;">Resposta do Comando: ${solic.respostaAdmin}</p>` : ''}
+                    ${solic.anexo ? `<div class="item-actions"><a href="${solic.anexo.url}" target="_blank" class="download-link">Anexo (PDF)</a></div>` : ''}
+                </div>
+                `;
+            });
+            listDiv.innerHTML = html;
+        }, (error) => {
+            listDiv.innerHTML = `<div class="error-msg" style="display: block;">Erro ao carregar: ${error.message}</div>`;
+            console.error(error);
+        });
+}
+
+
+// -----------------------------------------
+// C. CARREGAR PENDENTES (Admin-Only)
+// -----------------------------------------
+function loadSolicitacoesPendentes() {
+    const listDiv = document.getElementById('listaSolicitacoesPendentes');
+    listDiv.innerHTML = '<div class="loading">Carregando solicitações pendentes...</div>';
+
+    database.ref('solicitacoes')
+        .orderByChild('status')
+        .equalTo('PENDENTE')
+        .on('value', (snapshot) => {
+            const solicitacoes = [];
+            snapshot.forEach(childSnapshot => {
+                solicitacoes.push({ id: childSnapshot.key, ...childSnapshot.val() });
+            });
+            
+            solicitacoes.reverse();
+            
+            if (solicitacoes.length === 0) {
+                listDiv.innerHTML = '<div class="empty-state">Nenhuma solicitação pendente no momento.</div>';
+                return;
+            }
+
+            let html = '';
+            solicitacoes.forEach(solic => {
+                const dataFormatada = new Date(solic.dataEnvio).toLocaleString('pt-BR');
+                
+                html += `
+                <div class="item-box" id="solicitacao-${solic.id}">
+                    <div class="item-header">
+                        <span class="item-tipo" style="background: #dc3545;">🚨 PENDENTE</span>
+                        <span class="item-data">Servidor: <b>${solic.nomeUsuario}</b> (${solic.tipo}) - Enviada: ${dataFormatada}</span>
+                    </div>
+                    <div class="item-titulo">${solic.titulo}</div>
+                    <div class="item-conteudo">${solic.detalhes}</div>
+                    ${solic.anexo ? `<div class="item-actions"><a href="${solic.anexo.url}" target="_blank" class="download-link">Anexo (PDF)</a></div>` : ''}
+                    <div class="item-actions" style="margin-top: 15px;">
+                        <button class="btn" style="width: auto; background: #28a745;" onclick="responderSolicitacao('${solic.id}', true)">✅ Deferir</button>
+                        <button class="btn-delete" style="width: auto; margin-left: 10px;" onclick="responderSolicitacao('${solic.id}', false)">❌ Indeferir</button>
+                    </div>
+                </div>
+                `;
+            });
+            listDiv.innerHTML = html;
+        }, (error) => {
+            listDiv.innerHTML = `<div class="error-msg" style="display: block;">Erro ao carregar: ${error.message}</div>`;
+            console.error(error);
+        });
+}
+
+// -----------------------------------------
+// D. FUNÇÃO DE RESPOSTA (Admin)
+// -----------------------------------------
+async function responderSolicitacao(solicitacaoId, deferir) {
+    if (!currentUser.admin) return;
+
+    const resposta = prompt(`Insira a justificativa ou comentário para ${deferir ? 'DEFERIR' : 'INDEFERIR'} a solicitação:`);
+    
+    if (resposta === null || resposta.trim() === '') {
+        alert('A resposta/justificativa é obrigatória.');
+        return;
+    }
+
+    const newStatus = deferir ? 'DEFERIDO' : 'INDEFERIDO';
+    const btnContainer = document.querySelector(`#solicitacao-${solicitacaoId} .item-actions`);
+    const oldHtml = btnContainer.innerHTML;
+    btnContainer.innerHTML = 'Processando...';
+    
+    try {
+        const solicRef = database.ref('solicitacoes/' + solicitacaoId);
+        const snapshot = await solicRef.once('value');
+        const solicitacao = snapshot.val();
+
+        if (!solicitacao) throw new Error("Solicitação não encontrada.");
+        
+        await solicRef.update({
+            status: newStatus,
+            respostaAdmin: resposta,
+            dataResposta: firebase.database.ServerValue.TIMESTAMP,
+            adminUid: currentUser.uid
+        });
+
+        // ** EMAILJS: NOTIFICAR O SERVIDOR **
+        if (solicitacao.emailNotificacao) {
+            const templateParams = {
+                to_email: solicitacao.emailNotificacao,
+                from_name: 'Comando Administrativo GM',
+                subject_line: `[RESPOSTA] Sua solicitação sobre: ${solicitacao.titulo}`,
+                message_html: `Prezado(a) Servidor(a) ${solicitacao.nomeUsuario},<br><br>Sua solicitação do tipo <b>${solicitacao.tipo}</b> foi avaliada e obteve o status:<br><br>
+                               <h3 style="color: ${deferir ? '#28a745' : '#dc3545'};">${newStatus}!</h3>
+                               <p><b>Resposta do Comando:</b> ${resposta}</p>
+                               <p style="margin-top: 20px;">Atenciosamente,<br>Portal Administrativo GM.</p>`,
+            };
+            
+            // Assumindo que você tem um Template ID configurado no EmailJS para notificar o usuário
+            await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID_USER', templateParams); // Mude os IDs
+        } else {
+             console.warn(`Email de notificação não encontrado para o usuário ${solicitacao.nomeUsuario}. Apenas o status foi atualizado no Portal.`);
+        }
+
+        alert(`Solicitação ${newStatus} e notificação enviada ao usuário.`);
+        loadSolicitacoes(); // Recarrega as listas
+
+    } catch (error) {
+        console.error('Erro ao responder solicitação ou enviar email:', error);
+        alert(`Falha: ${error.message}`);
+    } finally {
+        btnContainer.innerHTML = oldHtml;
+    }
+}
         <div id="documentos" class="content-section">
             <div class="card admin-only">
                 <h3>📝 Novo Documento</h3>
